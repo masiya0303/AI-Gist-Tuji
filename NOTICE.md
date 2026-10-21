@@ -60,6 +60,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Added inline category creation feature
 
+### 2026-10-21 — Category Tabs on Prompts Page (Commit 2cc90f3)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category tabs for quick filtering
+
 ---
 
 ## Files NOT Modified
