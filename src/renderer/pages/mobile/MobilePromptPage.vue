@@ -1,8 +1,8 @@
 <!--
   Fork modification notice (AGPL v3.0 Section 5a):
   Modified by 兔叽 (msiya8160-star) on 2026-10-21
-  Change: Added category management button to header
   Change: Added category tabs for quick filtering at top of page
+  Change: Added category management (create/edit/delete) to filter modal
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -44,9 +44,6 @@
           <ion-button @click="showFilterModal = true">
             <ion-icon :icon="funnelOutline"></ion-icon>
           </ion-button>
-          <ion-button @click="navigateToCategory">
-            <ion-icon :icon="albumsOutline"></ion-icon>
-          </ion-button>
           <ion-button @click="handleCreate">
             <ion-icon :icon="add"></ion-icon>
           </ion-button>
@@ -84,7 +81,6 @@
             :class="{ active: selectedCategory === category.id }"
             @click="selectCategoryTab(category.id)"
           >
-            <span class="category-tab-dot" :style="{ background: category.color || 'var(--content-tertiary)' }"></span>
             {{ category.name }}
           </button>
         </div>
@@ -282,7 +278,79 @@
               color="primary"
             ></ion-icon>
           </ion-item>
+
+          <!-- 分类管理 -->
+          <ion-list-header>
+            <ion-label>{{ t('promptManagement.categoryManageTitle') }}</ion-label>
+            <ion-button fill="clear" size="small" @click="showCreateCategoryModal = true">
+              <ion-icon :icon="add" slot="start"></ion-icon>
+              {{ t('promptManagement.createCategory') }}
+            </ion-button>
+          </ion-list-header>
+          <ion-item v-if="categories.length === 0">
+            <ion-label color="medium">{{ t('promptManagement.noCategories') }}</ion-label>
+          </ion-item>
+          <ion-item-sliding v-for="category in categories" :key="'manage-' + category.id">
+            <ion-item>
+              <ion-label>{{ category.name }}</ion-label>
+              <ion-note slot="end">{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="primary" @click="editCategoryFromFilter(category)">
+                <ion-icon :icon="createOutline" slot="icon-only"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="danger" @click="deleteCategoryFromFilter(category)">
+                <ion-icon :icon="trashOutline" slot="icon-only"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         </ion-list>
+      </ion-content>
+    </ion-modal>
+
+    <!-- 创建/编辑分类弹窗 -->
+    <ion-modal :is-open="showCategoryModal" @didDismiss="showCategoryModal = false">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ isEditingCategory ? t('promptManagement.editCategory') : t('promptManagement.createCategory') }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button @click="showCategoryModal = false">
+              {{ t('common.close') }}
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="category-form">
+          <ion-input
+            v-model="categoryFormData.name"
+            :label="t('promptManagement.categoryName')"
+            :placeholder="t('promptManagement.categoryNamePlaceholder')"
+            clear-button
+            @keyup.enter="saveCategory"
+          />
+          <div class="color-picker">
+            <span class="color-picker-label">{{ t('promptManagement.color') }}</span>
+            <div class="color-options">
+              <button
+                v-for="color in COLOR_OPTIONS"
+                :key="color"
+                type="button"
+                class="color-option"
+                :class="{ selected: categoryFormData.color === color }"
+                :style="{ backgroundColor: color }"
+                @click="categoryFormData.color = color"
+              />
+            </div>
+          </div>
+          <ion-button
+            expand="block"
+            :loading="savingCategory"
+            @click="saveCategory"
+          >
+            {{ isEditingCategory ? t('common.save') : t('promptManagement.createCategory') }}
+          </ion-button>
+        </div>
       </ion-content>
     </ion-modal>
   </ion-page>
@@ -333,8 +401,7 @@ import {
   sparklesOutline,
   listOutline,
   gridOutline,
-  searchOutline,
-  albumsOutline
+  searchOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { useAIConfigStatus } from '~/composables/useAIConfigStatus'
@@ -382,6 +449,27 @@ const currentPage = ref(1)
 const pageSize = 20
 const hasNextPage = ref(false)
 const totalCount = ref(0)
+// 分类管理
+const showCategoryModal = ref(false)
+const isEditingCategory = ref(false)
+const savingCategory = ref(false)
+const editingCategoryId = ref<number | null>(null)
+const categoryFormData = ref({
+  name: '',
+  color: '#67c23a'
+})
+const showCreateCategoryModal = ref(false)
+
+const COLOR_OPTIONS = [
+  '#67c23a', // 绿色
+  '#409eff', // 蓝色
+  '#e6a23c', // 橙色
+  '#f56c6c', // 红色
+  '#909399', // 灰色
+  '#8b5cf6', // 紫色
+  '#06b6d4', // 青色
+  '#ec4899'  // 粉色
+]
 // 是否存在已启用的 AI 配置：跨组件共享状态，另见底部浮动导航的两态按钮布局
 // （src/renderer/pages/MobileMainPage.vue），两处依赖同一份数据，不再各自查库。
 const { hasAIConfig, refreshAIConfigStatus } = useAIConfigStatus()
@@ -552,6 +640,108 @@ const selectCategoryTab = (categoryId: number | null) => {
   loadPrompts()
 }
 
+// 获取分类下的提示词数量
+const getCategoryPromptCount = (categoryId: number) => {
+  return prompts.value.filter(p => p.categoryId === categoryId).length
+}
+
+// 打开创建分类弹窗
+const openCreateCategory = () => {
+  isEditingCategory.value = false
+  editingCategoryId.value = null
+  categoryFormData.value = {
+    name: '',
+    color: COLOR_OPTIONS[0]
+  }
+  showCategoryModal.value = true
+}
+
+// 编辑分类
+const editCategoryFromFilter = (category: Category) => {
+  isEditingCategory.value = true
+  editingCategoryId.value = category.id
+  categoryFormData.value = {
+    name: category.name,
+    color: category.color || COLOR_OPTIONS[0]
+  }
+  showCategoryModal.value = true
+}
+
+// 删除分类
+const deleteCategoryFromFilter = async (category: Category) => {
+  const alert = await alertController.create({
+    header: t('promptManagement.deleteCategoryTitle'),
+    message: t('promptManagement.deleteCategoryConfirm', {
+      name: category.name,
+      count: getCategoryPromptCount(category.id)
+    }),
+    buttons: [
+      t('common.cancel'),
+      {
+        text: t('promptManagement.deleteCategory'),
+        role: 'danger',
+        handler: async () => {
+          try {
+            await api.categories.delete.mutate(category.id)
+            await loadCategories()
+            if (selectedCategory.value === category.id) {
+              selectedCategory.value = null
+              loadPrompts()
+            }
+            await presentMobileToast(t('promptManagement.categoryDeleted'), 'success', { duration: 2000 })
+          } catch (error) {
+            console.error('删除分类失败:', error)
+            await presentMobileToast(t('promptManagement.deleteCategoryFailed'), 'danger', { duration: 3000 })
+          }
+        }
+      }
+    ]
+  })
+  await alert.present()
+}
+
+// 保存分类（创建或更新）
+const saveCategory = async () => {
+  if (!categoryFormData.value.name.trim()) {
+    const alert = await alertController.create({
+      header: t('common.validationError'),
+      message: t('promptManagement.categoryNameRequired'),
+      buttons: [t('common.ok')]
+    })
+    await alert.present()
+    return
+  }
+
+  savingCategory.value = true
+  try {
+    if (isEditingCategory.value && editingCategoryId.value) {
+      await api.categories.update.mutate(editingCategoryId.value, {
+        name: categoryFormData.value.name.trim(),
+        color: categoryFormData.value.color
+      })
+      await presentMobileToast(t('promptManagement.categoryUpdated'), 'success', { duration: 2000 })
+    } else {
+      await api.categories.create.mutate({
+        name: categoryFormData.value.name.trim(),
+        color: categoryFormData.value.color,
+        isActive: true
+      })
+      await presentMobileToast(t('promptManagement.categoryCreated'), 'success', { duration: 2000 })
+    }
+    await loadCategories()
+    showCategoryModal.value = false
+  } catch (error) {
+    console.error('保存分类失败:', error)
+    await presentMobileToast(
+      isEditingCategory.value ? t('promptManagement.updateCategoryFailed') : t('promptManagement.createCategoryFailed'),
+      'danger',
+      { duration: 3000 }
+    )
+  } finally {
+    savingCategory.value = false
+  }
+}
+
 // 清除搜索词和全部筛选条件（搜索/筛选后无匹配结果时的空状态操作）
 const clearSearchAndFilters = () => {
   if (searchTimer) {
@@ -596,10 +786,6 @@ const navigateToAIGenerator = () => {
 }
 
 // 导航到分类管理
-const navigateToCategory = () => {
-  router.push('/category')
-}
-
 // 删除提示词
 const handleDelete = async (prompt: Prompt) => {
   const alert = await alertController.create({
@@ -857,9 +1043,7 @@ ion-content {
 
 /* 分类切换标签 */
 .category-tabs-container {
-  padding: 8px var(--content-padding) 0;
-  background: var(--ion-background-color);
-  border-bottom: 1px solid var(--ion-border-color);
+  padding: 4px var(--content-padding);
 }
 
 .category-tabs-scroll {
@@ -877,10 +1061,7 @@ ion-content {
 
 .category-tab {
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   border: 1px solid var(--border-subtle, var(--ion-border-color));
   border-radius: 20px;
   background: var(--surface-primary, var(--ion-background-color));
@@ -902,10 +1083,48 @@ ion-content {
   color: var(--ion-color-primary-contrast);
 }
 
-.category-tab-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
+/* 分类管理表单 */
+.category-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-picker-label {
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 600;
+  color: var(--content-secondary);
+}
+
+.color-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: var(--ion-color-primary);
+  transform: scale(1.15);
 }
 </style>
