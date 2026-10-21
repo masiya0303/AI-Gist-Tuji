@@ -1,4 +1,4 @@
-package com.getaigist.app;
+package com.msiya8160.aigist;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

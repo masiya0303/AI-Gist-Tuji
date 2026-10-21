@@ -1,4 +1,4 @@
-package com.getaigist.app;
+package com.msiya8160.aigist;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;

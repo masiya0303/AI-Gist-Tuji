@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.getaigist.app',
+  appId: 'com.msiya8160.aigist',
   appName: 'AI Gist',
   webDir: 'build/renderer',
   plugins: {
