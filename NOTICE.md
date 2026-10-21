@@ -55,6 +55,11 @@
 #### Files modified (JSON format, no inline comments possible):
 - `src/renderer/i18n/locales/zh-CN.json` — Added category management translations
 
+### 2026-10-21 — Inline Category Creation in Edit Page (Commit 357e78b)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Added inline category creation feature
+
 ---
 
 ## Files NOT Modified
