@@ -87,11 +87,7 @@
       </div>
 
       <!-- 筛选标签 -->
-      <div v-if="hasActiveFilters" class="filter-chips">
-        <ion-chip v-if="selectedCategory" @click="clearCategory">
-          <ion-label>{{ getCategoryName(selectedCategory) }}</ion-label>
-          <ion-icon :icon="closeCircle"></ion-icon>
-        </ion-chip>
+      <div v-if="hasActiveFilters && (showFavoritesOnly || selectedTag)" class="filter-chips">
         <ion-chip v-if="showFavoritesOnly" @click="showFavoritesOnly = false">
           <ion-label>{{ t('promptManagement.favorites') }}</ion-label>
           <ion-icon :icon="closeCircle"></ion-icon>
