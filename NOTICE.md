@@ -79,6 +79,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Hide category filter chip (category already shown in tabs)
 
+### 2026-10-21 — Fix Create Category Button (Commit 96994cf)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Fix create category button not opening modal
+
 ---
 
 ## Files NOT Modified
