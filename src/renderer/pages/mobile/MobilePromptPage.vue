@@ -257,43 +257,33 @@
           </ion-item>
 
           <!-- 分类筛选 -->
+          <!-- 分类筛选与管理 -->
           <ion-list-header>
             <ion-label>{{ t('promptManagement.categoryFilterTitle') }}</ion-label>
-          </ion-list-header>
-          <ion-item button @click="handleCategoryFilter(null)">
-            <ion-label>{{ t('promptManagement.allCategories') }}</ion-label>
-            <ion-icon v-if="!selectedCategory" :icon="checkmark" slot="end" color="primary"></ion-icon>
-          </ion-item>
-          <ion-item
-            v-for="category in categories"
-            :key="category.id"
-            button
-            @click="handleCategoryFilter(category.id)"
-          >
-            <ion-label>{{ category.name }}</ion-label>
-            <ion-icon
-              v-if="selectedCategory === category.id"
-              :icon="checkmark"
-              slot="end"
-              color="primary"
-            ></ion-icon>
-          </ion-item>
-
-          <!-- 分类管理 -->
-          <ion-list-header>
-            <ion-label>{{ t('promptManagement.categoryManageTitle') }}</ion-label>
             <ion-button fill="clear" size="small" @click="showCreateCategoryModal = true">
               <ion-icon :icon="add" slot="start"></ion-icon>
               {{ t('promptManagement.createCategory') }}
             </ion-button>
           </ion-list-header>
+          <ion-item button @click="handleCategoryFilter(null)">
+            <ion-label>{{ t('promptManagement.allCategories') }}</ion-label>
+            <ion-icon v-if="!selectedCategory" :icon="checkmark" slot="end" color="primary"></ion-icon>
+          </ion-item>
           <ion-item v-if="categories.length === 0">
             <ion-label color="medium">{{ t('promptManagement.noCategories') }}</ion-label>
           </ion-item>
           <ion-item-sliding v-for="category in categories" :key="'manage-' + category.id">
-            <ion-item>
-              <ion-label>{{ category.name }}</ion-label>
-              <ion-note slot="end">{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
+            <ion-item button @click="handleCategoryFilter(category.id)">
+              <ion-label>
+                {{ category.name }}
+                <ion-note>{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
+              </ion-label>
+              <ion-icon
+                v-if="selectedCategory === category.id"
+                :icon="checkmark"
+                slot="end"
+                color="primary"
+              ></ion-icon>
             </ion-item>
             <ion-item-options side="end">
               <ion-item-option color="primary" @click="editCategoryFromFilter(category)">
