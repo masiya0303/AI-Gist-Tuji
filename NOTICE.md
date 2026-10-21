@@ -69,6 +69,11 @@
 #### Files removed:
 - `src/renderer/pages/mobile/MobileCategoryPage.vue` — Removed (functionality moved to filter modal)
 
+### 2026-10-21 — Fix Duplicate Category List (Commit 29110a1)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Merged category filter and management into single list
+
 ---
 
 ## Files NOT Modified
