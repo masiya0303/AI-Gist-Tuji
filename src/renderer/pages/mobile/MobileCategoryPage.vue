@@ -214,8 +214,7 @@ import {
   IonIcon,
   IonModal,
   IonSpinner,
-  presentAlert,
-  presentToast
+  alertController
 } from '@ionic/vue'
 import {
   add,
@@ -224,6 +223,7 @@ import {
   trashOutline,
   albumsOutline
 } from 'ionicons/icons'
+import { presentMobileToast } from '~/lib/utils/mobile-toast'
 import { CategoryService } from '~/lib/services/category.service'
 import type { Category, CategoryWithRelations } from '@shared/types/database'
 
@@ -264,11 +264,7 @@ const loadCategories = async () => {
     categories.value = await service.getAllCategories()
   } catch (error) {
     console.error('加载分类失败:', error)
-    await presentToast({
-      message: t('common.loadFailed'),
-      color: 'danger',
-      duration: 3000
-    })
+    await presentMobileToast(t('common.loadFailed'), 'danger', { duration: 3000 })
   } finally {
     loading.value = false
   }
@@ -290,11 +286,12 @@ const cancelCreating = () => {
 
 const handleCreate = async () => {
   if (!newCategory.value.name.trim()) {
-    await presentAlert({
+    const alert = await alertController.create({
       header: t('common.validationError'),
       message: t('promptManagement.categoryNameRequired'),
       buttons: [t('common.ok')]
     })
+    await alert.present()
     return
   }
 
@@ -302,20 +299,12 @@ const handleCreate = async () => {
   try {
     const service = CategoryService.getInstance()
     await service.createCategory(newCategory.value)
-    await presentToast({
-      message: t('promptManagement.categoryCreated'),
-      color: 'success',
-      duration: 2000
-    })
+    await presentMobileToast(t('promptManagement.categoryCreated'), 'success', { duration: 2000 })
     cancelCreating()
     await loadCategories()
   } catch (error) {
     console.error('创建分类失败:', error)
-    await presentToast({
-      message: t('promptManagement.createCategoryFailed'),
-      color: 'danger',
-      duration: 3000
-    })
+    await presentMobileToast(t('promptManagement.createCategoryFailed'), 'danger', { duration: 3000 })
   } finally {
     creating.value = false
   }
@@ -343,11 +332,12 @@ const handleSaveEdit = async () => {
   if (!editingCategory.value) return
 
   if (!editingCategory.value.name.trim()) {
-    await presentAlert({
+    const alert = await alertController.create({
       header: t('common.validationError'),
       message: t('promptManagement.categoryNameRequired'),
       buttons: [t('common.ok')]
     })
+    await alert.present()
     return
   }
 
@@ -359,20 +349,12 @@ const handleSaveEdit = async () => {
       description: editingCategory.value.description,
       color: editingCategory.value.color
     })
-    await presentToast({
-      message: t('promptManagement.categoryUpdated'),
-      color: 'success',
-      duration: 2000
-    })
+    await presentMobileToast(t('promptManagement.categoryUpdated'), 'success', { duration: 2000 })
     cancelEdit()
     await loadCategories()
   } catch (error) {
     console.error('更新分类失败:', error)
-    await presentToast({
-      message: t('promptManagement.updateCategoryFailed'),
-      color: 'danger',
-      duration: 3000
-    })
+    await presentMobileToast(t('promptManagement.updateCategoryFailed'), 'danger', { duration: 3000 })
   } finally {
     updating.value = false
   }
@@ -393,20 +375,12 @@ const handleDelete = async () => {
   try {
     const service = CategoryService.getInstance()
     await service.deleteCategory(deletingCategory.value.id!)
-    await presentToast({
-      message: t('promptManagement.categoryDeleted'),
-      color: 'success',
-      duration: 2000
-    })
+    await presentMobileToast(t('promptManagement.categoryDeleted'), 'success', { duration: 2000 })
     cancelDelete()
     await loadCategories()
   } catch (error) {
     console.error('删除分类失败:', error)
-    await presentToast({
-      message: t('promptManagement.deleteCategoryFailed'),
-      color: 'danger',
-      duration: 3000
-    })
+    await presentMobileToast(t('promptManagement.deleteCategoryFailed'), 'danger', { duration: 3000 })
   } finally {
     deleting.value = false
   }
