@@ -86,7 +86,6 @@
                 :style="categoryChipStyle(category)"
                 @click="selectCategory(category.id)"
               >
-                <span class="pill-dot" :style="{ background: category.color || 'var(--content-tertiary)' }"></span>
                 {{ category.name }}
               </button>
               <button type="button" class="pill pill-add" @click="showCategoryModal = true">
