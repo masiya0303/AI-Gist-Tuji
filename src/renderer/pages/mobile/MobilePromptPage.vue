@@ -2,6 +2,7 @@
   Fork modification notice (AGPL v3.0 Section 5a):
   Modified by 兔叽 (msiya8160-star) on 2026-10-21
   Change: Added category management button to header
+  Change: Added category tabs for quick filtering at top of page
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -62,6 +63,31 @@
       <!-- 大标题：静止时展开，向下滚动时收起为工具栏小标题 -->
       <div class="mobile-large-title-bar" :style="{ '--collapse-progress': headerProgress }">
         <h1 class="mobile-large-title-text" aria-hidden="true">{{ t('mainPage.menu.prompts') }}</h1>
+      </div>
+
+      <!-- 分类切换 -->
+      <div v-if="categories.length > 0" class="category-tabs-container">
+        <div class="category-tabs-scroll">
+          <button
+            type="button"
+            class="category-tab"
+            :class="{ active: selectedCategory === null }"
+            @click="selectCategoryTab(null)"
+          >
+            {{ t('promptManagement.allCategories') }}
+          </button>
+          <button
+            v-for="category in categories"
+            :key="category.id"
+            type="button"
+            class="category-tab"
+            :class="{ active: selectedCategory === category.id }"
+            @click="selectCategoryTab(category.id)"
+          >
+            <span class="category-tab-dot" :style="{ background: category.color || 'var(--content-tertiary)' }"></span>
+            {{ category.name }}
+          </button>
+        </div>
       </div>
 
       <!-- 筛选标签 -->
@@ -520,6 +546,12 @@ const clearCategory = () => {
   loadPrompts()
 }
 
+// 选择分类标签
+const selectCategoryTab = (categoryId: number | null) => {
+  selectedCategory.value = categoryId
+  loadPrompts()
+}
+
 // 清除搜索词和全部筛选条件（搜索/筛选后无匹配结果时的空状态操作）
 const clearSearchAndFilters = () => {
   if (searchTimer) {
@@ -821,5 +853,59 @@ ion-chip {
 ion-content {
   /* 让列表底部留出浮动导航（AI 入口条 + 标签栏）的空间，避免最后一项被遮挡 */
   --padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--mobile-nav-clearance));
+}
+
+/* 分类切换标签 */
+.category-tabs-container {
+  padding: 8px var(--content-padding) 0;
+  background: var(--ion-background-color);
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.category-tabs-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tab {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-subtle, var(--ion-border-color));
+  border-radius: 20px;
+  background: var(--surface-primary, var(--ion-background-color));
+  color: var(--content-secondary, var(--ion-color-medium));
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  border-color: var(--ion-color-primary);
+}
+
+.category-tab.active {
+  border-color: var(--ion-color-primary);
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+}
+
+.category-tab-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 </style>
