@@ -256,7 +256,7 @@
           <!-- 分类筛选与管理 -->
           <ion-list-header>
             <ion-label>{{ t('promptManagement.categoryFilterTitle') }}</ion-label>
-            <ion-button fill="clear" size="small" @click="showCreateCategoryModal = true">
+            <ion-button fill="clear" size="small" @click="showCategoryModal = true; isEditingCategory = false; editingCategoryId = null; categoryFormData = { name: '', color: '#67c23a' }">
               <ion-icon :icon="add" slot="start"></ion-icon>
               {{ t('promptManagement.createCategory') }}
             </ion-button>
@@ -444,7 +444,6 @@ const categoryFormData = ref({
   name: '',
   color: '#67c23a'
 })
-const showCreateCategoryModal = ref(false)
 
 const COLOR_OPTIONS = [
   '#67c23a', // 绿色
@@ -632,16 +631,6 @@ const getCategoryPromptCount = (categoryId: number) => {
 }
 
 // 打开创建分类弹窗
-const openCreateCategory = () => {
-  isEditingCategory.value = false
-  editingCategoryId.value = null
-  categoryFormData.value = {
-    name: '',
-    color: COLOR_OPTIONS[0]
-  }
-  showCategoryModal.value = true
-}
-
 // 编辑分类
 const editCategoryFromFilter = (category: Category) => {
   isEditingCategory.value = true
