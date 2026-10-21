@@ -1,4 +1,4 @@
-# AI Gist privacy policy
+# AI Gist Fork privacy policy
 
 Last updated: August 15, 2026
 
