@@ -45,6 +45,16 @@
 - `android/app/src/main/java/com/msiya8160/aigist/WebDavPlugin.java` — Changed package name
 - `android/app/src/main/res/values/strings.xml` — Changed `package_name` and `custom_url_scheme`
 
+### 2026-10-21 — Mobile Category Management Page (Commit 9ab2263)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobileCategoryPage.vue` — New file: mobile category management page
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category management button
+- `src/renderer/router/mobile.ts` — Added `/category` route
+
+#### Files modified (JSON format, no inline comments possible):
+- `src/renderer/i18n/locales/zh-CN.json` — Added category management translations
+
 ---
 
 ## Files NOT Modified
