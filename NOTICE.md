@@ -84,6 +84,12 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Fix create category button not opening modal
 
+### 2026-10-21 — Fix Create Category Save and Remove Color Dots (Commit 1667e5f)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Fix categoryFormData.value not being set in create button
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Remove color dot from category pills
+
 ---
 
 ## Files NOT Modified
