@@ -56,6 +56,10 @@ const routes: RouteRecordRaw[] = [
     path: '/ai-config/:id/system-prompt',
     component: () => import('../pages/mobile/MobileSystemPromptEditPage.vue')
   },
+  {
+    path: '/category',
+    component: () => import('../pages/mobile/MobileCategoryPage.vue')
+  },
   // 设置二级页面：设置首页只做导航，具体设置都在这些独立页面里
   {
     path: '/mobile/settings/general',

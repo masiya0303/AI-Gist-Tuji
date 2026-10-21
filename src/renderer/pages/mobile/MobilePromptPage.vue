@@ -36,6 +36,9 @@
           <ion-button @click="showFilterModal = true">
             <ion-icon :icon="funnelOutline"></ion-icon>
           </ion-button>
+          <ion-button @click="navigateToCategory">
+            <ion-icon :icon="albumsOutline"></ion-icon>
+          </ion-button>
           <ion-button @click="handleCreate">
             <ion-icon :icon="add"></ion-icon>
           </ion-button>
@@ -297,7 +300,8 @@ import {
   sparklesOutline,
   listOutline,
   gridOutline,
-  searchOutline
+  searchOutline,
+  albumsOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { useAIConfigStatus } from '~/composables/useAIConfigStatus'
@@ -550,6 +554,11 @@ const handleCreate = () => {
 // 导航到AI生成器
 const navigateToAIGenerator = () => {
   router.push('/ai-generator')
+}
+
+// 导航到分类管理
+const navigateToCategory = () => {
+  router.push('/category')
 }
 
 // 删除提示词
