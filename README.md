@@ -1,10 +1,19 @@
+> ⚠️ **本项目是 [AI Gist](https://github.com/yarin-zhang/AI-Gist) 的 Fork**
+>
+> - **原作者**：Yarin Zhang（[GitHub](https://github.com/yarin-zhang)）
+> - **原项目**采用 AGPL-3.0 许可证，本项目在原项目基础上进行了修改
+> - **本 Fork** 同样采用 AGPL-3.0 许可证，修改由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）完成
+> - 如果你通过网络（SaaS）方式提供基于本项目的服务，必须向用户公开修改后的完整源代码（AGPL-3.0 第 13 条）
+
+---
+
 <div align="center">
 
 ![Logo](docs/images/logo.png)
 
 # AI Gist
 
-![100% 本地数据](https://img.shields.io/badge/数据存储-100%25本地-success?style=flat&logo=database&logoColor=white) ![AI 支持](https://img.shields.io/badge/AI-支持多模型-blue?style=flat&logo=openai&logoColor=white)  [![GitHub all releases](https://img.shields.io/github/downloads/yarin-zhang/AI-Gist/total?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases)
+![100% 本地数据](https://img.shields.io/badge/数据存储-100%25本地-success?style=flat&logo=database&logoColor=white) ![AI 支持](https://img.shields.io/badge/AI-支持多模型-blue?style=flat&logo=openai&logoColor=white)  [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
 
 ![桌面端](https://img.shields.io/badge/桌面端-Windows%20%7C%20macOS%20%7C%20Linux-purple?style=flat&logo=electron&logoColor=white) ![移动端](https://img.shields.io/badge/移动端-Android%20%7C%20iOS-00A98F?style=flat&logo=capacitor&logoColor=white) 
 
@@ -15,7 +24,7 @@
 
 ![主要截图](docs/images/image-main.png?v=202608170119)
 
-[🏠 访问官网](https://getaigist.com) | [🔗 GitHub 下载](https://github.com/yarin-zhang/AI-Gist/releases) | [🇬🇧 English README](docs/README.en.md)
+[🏠 访问官网](https://getaigist.com) | [🔗 Fork Releases](https://github.com/msiya8160-star/AI-Gist-Tuji/releases) | [🔗 上游原项目](https://github.com/yarin-zhang/AI-Gist/releases) | [🇬🇧 English README](docs/README.en.md)
 
 </div>
 
@@ -52,7 +61,11 @@ AI Gist 关注隐私和数据安全，所有数据都存储在本地，并支持
 
 ## ⬇️ 下载
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/yarin-zhang/AI-Gist?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases/latest) [![GitHub all releases](https://img.shields.io/github/downloads/yarin-zhang/AI-Gist/total?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases)
+> 📦 **注意**：下表中的 GitHub Releases 下载链接指向**上游原项目**（[yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist/releases)）的发布版本。
+> 本 Fork 目前尚未独立发布版本，如需安装本 Fork，请从源码构建（见下方「开发说明」）。
+> Microsoft Store / App Store 链接指向的是上游原项目的商店版本，与本 Fork 无关。
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/msiya8160-star/AI-Gist-Tuji?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases/latest) [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
 
 | 平台 | 安装包 | 应用市场 | 说明 |
 |------|----------|----------|------|

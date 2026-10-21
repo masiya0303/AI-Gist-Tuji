@@ -17,4 +17,8 @@ The self-hosted Web edition uses a same-origin backend to proxy WebDAV and AI re
 
 Users can remove their data through AI Gist's delete and reset controls, delete exported or backup files from their chosen locations, or remove the application's local data through the operating system. Data already sent to a user-selected AI provider, WebDAV server, or other external service is governed by that service and must be deleted there.
 
-Questions and privacy reports can be submitted through the [AI Gist issue tracker](https://github.com/yarin-zhang/AI-Gist/issues). Do not include API keys, passwords, prompt contents, or other sensitive data in a public issue.
+Questions and privacy reports can be submitted through the [AI Gist Fork issue tracker](https://github.com/msiya8160-star/AI-Gist-Tuji/issues)（本 Fork）或 [upstream issue tracker](https://github.com/yarin-zhang/AI-Gist/issues)（上游原项目）。Do not include API keys, passwords, prompt contents, or other sensitive data in a public issue.
+
+---
+
+*本 Fork 由 兔叽 ([@msiya8160-star](https://github.com/msiya8160-star)) 维护，上游原项目为 [AI Gist](https://github.com/yarin-zhang/AI-Gist) by [Yarin Zhang](https://github.com/yarin-zhang)。原项目采用 AGPL-3.0 许可证，本 Fork 同样采用 AGPL-3.0 许可证。*

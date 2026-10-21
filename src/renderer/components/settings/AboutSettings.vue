@@ -104,12 +104,22 @@
                 <NFlex vertical :size="8">
                     <NFlex justify="space-between">
                         <NText depth="2">{{ t('about.developer') }}</NText>
-                        <NText>{{ t('about.developerName') }}</NText>
+                        <NText>{{ t('about.originalAuthor') }}</NText>
+                    </NFlex>
+                    <NFlex justify="space-between">
+                        <NText depth="2">{{ t('about.forker') }}</NText>
+                        <NText>{{ t('about.forkerName') }}</NText>
                     </NFlex>
                     <NFlex justify="space-between">
                         <NText depth="2">{{ t('about.github') }}</NText>
                         <NButton text type="primary" @click="openGitHub" style="padding: 0; font-size: 14px;">
                             {{ t('about.githubRepo') }}
+                        </NButton>
+                    </NFlex>
+                    <NFlex justify="space-between">
+                        <NText depth="2">{{ t('about.upstream') }}</NText>
+                        <NButton text type="primary" @click="openUpstream" style="padding: 0; font-size: 14px;">
+                            {{ t('about.upstreamRepo') }}
                         </NButton>
                     </NFlex>
                     <NFlex justify="space-between">
@@ -218,17 +228,25 @@ const handleOpenDownloadPage = async () => {
     }
 };
 
-// 打开 GitHub 仓库
+// 打开 GitHub 仓库（本 Fork）
 const openGitHub = async () => {
-    const result = await openExternalUrl('https://github.com/yarin-zhang/AI-Gist');
+    const result = await openExternalUrl('https://github.com/msiya8160-star/AI-Gist-Tuji');
     if (!result.success) {
         message.error('打开 GitHub 失败');
     }
 };
 
+// 打开上游原项目
+const openUpstream = async () => {
+    const result = await openExternalUrl('https://github.com/yarin-zhang/AI-Gist');
+    if (!result.success) {
+        message.error('打开页面失败');
+    }
+};
+
 // 打开问题报告页面
 const openIssues = async () => {
-    const result = await openExternalUrl('https://github.com/yarin-zhang/AI-Gist/issues');
+    const result = await openExternalUrl('https://github.com/msiya8160-star/AI-Gist-Tuji/issues');
     if (!result.success) {
         message.error('打开页面失败');
     }
@@ -236,7 +254,7 @@ const openIssues = async () => {
 
 // 打开功能建议页面
 const openFeatureRequest = async () => {
-    const result = await openExternalUrl('https://github.com/yarin-zhang/AI-Gist/issues/new?template=feature_request.md');
+    const result = await openExternalUrl('https://github.com/msiya8160-star/AI-Gist-Tuji/issues/new?template=feature_request.md');
     if (!result.success) {
         message.error('打开页面失败');
     }

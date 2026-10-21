@@ -98,13 +98,25 @@
         <ion-item>
           <ion-icon :icon="personOutline" slot="start"></ion-icon>
           <ion-label>{{ t('about.developer') }}</ion-label>
-          <ion-note slot="end">{{ t('about.developerName') }}</ion-note>
+          <ion-note slot="end">{{ t('about.originalAuthor') }}</ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon :icon="personOutline" slot="start"></ion-icon>
+          <ion-label>{{ t('about.forker') }}</ion-label>
+          <ion-note slot="end">{{ t('about.forkerName') }}</ion-note>
+        </ion-item>
+
+        <ion-item button @click="openURL('https://github.com/msiya8160-star/AI-Gist-Tuji')">
+          <ion-icon :icon="logoGithub" slot="start"></ion-icon>
+          <ion-label>{{ t('about.github') }}</ion-label>
+          <ion-note slot="end">{{ t('about.githubRepo') }}</ion-note>
         </ion-item>
 
         <ion-item button @click="openURL('https://github.com/yarin-zhang/AI-Gist')">
           <ion-icon :icon="logoGithub" slot="start"></ion-icon>
-          <ion-label>{{ t('about.github') }}</ion-label>
-          <ion-note slot="end">{{ t('about.githubRepo') }}</ion-note>
+          <ion-label>{{ t('about.upstream') }}</ion-label>
+          <ion-note slot="end">{{ t('about.upstreamRepo') }}</ion-note>
         </ion-item>
 
         <ion-item>
@@ -120,12 +132,12 @@
           <ion-label>{{ t('about.feedbackSupport') }}</ion-label>
         </ion-list-header>
 
-        <ion-item button @click="openURL('https://github.com/yarin-zhang/AI-Gist/issues')">
+        <ion-item button @click="openURL('https://github.com/msiya8160-star/AI-Gist-Tuji/issues')">
           <ion-icon :icon="bugOutline" slot="start"></ion-icon>
           <ion-label>{{ t('about.reportIssue') }}</ion-label>
         </ion-item>
 
-        <ion-item button @click="openURL('https://github.com/yarin-zhang/AI-Gist/issues/new?template=feature_request.md')">
+        <ion-item button @click="openURL('https://github.com/msiya8160-star/AI-Gist-Tuji/issues/new?template=feature_request.md')">
           <ion-icon :icon="bulbOutline" slot="start"></ion-icon>
           <ion-label>{{ t('about.featureRequest') }}</ion-label>
         </ion-item>

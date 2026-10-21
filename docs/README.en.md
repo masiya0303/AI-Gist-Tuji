@@ -1,10 +1,19 @@
+> ⚠️ **This project is a Fork of [AI Gist](https://github.com/yarin-zhang/AI-Gist)**
+>
+> - **Original author**: Yarin Zhang ([GitHub](https://github.com/yarin-zhang))
+> - **Original project** is licensed under AGPL-3.0; this fork has been modified from the original
+> - **This Fork** is also licensed under AGPL-3.0, maintained by 兔叽 ([@msiya8160-star](https://github.com/msiya8160-star))
+> - If you provide a service based on this project over a network (SaaS), you must make the modified source code available to users (AGPL-3.0 Section 13)
+
+---
+
 <div align="center">
 
 ![Logo](images/logo.png)
 
 # AI Gist
 
-![100% local data](https://img.shields.io/badge/Data%20storage-100%25%20local-success?style=flat&logo=database&logoColor=white) ![AI support](https://img.shields.io/badge/AI-Multi--model%20support-blue?style=flat&logo=openai&logoColor=white)  [![GitHub all releases](https://img.shields.io/github/downloads/yarin-zhang/AI-Gist/total?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases)
+![100% local data](https://img.shields.io/badge/Data%20storage-100%25%20local-success?style=flat&logo=database&logoColor=white) ![AI support](https://img.shields.io/badge/AI-Multi--model%20support-blue?style=flat&logo=openai&logoColor=white)  [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
 
 ![Desktop](https://img.shields.io/badge/Desktop-Windows%20%7C%20macOS%20%7C%20Linux-purple?style=flat&logo=electron&logoColor=white) ![Mobile](https://img.shields.io/badge/Mobile-Android%20%7C%20iOS-00A98F?style=flat&logo=capacitor&logoColor=white)
 
@@ -51,7 +60,11 @@ AI Gist puts privacy and data security first. All data is stored locally, and cl
 
 ## ⬇️ Download
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/yarin-zhang/AI-Gist?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases/latest) [![GitHub all releases](https://img.shields.io/github/downloads/yarin-zhang/AI-Gist/total?style=flat)](https://github.com/yarin-zhang/AI-Gist/releases)
+> 📦 **Note**: The GitHub Releases download links below point to the **upstream original project** ([yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist/releases)).
+> This Fork has not published independent releases yet. To install this Fork, please build from source (see "Development" section below).
+> Microsoft Store / App Store links point to the upstream project's store versions and are unrelated to this Fork.
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/msiya8160-star/AI-Gist-Tuji?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases/latest) [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
 
 | Platform | Installer | App store | Notes |
 |------|----------|----------|------|

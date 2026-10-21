@@ -38,11 +38,15 @@
         "version": "node scripts/sync-version.js && git add -A",
         "postversion": "git push && git push --tags"
     },
-    "repository": "https://github.com/yarin-zhang/ai-gist",
+    "repository": "https://github.com/msiya8160-star/AI-Gist-Tuji.git",
     "author": {
         "name": "Yarin Zhang",
         "url": "https://github.com/yarin-zhang"
     },
+    "contributors": [
+        "兔叽 (https://github.com/msiya8160-star)"
+    ],
+    "license": "AGPL-3.0-only",
     "devDependencies": {
         "@anthropic-ai/sdk": "^0.53.0",
         "@capacitor/android": "^8.1.0",

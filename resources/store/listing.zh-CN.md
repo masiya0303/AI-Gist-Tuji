@@ -60,10 +60,12 @@ AI 提示词管理, 人工智能提示词, 提示词工具, 提示词模板, AI 
 ## 链接
 
 - 官网：https://getaigist.com
-- 支持：https://github.com/yarin-zhang/AI-Gist/issues
-- 隐私政策：https://github.com/yarin-zhang/AI-Gist/blob/dev/PRIVACY.md
-- 源代码：https://github.com/yarin-zhang/AI-Gist
-- AGPL-3.0 许可条款：https://github.com/yarin-zhang/AI-Gist/blob/main/LICENSE
+- 支持（本 Fork）：https://github.com/msiya8160-star/AI-Gist-Tuji/issues
+- 支持（上游原项目）：https://github.com/yarin-zhang/AI-Gist/issues
+- 隐私政策：https://github.com/msiya8160-star/AI-Gist-Tuji/blob/main/PRIVACY.md
+- 源代码（本 Fork）：https://github.com/msiya8160-star/AI-Gist-Tuji
+- 上游原项目：https://github.com/yarin-zhang/AI-Gist
+- AGPL-3.0 许可条款：https://github.com/msiya8160-star/AI-Gist-Tuji/blob/main/LICENSE
 
 ## Windows Store 标识
 

@@ -39,8 +39,8 @@ export function useUpdate() {
   const checkError = ref('');
 
   // 私有属性
-  const repoOwner = 'yarin-zhang';
-  const repoName = 'AI-Gist';
+  const repoOwner = 'msiya8160-star';
+  const repoName = 'AI-Gist-Tuji';
   const githubApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
   /**

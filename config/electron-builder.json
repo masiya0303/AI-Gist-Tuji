@@ -7,8 +7,8 @@
     },
     "publish": {
         "provider": "github",
-        "owner": "yarin-zhang",
-        "repo": "AI-Gist",
+        "owner": "msiya8160-star",
+        "repo": "AI-Gist-Tuji",
         "releaseType": "draft"
     },    "files": [
         {
