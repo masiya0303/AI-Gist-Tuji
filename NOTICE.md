@@ -48,9 +48,9 @@
 ### 2026-10-21 — Mobile Category Management Page (Commit 9ab2263)
 
 #### Files with inline modification notices:
-- `src/renderer/pages/mobile/MobileCategoryPage.vue` — New file: mobile category management page
-- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category management button
-- `src/renderer/router/mobile.ts` — Added `/category` route
+- `src/renderer/pages/mobile/MobileCategoryPage.vue` — New file: mobile category management page (later removed)
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category management button (later removed)
+- `src/renderer/router/mobile.ts` — Added `/category` route (later removed)
 
 #### Files modified (JSON format, no inline comments possible):
 - `src/renderer/i18n/locales/zh-CN.json` — Added category management translations
@@ -60,10 +60,14 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Added inline category creation feature
 
-### 2026-10-21 — Category Tabs on Prompts Page (Commit 2cc90f3)
+### 2026-10-21 — Category Tabs and Management in Filter (Commit 989b51a)
 
 #### Files with inline modification notices:
-- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category tabs for quick filtering
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Added category tabs + moved category management to filter modal
+- `src/renderer/router/mobile.ts` — Removed `/category` route
+
+#### Files removed:
+- `src/renderer/pages/mobile/MobileCategoryPage.vue` — Removed (functionality moved to filter modal)
 
 ---
 
