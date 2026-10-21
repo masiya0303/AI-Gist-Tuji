@@ -82,6 +82,10 @@
                 <span class="pill-dot" :style="{ background: category.color || 'var(--content-tertiary)' }"></span>
                 {{ category.name }}
               </button>
+              <button type="button" class="pill pill-add" @click="showCategoryModal = true">
+                <ion-icon :icon="add"></ion-icon>
+                {{ t('promptManagement.createCategory') }}
+              </button>
             </div>
           </div>
 
@@ -212,6 +216,50 @@
         </ion-list>
       </ion-content>
     </ion-modal>
+
+    <!-- 创建分类弹窗 -->
+    <ion-modal :is-open="showCategoryModal" @didDismiss="showCategoryModal = false">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ t('promptManagement.createCategory') }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button @click="showCategoryModal = false">
+              {{ t('common.close') }}
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="category-create-form">
+          <ion-input
+            v-model="newCategoryName"
+            :label="t('promptManagement.categoryName')"
+            :placeholder="t('promptManagement.categoryNamePlaceholder')"
+            clear-button
+            @keyup.enter="handleQuickCreateCategory"
+          />
+          <div class="color-picker-row">
+            <button
+              v-for="color in COLOR_OPTIONS"
+              :key="color"
+              type="button"
+              class="color-option"
+              :class="{ selected: newCategoryColor === color }"
+              :style="{ backgroundColor: color }"
+              :aria-label="color"
+              @click="newCategoryColor = color"
+            />
+          </div>
+          <ion-button
+            expand="block"
+            :loading="creatingCategory"
+            @click="handleQuickCreateCategory"
+          >
+            {{ t('promptManagement.createCategory') }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ion-modal>
   </ion-page>
 </template>
 
@@ -270,6 +318,21 @@ const categories = ref<Category[]>([])
 const popularTags = ref<string[]>([])
 const showTagsModal = ref(false)
 const tagSearchText = ref('')
+const showCategoryModal = ref(false)
+const newCategoryName = ref('')
+const newCategoryColor = ref('#67c23a')
+const creatingCategory = ref(false)
+
+const COLOR_OPTIONS = [
+  '#67c23a', // 绿色
+  '#409eff', // 蓝色
+  '#e6a23c', // 橙色
+  '#f56c6c', // 红色
+  '#909399', // 灰色
+  '#8b5cf6', // 紫色
+  '#06b6d4', // 青色
+  '#ec4899'  // 粉色
+]
 
 // 图片相关
 const imageBlobs = ref<Blob[]>([])
@@ -479,6 +542,38 @@ const loadData = async () => {
 // 选择分类
 const selectCategory = (categoryId: number | null) => {
   formData.value.categoryId = categoryId
+}
+
+// 快速创建分类
+const handleQuickCreateCategory = async () => {
+  if (!newCategoryName.value.trim()) {
+    const alert = await alertController.create({
+      header: t('common.validationError'),
+      message: t('promptManagement.categoryNameRequired'),
+      buttons: [t('common.ok')]
+    })
+    await alert.present()
+    return
+  }
+
+  creatingCategory.value = true
+  try {
+    const newCategory = await api.categories.create.mutate({
+      name: newCategoryName.value.trim(),
+      color: newCategoryColor.value,
+      isActive: true
+    })
+    categories.value.push(newCategory)
+    formData.value.categoryId = newCategory.id
+    await presentMobileToast(t('promptManagement.categoryCreated'), 'success', { duration: 2000 })
+    showCategoryModal.value = false
+    newCategoryName.value = ''
+  } catch (error) {
+    console.error('创建分类失败:', error)
+    await presentMobileToast(t('promptManagement.createCategoryFailed'), 'danger', { duration: 3000 })
+  } finally {
+    creatingCategory.value = false
+  }
 }
 
 // 切换标签
@@ -824,5 +919,38 @@ onUnmounted(() => {
   flex-wrap: wrap;
   background: var(--ion-background-color);
   border-bottom: 1px solid var(--ion-border-color);
+}
+
+/* 创建分类表单 */
+.category-create-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.color-picker-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: var(--ion-color-primary);
+  transform: scale(1.15);
 }
 </style>
