@@ -1,4 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  Fork modification notice (AGPL v3.0 Section 5a):
+  Modified by 兔叽 (msiya8160-star) on 2026-10-21
+  Change: package_name and custom_url_scheme changed to com.msiya8160.aigist
+  Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
+-->
 <resources>
     <string name="app_name">AI Gist</string>
     <string name="title_activity_main">AI Gist</string>

@@ -1,5 +1,12 @@
 # AI Gist 商店资料（简体中文）
 
+<!--
+  Fork modification notice (AGPL v3.0 Section 5a):
+  Modified by 兔叽 (msiya8160-star) on 2026-10-21
+  Change: Updated support/source/license links to point to fork repository
+  Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
+-->
+
 这份文件是各平台商店中文资料的单一来源。平台字符数限制不同时，可以缩短文本，但不要改变功能、隐私和联网行为的含义。
 
 ## 名称

@@ -1,5 +1,10 @@
 <template>
     <NCard size="small">
+        <!-- Fork modification notice (AGPL v3.0 Section 5a):
+             Modified by 兔叽 (msiya8160-star) on 2026-10-21
+             Change: Added fork/upstream info, updated URLs to fork repo
+             Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
+        -->
         <NFlex vertical :size="16">
             <!-- 应用信息 -->
             <NFlex vertical :size="16" align="center">

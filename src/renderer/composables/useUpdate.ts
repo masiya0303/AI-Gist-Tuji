@@ -1,6 +1,11 @@
 /**
  * 更新服务 Composable
  * 将大部分更新逻辑迁移到前端，只保留必要的 Electron API 调用
+ *
+ * Fork modification notice (AGPL v3.0 Section 5a):
+ * Modified by 兔叽 (msiya8160-star) on 2026-10-21
+ * Change: repoOwner and repoName changed to point to fork repository
+ * Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
  */
 
 import { ref, computed, readonly } from 'vue';
