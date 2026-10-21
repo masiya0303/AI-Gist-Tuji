@@ -74,6 +74,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Merged category filter and management into single list
 
+### 2026-10-21 — Hide Category Filter Chip (Commit ac8e54b)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Hide category filter chip (category already shown in tabs)
+
 ---
 
 ## Files NOT Modified
