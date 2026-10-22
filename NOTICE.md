@@ -90,6 +90,13 @@
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Fix categoryFormData.value not being set in create button
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Remove color dot from category pills
 
+### 2026-10-22 — Add Credential Type for Account/Password Records (Commit 17f4e53)
+
+#### Files with inline modification notices:
+- `src/shared/types/database.ts` — Added 'type' field to Prompt interface
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Added type selector UI
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Added credential parsing and individual copy buttons
+
 ---
 
 ## Files NOT Modified
