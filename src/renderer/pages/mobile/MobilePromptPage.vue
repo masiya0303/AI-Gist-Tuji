@@ -142,8 +142,8 @@
             <ion-item button @click="handleView(prompt)">
               <ion-label>
                 <h2 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h2>
-                <!-- Fork: 提示词类型显示描述，账号密码类型不显示 -->
-                <p v-if="prompt.description && prompt.type !== 'credentials'" class="prompt-description">{{ prompt.description }}</p>
+                <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
+                <p v-if="prompt.description && prompt.type === 'prompt'" class="prompt-description">{{ prompt.description }}</p>
                 <div class="prompt-meta">
                   <ion-chip v-if="prompt.categoryId" size="small" outline>
                     <ion-label>{{ getCategoryName(prompt.categoryId) }}</ion-label>
