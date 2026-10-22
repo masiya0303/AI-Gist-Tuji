@@ -305,7 +305,7 @@
       <ion-content>
         <div class="category-form">
           <ion-input
-            v-model="categoryFormData.name"
+            :value="categoryFormData.name" @ionChange="onCategoryNameChange"
             :label="t('promptManagement.categoryName')"
             :placeholder="t('promptManagement.categoryNamePlaceholder')"
             clear-button
@@ -669,6 +669,12 @@ const deleteCategoryFromFilter = async (category: Category) => {
     ]
   })
   await alert.present()
+}
+
+// 分类名称输入变化
+const onCategoryNameChange = (event: CustomEvent) => {
+  const target = event.target as HTMLIonInputElement
+  categoryFormData.value.name = target.value || ''
 }
 
 // 保存分类（创建或更新）
