@@ -107,26 +107,48 @@
             <h2>{{ t('promptManagement.detailModal.promptContent') }}</h2>
           </div>
 
-          <!-- Fork: 账号密码类型 - 每行可单独复制 -->
+          <!-- Fork: 账号密码类型 - 账号和密码都有复制按钮 -->
           <template v-if="isCredentialsType">
             <div class="credential-list">
-              <div
-                v-for="(field, index) in credentialFields"
-                :key="index"
-                class="credential-item"
-              >
-                <div class="credential-label">{{ field.label }}</div>
+              <div class="credential-item">
+                <div class="credential-label">{{ t('promptManagement.account') }}</div>
                 <div class="credential-value-row">
-                  <span class="credential-value">{{ field.value }}</span>
+                  <span class="credential-value">{{ prompt.title || '-' }}</span>
                   <ion-button
                     fill="clear"
                     size="small"
                     class="copy-btn"
-                    @click="copyCredential(field.value)"
+                    @click="copyCredential(prompt.title || '')"
+                    :disabled="!prompt.title"
                   >
                     <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
                   </ion-button>
                 </div>
+              </div>
+              <div class="credential-item">
+                <div class="credential-label">{{ t('promptManagement.password') }}</div>
+                <div class="credential-value-row">
+                  <span class="credential-value" :class="{ hidden: !showPasswordDetail }">
+                    {{ showPasswordDetail ? (prompt.content || '-') : '••••••••' }}
+                  </span>
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    class="copy-btn"
+                    @click="copyCredential(prompt.content || '')"
+                    :disabled="!prompt.content"
+                  >
+                    <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
+                  </ion-button>
+                </div>
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  class="toggle-password-btn"
+                  @click="showPasswordDetail = !showPasswordDetail"
+                >
+                  <ion-icon slot="icon-only" :icon="showPasswordDetail ? eyeOffOutline : eyeOutline"></ion-icon>
+                </ion-button>
               </div>
             </div>
           </template>
@@ -146,8 +168,9 @@
         摘出来，悬浮在 ion-content 可视区域的底部——也就是「窗口底部」，
         而不是「页面内容的末尾」。对应 Gitea issue #63：用户此前需要滑动到
         内容最后才能看到「复制提示词」按钮。
+        Fork: 账号密码类型不显示此按钮，因为已有内联复制按钮
       -->
-      <div v-if="prompt" class="action-buttons" slot="fixed">
+      <div v-if="prompt && !isCredentialsType" class="action-buttons" slot="fixed">
         <ion-button expand="block" @click="copyContent">
           <ion-icon slot="start" :icon="copyOutline"></ion-icon>
           {{ t('promptManagement.detailModal.copyContent') }}
@@ -194,7 +217,9 @@ import {
   documentTextOutline,
   copyOutline,
   trashOutline,
-  ellipsisVertical
+  ellipsisVertical,
+  eyeOutline,
+  eyeOffOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
@@ -247,25 +272,8 @@ const promptTags = computed(() => {
 // Fork: 账号密码类型判断
 const isCredentialsType = computed(() => prompt.value?.type === 'credentials')
 
-// Fork: 解析账号密码字段（格式：标签：值 或 标签: 值）
-const credentialFields = computed(() => {
-  if (!prompt.value?.content) return []
-  const lines = prompt.value.content.split('\n').filter(line => line.trim())
-  const fields: { label: string; value: string }[] = []
-  
-  for (const line of lines) {
-    // 匹配 "标签：值" 或 "标签: 值" 格式
-    const match = line.match(/^([^:：]+)[:：]\s*(.+)$/)
-    if (match) {
-      fields.push({
-        label: match[1].trim(),
-        value: match[2].trim()
-      })
-    }
-  }
-  
-  return fields
-})
+// Fork: 密码显示/隐藏切换
+const showPasswordDetail = ref(false)
 
 // Fork: 复制单个字段值
 const copyCredential = async (value: string) => {
@@ -752,5 +760,17 @@ ion-chip {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
+}
+
+.toggle-password-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
+}
+
+.credential-value.hidden {
+  letter-spacing: 2px;
 }
 </style>

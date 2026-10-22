@@ -34,7 +34,7 @@
             <ion-input
               v-model="formData.title"
               class="title-input"
-              :placeholder="t('promptManagement.titlePlaceholder')"
+              :placeholder="formData.type === 'credentials' ? t('promptManagement.accountPlaceholder') : t('promptManagement.titlePlaceholder')"
             ></ion-input>
           </div>
 
@@ -61,7 +61,25 @@
             </div>
           </div>
 
-          <div class="field-block">
+          <!-- Fork: 根据类型显示不同字段 -->
+          <div v-if="formData.type === 'credentials'" class="field-block">
+            <ion-input
+              v-model="formData.content"
+              class="content-input"
+              :placeholder="t('promptManagement.passwordPlaceholder')"
+              :type="showPassword ? 'text' : 'password'"
+              clear-button
+            />
+            <ion-button
+              fill="clear"
+              size="small"
+              class="toggle-password-btn"
+              @click="showPassword = !showPassword"
+            >
+              <ion-icon slot="icon-only" :icon="showPassword ? eyeOffOutline : eyeOutline"></ion-icon>
+            </ion-button>
+          </div>
+          <div v-else class="field-block">
             <ion-textarea
               v-model="formData.content"
               class="content-textarea"
@@ -322,7 +340,9 @@ import {
   closeCircle,
   add,
   heart,
-  heartOutline
+  heartOutline,
+  eyeOutline,
+  eyeOffOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
@@ -436,6 +456,9 @@ const formData = ref<Partial<Prompt>>({
   useCount: 0,
   type: 'prompt'
 })
+
+// Fork: 密码显示/隐藏切换
+const showPassword = ref(false)
 
 const contentLength = computed(() => formData.value.content?.length || 0)
 
@@ -796,6 +819,27 @@ onUnmounted(() => {
   font-size: var(--mobile-font-size-body);
   line-height: var(--mobile-line-height-relaxed);
   min-height: 132px;
+}
+
+/* Fork: 账号密码类型的密码输入框 */
+.content-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --placeholder-color: var(--content-tertiary);
+  --placeholder-opacity: 1;
+  --color: var(--content-primary);
+  font-size: var(--mobile-font-size-body);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.toggle-password-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
 }
 
 .field-meta-row {
