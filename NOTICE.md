@@ -109,6 +109,11 @@
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Content=account, description=password
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Updated field mapping for display
 
+### 2026-10-22 — Fix Password Display in Header (Commit 250fecc)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Hide description in header for credentials type
+
 ---
 
 ## Files NOT Modified
