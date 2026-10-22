@@ -256,10 +256,6 @@
           <!-- 分类筛选与管理 -->
           <ion-list-header>
             <ion-label>{{ t('promptManagement.categoryFilterTitle') }}</ion-label>
-            <ion-button fill="clear" size="small" @click="showCategoryModal = true; isEditingCategory = false; editingCategoryId = null; categoryFormData.value = { name: '', color: '#67c23a' }">
-              <ion-icon :icon="add" slot="start"></ion-icon>
-              {{ t('promptManagement.createCategory') }}
-            </ion-button>
           </ion-list-header>
           <ion-item button @click="handleCategoryFilter(null)">
             <ion-label>{{ t('promptManagement.allCategories') }}</ion-label>
