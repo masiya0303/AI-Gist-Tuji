@@ -119,6 +119,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Show account instead of password in list view for credentials type
 
+### 2026-10-22 — Fix Account Display on Homepage (Commit d50179d)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Show account content directly without prefix
+
 ---
 
 ## Files NOT Modified
