@@ -264,77 +264,22 @@
           <ion-item v-if="categories.length === 0">
             <ion-label color="medium">{{ t('promptManagement.noCategories') }}</ion-label>
           </ion-item>
-          <ion-item-sliding v-for="category in categories" :key="'manage-' + category.id">
-            <ion-item button @click="handleCategoryFilter(category.id)">
-              <ion-label>
-                {{ category.name }}
-                <ion-note>{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
-              </ion-label>
-              <ion-icon
-                v-if="selectedCategory === category.id"
-                :icon="checkmark"
-                slot="end"
-                color="primary"
-              ></ion-icon>
-            </ion-item>
-            <ion-item-options side="end">
-              <ion-item-option color="primary" @click="editCategoryFromFilter(category)">
-                <ion-icon :icon="createOutline" slot="icon-only"></ion-icon>
-              </ion-item-option>
-              <ion-item-option color="danger" @click="deleteCategoryFromFilter(category)">
-                <ion-icon :icon="trashOutline" slot="icon-only"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
+          <ion-item v-for="category in categories" :key="'filter-' + category.id" button @click="handleCategoryFilter(category.id)">
+            <ion-label>
+              {{ category.name }}
+              <ion-note>{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
+            </ion-label>
+            <ion-icon
+              v-if="selectedCategory === category.id"
+              :icon="checkmark"
+              slot="end"
+              color="primary"
+            ></ion-icon>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ion-modal>
 
-    <!-- 创建/编辑分类弹窗 -->
-    <ion-modal :is-open="showCategoryModal" @didDismiss="showCategoryModal = false">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>{{ isEditingCategory ? t('promptManagement.editCategory') : t('promptManagement.createCategory') }}</ion-title>
-          <ion-buttons slot="end">
-            <ion-button @click="showCategoryModal = false">
-              {{ t('common.close') }}
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <div class="category-form">
-          <ion-input
-            :value="categoryFormData.name" @ionChange="onCategoryNameChange"
-            :label="t('promptManagement.categoryName')"
-            :placeholder="t('promptManagement.categoryNamePlaceholder')"
-            clear-button
-            @keyup.enter="saveCategory"
-          />
-          <div class="color-picker">
-            <span class="color-picker-label">{{ t('promptManagement.color') }}</span>
-            <div class="color-options">
-              <button
-                v-for="color in COLOR_OPTIONS"
-                :key="color"
-                type="button"
-                class="color-option"
-                :class="{ selected: categoryFormData.color === color }"
-                :style="{ backgroundColor: color }"
-                @click="categoryFormData.color = color"
-              />
-            </div>
-          </div>
-          <ion-button
-            expand="block"
-            :loading="savingCategory"
-            @click="saveCategory"
-          >
-            {{ isEditingCategory ? t('common.save') : t('promptManagement.createCategory') }}
-          </ion-button>
-        </div>
-      </ion-content>
-    </ion-modal>
   </ion-page>
 </template>
 
@@ -627,97 +572,7 @@ const getCategoryPromptCount = (categoryId: number) => {
 }
 
 // 打开创建分类弹窗
-// 编辑分类
-const editCategoryFromFilter = (category: Category) => {
-  isEditingCategory.value = true
-  editingCategoryId.value = category.id
-  categoryFormData.value = {
-    name: category.name,
-    color: category.color || COLOR_OPTIONS[0]
-  }
-  showCategoryModal.value = true
-}
 
-// 删除分类
-const deleteCategoryFromFilter = async (category: Category) => {
-  const alert = await alertController.create({
-    header: t('promptManagement.deleteCategoryTitle'),
-    message: t('promptManagement.deleteCategoryConfirm', {
-      name: category.name,
-      count: getCategoryPromptCount(category.id)
-    }),
-    buttons: [
-      t('common.cancel'),
-      {
-        text: t('promptManagement.deleteCategory'),
-        role: 'danger',
-        handler: async () => {
-          try {
-            await api.categories.delete.mutate(category.id)
-            await loadCategories()
-            if (selectedCategory.value === category.id) {
-              selectedCategory.value = null
-              loadPrompts()
-            }
-            await presentMobileToast(t('promptManagement.categoryDeleted'), 'success', { duration: 2000 })
-          } catch (error) {
-            console.error('删除分类失败:', error)
-            await presentMobileToast(t('promptManagement.deleteCategoryFailed'), 'danger', { duration: 3000 })
-          }
-        }
-      }
-    ]
-  })
-  await alert.present()
-}
-
-// 分类名称输入变化
-const onCategoryNameChange = (event: CustomEvent) => {
-  const target = event.target as HTMLIonInputElement
-  categoryFormData.value.name = target.value || ''
-}
-
-// 保存分类（创建或更新）
-const saveCategory = async () => {
-  if (!categoryFormData.value.name.trim()) {
-    const alert = await alertController.create({
-      header: t('common.validationError'),
-      message: t('promptManagement.categoryNameRequired'),
-      buttons: [t('common.ok')]
-    })
-    await alert.present()
-    return
-  }
-
-  savingCategory.value = true
-  try {
-    if (isEditingCategory.value && editingCategoryId.value) {
-      await api.categories.update.mutate(editingCategoryId.value, {
-        name: categoryFormData.value.name.trim(),
-        color: categoryFormData.value.color
-      })
-      await presentMobileToast(t('promptManagement.categoryUpdated'), 'success', { duration: 2000 })
-    } else {
-      await api.categories.create.mutate({
-        name: categoryFormData.value.name.trim(),
-        color: categoryFormData.value.color,
-        isActive: true
-      })
-      await presentMobileToast(t('promptManagement.categoryCreated'), 'success', { duration: 2000 })
-    }
-    await loadCategories()
-    showCategoryModal.value = false
-  } catch (error) {
-    console.error('保存分类失败:', error)
-    await presentMobileToast(
-      isEditingCategory.value ? t('promptManagement.updateCategoryFailed') : t('promptManagement.createCategoryFailed'),
-      'danger',
-      { duration: 3000 }
-    )
-  } finally {
-    savingCategory.value = false
-  }
-}
 
 // 清除搜索词和全部筛选条件（搜索/筛选后无匹配结果时的空状态操作）
 const clearSearchAndFilters = () => {
