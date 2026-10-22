@@ -38,7 +38,8 @@
         <!-- 标题和描述 -->
         <div class="prompt-header">
           <h1 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h1>
-          <p v-if="prompt.description" class="prompt-description">{{ prompt.description }}</p>
+          <!-- Fork: 账号密码类型不显示描述（密码在下方单独显示） -->
+          <p v-if="prompt.description && !isCredentialsType" class="prompt-description">{{ prompt.description }}</p>
           <div class="prompt-meta-row">
             <ion-chip v-if="prompt.categoryId" size="small" outline>
               <ion-label>{{ getCategoryName(prompt.categoryId) }}</ion-label>
