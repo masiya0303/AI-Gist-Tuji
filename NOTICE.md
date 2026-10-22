@@ -97,6 +97,12 @@
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Added type selector UI
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Added credential parsing and individual copy buttons
 
+### 2026-10-22 — Improve Credential Type with Dedicated Fields (Commit b79261e)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Title=account, content=password with eye toggle
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Account/password display with inline copy buttons
+
 ---
 
 ## Files NOT Modified
