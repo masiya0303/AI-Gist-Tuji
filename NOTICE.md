@@ -103,6 +103,12 @@
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Title=account, content=password with eye toggle
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Account/password display with inline copy buttons
 
+### 2026-10-22 — Fix Credential Field Mapping (Commit f1016e9)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Content=account, description=password
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Updated field mapping for display
+
 ---
 
 ## Files NOT Modified
