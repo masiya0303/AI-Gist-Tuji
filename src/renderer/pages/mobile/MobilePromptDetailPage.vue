@@ -1,3 +1,10 @@
+<!--
+  Fork modification notice (AGPL v3.0 Section 5a):
+  Modified by 兔叽 (msiya8160-star) on 2026-10-22
+  Change: Added field-based copy feature for account/password type prompts
+  Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
+  This fork is licensed under AGPL-3.0
+-->
 <template>
   <ion-page>
     <ion-header>
@@ -99,9 +106,37 @@
           <div class="section-header">
             <h2>{{ t('promptManagement.detailModal.promptContent') }}</h2>
           </div>
-          <div class="prompt-content-wrapper">
-            <div class="prompt-content">{{ prompt.content }}</div>
-          </div>
+
+          <!-- Fork: 账号密码类型 - 每行可单独复制 -->
+          <template v-if="isCredentialsType">
+            <div class="credential-list">
+              <div
+                v-for="(field, index) in credentialFields"
+                :key="index"
+                class="credential-item"
+              >
+                <div class="credential-label">{{ field.label }}</div>
+                <div class="credential-value-row">
+                  <span class="credential-value">{{ field.value }}</span>
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    class="copy-btn"
+                    @click="copyCredential(field.value)"
+                  >
+                    <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Fork: 提示词类型 - 复制整个内容 -->
+          <template v-else>
+            <div class="prompt-content-wrapper">
+              <div class="prompt-content">{{ prompt.content }}</div>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -208,6 +243,40 @@ const promptTags = computed(() => {
   if (Array.isArray(tags)) return tags
   return tags.split(',').map(tag => tag.trim()).filter(Boolean)
 })
+
+// Fork: 账号密码类型判断
+const isCredentialsType = computed(() => prompt.value?.type === 'credentials')
+
+// Fork: 解析账号密码字段（格式：标签：值 或 标签: 值）
+const credentialFields = computed(() => {
+  if (!prompt.value?.content) return []
+  const lines = prompt.value.content.split('\n').filter(line => line.trim())
+  const fields: { label: string; value: string }[] = []
+  
+  for (const line of lines) {
+    // 匹配 "标签：值" 或 "标签: 值" 格式
+    const match = line.match(/^([^:：]+)[:：]\s*(.+)$/)
+    if (match) {
+      fields.push({
+        label: match[1].trim(),
+        value: match[2].trim()
+      })
+    }
+  }
+  
+  return fields
+})
+
+// Fork: 复制单个字段值
+const copyCredential = async (value: string) => {
+  try {
+    await navigator.clipboard.writeText(value)
+    showToast(t('promptManagement.detailModal.copySuccess'))
+  } catch (error) {
+    console.error('复制失败:', error)
+    showToast(t('promptManagement.detailModal.copyFailed'), 'danger')
+  }
+}
 
 const updateImageUrls = () => {
   imageUrls.value.forEach(url => URL.revokeObjectURL(url))
@@ -638,5 +707,50 @@ ion-chip {
   max-height: 100%;
   object-fit: contain;
   border-radius: var(--radius-image, 8px);
+}
+
+/* Fork: 账号密码字段列表 */
+.credential-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.credential-item {
+  background: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  border: 1px solid var(--border-default);
+}
+
+.credential-label {
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 600;
+  color: var(--content-secondary);
+  margin-bottom: 4px;
+}
+
+.credential-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.credential-value {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--mobile-font-size-body);
+  color: var(--ion-text-color);
+  word-break: break-all;
+  flex: 1;
+}
+
+.copy-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 </style>

@@ -47,6 +47,7 @@ export interface Prompt {
   isActive: boolean;
   isJinjaTemplate?: boolean; // 是否为 Jinja 模板
   imageBlobs?: Blob[]; // 图片数据数组，支持多张图片
+  type?: 'prompt' | 'credentials'; // Fork: 记录类型，提示词或账号密码
 
   /** @deprecated 仅用于迁移旧数据；新快捷键绑定保存在本机偏好设置中。 */
   shortcutKey?: string;

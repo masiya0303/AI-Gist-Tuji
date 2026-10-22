@@ -38,6 +38,29 @@
             ></ion-input>
           </div>
 
+          <!-- Fork: 记录类型选择器 -->
+          <div class="field-block">
+            <span class="field-caption">{{ t('promptManagement.recordType') }}</span>
+            <div class="type-selector">
+              <button
+                type="button"
+                class="type-option"
+                :class="{ active: formData.type === 'prompt' }"
+                @click="formData.type = 'prompt'"
+              >
+                {{ t('promptManagement.typePrompt') }}
+              </button>
+              <button
+                type="button"
+                class="type-option"
+                :class="{ active: formData.type === 'credentials' }"
+                @click="formData.type = 'credentials'"
+              >
+                {{ t('promptManagement.typeCredentials') }}
+              </button>
+            </div>
+          </div>
+
           <div class="field-block">
             <ion-textarea
               v-model="formData.content"
@@ -410,7 +433,8 @@ const formData = ref<Partial<Prompt>>({
   tags: [],
   isFavorite: false,
   isActive: true,
-  useCount: 0
+  useCount: 0,
+  type: 'prompt'
 })
 
 const contentLength = computed(() => formData.value.content?.length || 0)
@@ -958,5 +982,35 @@ onUnmounted(() => {
 .color-option.selected {
   border-color: var(--ion-color-primary);
   transform: scale(1.15);
+}
+
+/* Fork: 记录类型选择器 */
+.type-selector {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.type-option {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--border-subtle, var(--ion-border-color));
+  border-radius: 8px;
+  background: var(--surface-primary, var(--ion-background-color));
+  color: var(--content-secondary, var(--ion-color-medium));
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-option:hover {
+  border-color: var(--ion-color-primary);
+}
+
+.type-option.active {
+  border-color: var(--ion-color-primary);
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
 }
 </style>
