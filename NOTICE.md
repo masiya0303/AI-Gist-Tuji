@@ -114,6 +114,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Hide description in header for credentials type
 
+### 2026-10-22 — Fix Password Display on Homepage (Commit b144832)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Show account instead of password in list view for credentials type
+
 ---
 
 ## Files NOT Modified
