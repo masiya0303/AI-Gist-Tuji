@@ -34,7 +34,7 @@
             <ion-input
               v-model="formData.title"
               class="title-input"
-              :placeholder="formData.type === 'credentials' ? t('promptManagement.accountPlaceholder') : t('promptManagement.titlePlaceholder')"
+              :placeholder="t('promptManagement.titlePlaceholder')"
             ></ion-input>
           </div>
 
@@ -61,48 +61,64 @@
             </div>
           </div>
 
-          <!-- Fork: 根据类型显示不同字段 -->
-          <div v-if="formData.type === 'credentials'" class="field-block">
-            <ion-input
-              v-model="formData.content"
-              class="content-input"
-              :placeholder="t('promptManagement.passwordPlaceholder')"
-              :type="showPassword ? 'text' : 'password'"
-              clear-button
-            />
-            <ion-button
-              fill="clear"
-              size="small"
-              class="toggle-password-btn"
-              @click="showPassword = !showPassword"
-            >
-              <ion-icon slot="icon-only" :icon="showPassword ? eyeOffOutline : eyeOutline"></ion-icon>
-            </ion-button>
-          </div>
-          <div v-else class="field-block">
-            <ion-textarea
-              v-model="formData.content"
-              class="content-textarea"
-              :placeholder="t('promptManagement.contentPlaceholder')"
-              :rows="6"
-              :auto-grow="true"
-              required
-            ></ion-textarea>
-            <div class="field-meta-row">
-              <span class="char-count">{{ contentLength }} {{ t('promptManagement.characters') }}</span>
+          <!-- Fork: 账号密码类型 - 正文是账号，描述是密码 -->
+          <template v-if="formData.type === 'credentials'">
+            <div class="field-block">
+              <span class="field-caption">{{ t('promptManagement.account') }}</span>
+              <ion-input
+                v-model="formData.content"
+                class="content-input"
+                :placeholder="t('promptManagement.accountPlaceholder')"
+                clear-button
+              />
             </div>
-          </div>
+            <div class="field-block">
+              <span class="field-caption">{{ t('promptManagement.password') }}</span>
+              <ion-input
+                v-model="formData.description"
+                class="content-input"
+                :placeholder="t('promptManagement.passwordPlaceholder')"
+                :type="showPassword ? 'text' : 'password'"
+                clear-button
+              />
+              <ion-button
+                fill="clear"
+                size="small"
+                class="toggle-password-btn"
+                @click="showPassword = !showPassword"
+              >
+                <ion-icon slot="icon-only" :icon="showPassword ? eyeOffOutline : eyeOutline"></ion-icon>
+              </ion-button>
+            </div>
+          </template>
 
-          <div class="field-block">
-            <span class="field-caption">{{ t('promptManagement.description') }}</span>
-            <ion-textarea
-              v-model="formData.description"
-              class="description-textarea"
-              :placeholder="t('promptManagement.descriptionPlaceholder')"
-              :rows="2"
-              :auto-grow="true"
-            ></ion-textarea>
-          </div>
+          <!-- 提示词类型 - 正文是提示词内容 -->
+          <template v-else>
+            <div class="field-block">
+              <ion-textarea
+                v-model="formData.content"
+                class="content-textarea"
+                :placeholder="t('promptManagement.contentPlaceholder')"
+                :rows="6"
+                :auto-grow="true"
+                required
+              ></ion-textarea>
+              <div class="field-meta-row">
+                <span class="char-count">{{ contentLength }} {{ t('promptManagement.characters') }}</span>
+              </div>
+            </div>
+
+            <div class="field-block">
+              <span class="field-caption">{{ t('promptManagement.description') }}</span>
+              <ion-textarea
+                v-model="formData.description"
+                class="description-textarea"
+                :placeholder="t('promptManagement.descriptionPlaceholder')"
+                :rows="2"
+                :auto-grow="true"
+              ></ion-textarea>
+            </div>
+          </template>
         </section>
 
         <!-- 元信息：分类 / 标签 / 图片，以内联 chip 呈现，无需跳转即可看到当前选择 -->

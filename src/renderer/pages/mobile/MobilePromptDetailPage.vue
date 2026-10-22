@@ -113,13 +113,13 @@
               <div class="credential-item">
                 <div class="credential-label">{{ t('promptManagement.account') }}</div>
                 <div class="credential-value-row">
-                  <span class="credential-value">{{ prompt.title || '-' }}</span>
+                  <span class="credential-value">{{ prompt.content || '-' }}</span>
                   <ion-button
                     fill="clear"
                     size="small"
                     class="copy-btn"
-                    @click="copyCredential(prompt.title || '')"
-                    :disabled="!prompt.title"
+                    @click="copyCredential(prompt.content || '')"
+                    :disabled="!prompt.content"
                   >
                     <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
                   </ion-button>
@@ -129,14 +129,14 @@
                 <div class="credential-label">{{ t('promptManagement.password') }}</div>
                 <div class="credential-value-row">
                   <span class="credential-value" :class="{ hidden: !showPasswordDetail }">
-                    {{ showPasswordDetail ? (prompt.content || '-') : '••••••••' }}
+                    {{ showPasswordDetail ? (prompt.description || '-') : '••••••••' }}
                   </span>
                   <ion-button
                     fill="clear"
                     size="small"
                     class="copy-btn"
-                    @click="copyCredential(prompt.content || '')"
-                    :disabled="!prompt.content"
+                    @click="copyCredential(prompt.description || '')"
+                    :disabled="!prompt.description"
                   >
                     <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
                   </ion-button>
