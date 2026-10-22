@@ -129,6 +129,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Only show title for credentials type on homepage
 
+### 2026-10-23 — Fix Description Display Logic (Commit fd78adf)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Use 'type === prompt' instead of 'type !== credentials'
+
 ---
 
 ## Files NOT Modified
