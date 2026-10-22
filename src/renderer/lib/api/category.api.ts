@@ -30,7 +30,7 @@ export class CategoryApiClient {
        * @param input 分类创建数据
        * @returns Promise<Category> 创建的分类记录
        */
-      mutate: async (input: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category> => {
+      mutate: async (input: Omit<Category, 'id' | 'uuid' | 'createdAt' | 'updatedAt'>): Promise<Category> => {
         return this.categoryService.createCategory(input);
       }
     },
@@ -114,7 +114,7 @@ export class CategoryApiClient {
        */
       mutate: async (input: { 
         id: number; 
-        data: Partial<Omit<Category, 'id' | 'createdAt' | 'updatedAt'>> 
+        data: Partial<Omit<Category, 'id' | 'uuid' | 'createdAt' | 'updatedAt'>> 
       }): Promise<Category> => {
         const { id, data } = input;
         return this.categoryService.updateCategory(id, data);
@@ -186,7 +186,7 @@ export class CategoryApiClient {
        * @param input 分类数据数组
        * @returns Promise<{ created: Category[], skipped: string[] }> 创建结果
        */
-      mutate: async (input: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>[]): Promise<{ 
+      mutate: async (input: Omit<Category, 'id' | 'uuid' | 'createdAt' | 'updatedAt'>[]): Promise<{ 
         created: Category[], 
         skipped: string[] 
       }> => {
