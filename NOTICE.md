@@ -124,6 +124,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Show account content directly without prefix
 
+### 2026-10-22 — Hide Subtitle for Credentials Type (Commit dd6f57e)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Only show title for credentials type on homepage
+
 ---
 
 ## Files NOT Modified
