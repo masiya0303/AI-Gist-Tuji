@@ -156,6 +156,11 @@
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Add URL input for credentials type
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Show URL with click-to-open link
 
+### 2026-10-23 — Fix Build Error (Commit fb64467)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Use window.open instead of CapacitorApp
+
 ---
 
 ## Files NOT Modified
