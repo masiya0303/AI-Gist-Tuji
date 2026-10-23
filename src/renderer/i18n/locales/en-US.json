@@ -848,7 +848,7 @@
     "categoryDragHandle": "Drag category {name} to reorder",
     "categoryFilter": "Category: {name}",
     "categoryFilterTitle": "Category Filter",
-    "categoryHasPrompts": "This category still has prompts and cannot be deleted",
+    "categoryHasPrompts": "Category \"{name}\" still has {count} prompts. They will become uncategorized. Delete anyway?",
     "categoryManageDesc": "Reorder, create, edit, or delete your prompt categories",
     "categoryManageEmpty": "No categories yet. Click \"Create Category\" to add one.",
     "categoryManageTitle": "Category Management",

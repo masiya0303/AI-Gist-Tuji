@@ -850,7 +850,7 @@
     "categoryDragHandle": "拖拽分类“{name}”调整顺序",
     "categoryFilter": "分类: {name}",
     "categoryFilterTitle": "分类筛选",
-    "categoryHasPrompts": "该分类下还有提示词，无法删除",
+    "categoryHasPrompts": "分类“{name}”下还有 {count} 个提示词，删除后提示词将变为未分类，确定删除吗？",
     "categoryManageDesc": "管理您的提示词分类，调整顺序并创建、编辑或删除分类",
     "categoryManageEmpty": "暂无分类，点击“新建分类”创建",
     "categoryManageTitle": "分类管理",

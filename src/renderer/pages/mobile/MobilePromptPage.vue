@@ -265,18 +265,26 @@
           <ion-item v-if="categories.length === 0">
             <ion-label color="medium">{{ t('promptManagement.noCategories') }}</ion-label>
           </ion-item>
-          <ion-item v-for="category in categories" :key="'filter-' + category.id" button @click="handleCategoryFilter(category.id)">
-            <ion-label>
-              {{ category.name }}
-              <ion-note>{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
-            </ion-label>
-            <ion-icon
-              v-if="selectedCategory === category.id"
-              :icon="checkmark"
-              slot="end"
-              color="primary"
-            ></ion-icon>
-          </ion-item>
+          <ion-item-sliding v-for="category in categories" :key="'filter-' + category.id">
+            <ion-item button @click="handleCategoryFilter(category.id)">
+              <ion-label>
+                {{ category.name }}
+                <ion-note>{{ getCategoryPromptCount(category.id) }} {{ t('promptManagement.prompts') }}</ion-note>
+              </ion-label>
+              <ion-icon
+                v-if="selectedCategory === category.id"
+                :icon="checkmark"
+                slot="end"
+                color="primary"
+              ></ion-icon>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" @click="handleDeleteCategory(category)">
+                <ion-icon :icon="trashOutline"></ion-icon>
+                {{ t('common.delete') }}
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         </ion-list>
       </ion-content>
     </ion-modal>
@@ -574,6 +582,62 @@ const selectCategoryTab = (categoryId: number | null) => {
 // 获取分类下的提示词数量
 const getCategoryPromptCount = (categoryId: number) => {
   return allPrompts.value.filter(p => p.categoryId === categoryId).length
+}
+
+// 删除分类
+const handleDeleteCategory = async (category: Category) => {
+  const promptCount = getCategoryPromptCount(category.id)
+  
+  // 如果有提示词，提示用户
+  if (promptCount > 0) {
+    const alert = await alertController.create({
+      header: t('promptManagement.categoryManageTitle'),
+      message: t('promptManagement.categoryHasPrompts', { 
+        name: category.name, 
+        count: promptCount 
+      }),
+      buttons: [
+        {
+          text: t('common.cancel'),
+          role: 'cancel'
+        },
+        {
+          text: t('common.delete'),
+          role: 'destructive',
+          handler: async () => {
+            await deleteCategory(category)
+          }
+        }
+      ]
+    })
+    await alert.present()
+    return
+  }
+  
+  // 没有提示词，直接删除
+  await deleteCategory(category)
+}
+
+// 执行删除分类
+const deleteCategory = async (category: Category) => {
+  try {
+    await api.categories.delete.mutate(category.id)
+    
+    // 如果当前选中了这个分类，清除选择
+    if (selectedCategory.value === category.id) {
+      selectedCategory.value = null
+    }
+    
+    // 重新加载分类
+    await loadCategories()
+    // 重新加载提示词
+    await loadPrompts()
+    
+    await showToast(t('promptManagement.categoryDeletedSuccess'), 'success')
+  } catch (error) {
+    console.error('删除分类失败:', error)
+    await showToast(t('promptManagement.categoryDeletedFailed'), 'danger')
+  }
 }
 
 // 打开创建分类弹窗
