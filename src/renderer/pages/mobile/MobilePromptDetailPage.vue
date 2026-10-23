@@ -236,7 +236,6 @@ import {
   eyeOffOutline,
   openOutline
 } from 'ionicons/icons'
-import { CapacitorApp } from '@ionic/core'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
@@ -323,13 +322,12 @@ const credentialsUrl = computed(() => {
 })
 
 // Fork: 打开网页链接
-const openUrl = async (url: string) => {
+const openUrl = (url: string) => {
   try {
-    await CapacitorApp.openURL({ url })
+    window.open(url, '_blank')
   } catch (error) {
     console.error('打开链接失败:', error)
-    // 回退到 window.open
-    window.open(url, '_blank')
+    showToast(t('promptManagement.detailModal.openUrlFailed'), 'danger')
   }
 }
 

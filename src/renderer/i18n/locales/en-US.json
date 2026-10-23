@@ -1177,6 +1177,7 @@
     "addPassword": "Add Password",
     "url": "URL",
     "urlPlaceholder": "Enter URL (e.g. https://example.com)",
+    "openUrlFailed": "Failed to open URL",
     "totalCategories": "{count} categories total",
     "totalItems": "Total {count} items",
     "unknownCategory": "Unknown category",
