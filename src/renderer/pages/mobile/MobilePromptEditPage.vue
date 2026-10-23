@@ -788,9 +788,12 @@ const handleSave = async () => {
       ...formData.value,
       imageBlobs: imageBlobs.value
     }
-    // Fork: 账号密码类型，保存密码列表到 description
+    // Fork: 账号密码类型，保存密码列表和链接到 description
     if (formData.value.type === 'credentials') {
-      dataToSave.description = JSON.stringify(passwords.value.filter(p => p))
+      dataToSave.description = JSON.stringify({
+        passwords: passwords.value.filter(p => p),
+        url: credentialsUrl.value
+      })
     }
     if (isEdit.value && promptId.value) {
       // 更新
