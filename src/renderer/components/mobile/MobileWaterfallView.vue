@@ -1,3 +1,10 @@
+<!--
+  Fork modification notice (AGPL v3.0 Section 5a):
+  Modified by 兔叽 (msiya8160-star) on 2026-10-23
+  Change: Hide description for credentials type in waterfall view
+  Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
+  This fork is licensed under AGPL-3.0
+-->
 <template>
   <div class="waterfall-container">
     <div class="waterfall-column">
@@ -12,7 +19,8 @@
         </div>
         <div class="card-content">
           <p class="card-title">{{ item.prompt.title || getFirstLine(item.prompt.content) }}</p>
-          <p v-if="item.prompt.description" class="card-desc">{{ item.prompt.description }}</p>
+          <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
+          <p v-if="item.prompt.description && item.prompt.type === 'prompt'" class="card-desc">{{ item.prompt.description }}</p>
           <div v-if="getTagList(item.prompt).length" class="card-tags">
             <span
               v-for="tag in getTagList(item.prompt).slice(0, 2)"
@@ -46,7 +54,8 @@
         </div>
         <div class="card-content">
           <p class="card-title">{{ item.prompt.title || getFirstLine(item.prompt.content) }}</p>
-          <p v-if="item.prompt.description" class="card-desc">{{ item.prompt.description }}</p>
+          <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
+          <p v-if="item.prompt.description && item.prompt.type === 'prompt'" class="card-desc">{{ item.prompt.description }}</p>
           <div v-if="getTagList(item.prompt).length" class="card-tags">
             <span
               v-for="tag in getTagList(item.prompt).slice(0, 2)"
