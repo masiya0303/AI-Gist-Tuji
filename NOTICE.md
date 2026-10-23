@@ -134,6 +134,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Use 'type === prompt' instead of 'type !== credentials'
 
+### 2026-10-23 — Fix Waterfall View Description Display (Commit fb1b308)
+
+#### Files with inline modification notices:
+- `src/renderer/components/mobile/MobileWaterfallView.vue` — Hide description for credentials type
+
 ---
 
 ## Files NOT Modified
