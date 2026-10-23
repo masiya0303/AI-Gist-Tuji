@@ -104,12 +104,14 @@ export function useUpdate() {
    * 比较版本号
    */
   const compareVersions = (current: string, latest: string): boolean => {
-    // 移除版本号前的 'v' 前缀
-    const cleanCurrent = current.replace(/^v/, '');
-    const cleanLatest = latest.replace(/^v/, '');
+    // 提取语义版本号部分 (major.minor.patch)，忽略后缀如 -mobile-xxx
+    const extractVersion = (v: string): string => {
+      const match = v.match(/^v?(\d+\.\d+\.\d+)/);
+      return match ? match[1] : '0.0.0';
+    };
 
-    const currentParts = cleanCurrent.split('.').map(Number);
-    const latestParts = cleanLatest.split('.').map(Number);
+    const currentParts = extractVersion(current).split('.').map(Number);
+    const latestParts = extractVersion(latest).split('.').map(Number);
 
     // 确保数组长度一致
     const maxLength = Math.max(currentParts.length, latestParts.length);
@@ -153,11 +155,12 @@ export function useUpdate() {
       }
 
       const latestVersion = release.tag_name;
+      const displayVersion = latestVersion.match(/^v?(\d+\.\d+\.\d+)/)?.[1] || latestVersion;
       const hasUpdate = compareVersions(currentVersionValue, latestVersion);
 
       const updateInfoValue: UpdateInfo = {
         currentVersion: currentVersionValue,
-        latestVersion,
+        latestVersion: displayVersion,
         hasUpdate,
         releaseNotes: release.body || '暂无更新说明',
         downloadUrl: release.html_url,
