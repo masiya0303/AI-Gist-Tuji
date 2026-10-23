@@ -108,7 +108,7 @@
             <h2>{{ t('promptManagement.detailModal.promptContent') }}</h2>
           </div>
 
-          <!-- Fork: 账号密码类型 - 账号和密码都有复制按钮 -->
+          <!-- Fork: 账号密码类型 - 账号和多个密码都有复制按钮 -->
           <template v-if="isCredentialsType">
             <div class="credential-list">
               <div class="credential-item">
@@ -127,29 +127,21 @@
                 </div>
               </div>
               <div class="credential-item">
-                <div class="credential-label">{{ t('promptManagement.password') }}</div>
-                <div class="credential-value-row">
-                  <span class="credential-value" :class="{ hidden: !showPasswordDetail }">
-                    {{ showPasswordDetail ? (prompt.description || '-') : '••••••••' }}
-                  </span>
-                  <ion-button
-                    fill="clear"
-                    size="small"
-                    class="copy-btn"
-                    @click="copyCredential(prompt.description || '')"
-                    :disabled="!prompt.description"
-                  >
-                    <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
-                  </ion-button>
+                <div class="credential-label">{{ t('promptManagement.passwords') }}</div>
+                <div v-for="(password, index) in passwordList" :key="index" class="password-item">
+                  <div class="credential-value-row">
+                    <span class="credential-value">{{ password || '-' }}</span>
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      class="copy-btn"
+                      @click="copyCredential(password)"
+                      :disabled="!password"
+                    >
+                      <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
+                    </ion-button>
+                  </div>
                 </div>
-                <ion-button
-                  fill="clear"
-                  size="small"
-                  class="toggle-password-btn"
-                  @click="showPasswordDetail = !showPasswordDetail"
-                >
-                  <ion-icon slot="icon-only" :icon="showPasswordDetail ? eyeOffOutline : eyeOutline"></ion-icon>
-                </ion-button>
               </div>
             </div>
           </template>
@@ -273,8 +265,19 @@ const promptTags = computed(() => {
 // Fork: 账号密码类型判断
 const isCredentialsType = computed(() => prompt.value?.type === 'credentials')
 
-// Fork: 密码显示/隐藏切换
-const showPasswordDetail = ref(false)
+// Fork: 解析密码列表
+const passwordList = computed(() => {
+  if (!prompt.value?.description) return []
+  try {
+    const parsed = JSON.parse(prompt.value.description)
+    if (Array.isArray(parsed)) {
+      return parsed
+    }
+  } catch {
+    // 不是 JSON，当作单个密码
+  }
+  return [prompt.value.description]
+})
 
 // Fork: 复制单个字段值
 const copyCredential = async (value: string) => {
@@ -731,6 +734,16 @@ ion-chip {
   border-radius: var(--radius-lg);
   padding: 12px 16px;
   border: 1px solid var(--border-default);
+}
+
+/* Fork: 多个密码列表 */
+.password-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.password-item:last-child {
+  border-bottom: none;
 }
 
 .credential-label {

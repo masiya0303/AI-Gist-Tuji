@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <!-- Fork: 账号密码类型 - 正文是账号，描述是密码 -->
+          <!-- Fork: 账号密码类型 - 正文是账号，多个密码 -->
           <template v-if="formData.type === 'credentials'">
             <div class="field-block">
               <span class="field-caption">{{ t('promptManagement.account') }}</span>
@@ -73,22 +73,36 @@
               />
             </div>
             <div class="field-block">
-              <span class="field-caption">{{ t('promptManagement.password') }}</span>
-              <ion-input
-                v-model="formData.description"
-                class="content-input"
-                :placeholder="t('promptManagement.passwordPlaceholder')"
-                :type="showPassword ? 'text' : 'password'"
-                clear-button
-              />
-              <ion-button
-                fill="clear"
-                size="small"
-                class="toggle-password-btn"
-                @click="showPassword = !showPassword"
-              >
-                <ion-icon slot="icon-only" :icon="showPassword ? eyeOffOutline : eyeOutline"></ion-icon>
-              </ion-button>
+              <span class="field-caption">{{ t('promptManagement.passwords') }}</span>
+              <div class="passwords-list">
+                <div v-for="(password, index) in passwords" :key="index" class="password-item">
+                  <ion-input
+                    :model-value="password"
+                    class="content-input"
+                    :placeholder="t('promptManagement.passwordPlaceholder')"
+                    clear-button
+                    @ionChange="updatePassword(index, $event)"
+                  />
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    class="remove-btn"
+                    @click="removePassword(index)"
+                    :disabled="passwords.length <= 1"
+                  >
+                    <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
+                  </ion-button>
+                </div>
+                <ion-button
+                  fill="outline"
+                  size="small"
+                  class="add-password-btn"
+                  @click="addPassword"
+                >
+                  <ion-icon slot="start" :icon="addOutline"></ion-icon>
+                  {{ t('promptManagement.addPassword') }}
+                </ion-button>
+              </div>
             </div>
           </template>
 
@@ -355,6 +369,8 @@ import {
   arrowBack,
   closeCircle,
   add,
+  addOutline,
+  trashOutline,
   heart,
   heartOutline,
   eyeOutline,
@@ -473,8 +489,45 @@ const formData = ref<Partial<Prompt>>({
   type: 'prompt'
 })
 
-// Fork: 密码显示/隐藏切换
-const showPassword = ref(false)
+// Fork: 多个密码列表
+const passwords = ref<string[]>([''])
+
+// Fork: 添加密码
+const addPassword = () => {
+  passwords.value.push('')
+}
+
+// Fork: 删除密码
+const removePassword = (index: number) => {
+  if (passwords.value.length > 1) {
+    passwords.value.splice(index, 1)
+  }
+}
+
+// Fork: 更新密码
+const updatePassword = (index: number, event: CustomEvent) => {
+  const value = (event.target as HTMLIonInputElement).value
+  passwords.value[index] = value
+}
+
+// Fork: 从 description 解析密码列表
+const parsePasswords = (desc: string) => {
+  if (!desc) return ['']
+  try {
+    const parsed = JSON.parse(desc)
+    if (Array.isArray(parsed)) {
+      return parsed.length > 0 ? parsed : ['']
+    }
+  } catch {
+    // 不是 JSON，当作单个密码
+  }
+  return [desc]
+}
+
+// Fork: 将密码列表保存为 JSON
+const savePasswords = () => {
+  formData.value.description = JSON.stringify(passwords.value.filter(p => p))
+}
 
 const contentLength = computed(() => formData.value.content?.length || 0)
 
@@ -591,6 +644,10 @@ const loadData = async () => {
         isFavorite: prompt.isFavorite ?? false,
         useCount: prompt.useCount ?? 0
       }
+      // Fork: 账号密码类型，解析密码列表
+      if (prompt.type === 'credentials') {
+        passwords.value = parsePasswords(prompt.description || '')
+      }
       // 加载已有图片
       if (prompt.imageBlobs?.length) {
         loadExistingImages(prompt.imageBlobs)
@@ -698,6 +755,10 @@ const handleSave = async () => {
     const dataToSave = {
       ...formData.value,
       imageBlobs: imageBlobs.value
+    }
+    // Fork: 账号密码类型，保存密码列表到 description
+    if (formData.value.type === 'credentials') {
+      dataToSave.description = JSON.stringify(passwords.value.filter(p => p))
     }
     if (isEdit.value && promptId.value) {
       // 更新
@@ -848,6 +909,33 @@ onUnmounted(() => {
   --color: var(--content-primary);
   font-size: var(--mobile-font-size-body);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Fork: 多个密码列表 */
+.passwords-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remove-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: var(--ion-color-danger);
+}
+
+.add-password-btn {
+  margin-top: 4px;
+  align-self: flex-start;
 }
 
 .toggle-password-btn {

@@ -1192,6 +1192,8 @@
     "accountPlaceholder": "请输入账号",
     "password": "密码",
     "passwordPlaceholder": "请输入密码",
+    "passwords": "密码列表",
+    "addPassword": "添加密码",
     "totalCategories": "共 {count} 个分类",
     "totalItems": "共 {count} 项",
     "unknownCategory": "未知分类",

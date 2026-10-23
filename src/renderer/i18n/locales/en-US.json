@@ -1173,6 +1173,8 @@
     "accountPlaceholder": "Enter account",
     "password": "Password",
     "passwordPlaceholder": "Enter password",
+    "passwords": "Passwords",
+    "addPassword": "Add Password",
     "totalCategories": "{count} categories total",
     "totalItems": "Total {count} items",
     "unknownCategory": "Unknown category",
