@@ -166,6 +166,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Save URL to description JSON
 
+### 2026-10-23 — Fix Unsaved Changes During Loading (Commit adcbca3)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Add loading flag to prevent false positive
+
 ---
 
 ## Files NOT Modified
