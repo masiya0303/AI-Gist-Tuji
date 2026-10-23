@@ -176,6 +176,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Show correct prompt count for all categories
 
+### 2026-10-23 — Add Category Delete Feature (Commit 2f4eacb)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Swipe-to-delete categories in filter modal
+
 ---
 
 ## Files NOT Modified
