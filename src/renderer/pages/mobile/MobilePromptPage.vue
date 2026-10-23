@@ -362,6 +362,7 @@ let promptLoadSequence = 0
 
 // 状态
 const prompts = ref<Prompt[]>([])
+const allPrompts = ref<Prompt[]>([]) // 用于分类计数，不受筛选影响
 const categories = ref<Category[]>([])
 const loading = ref(true)
 const searchText = ref('')
@@ -478,6 +479,9 @@ const loadPrompts = async (append = false, options: { showLoading?: boolean } = 
 const loadCategories = async () => {
   try {
     categories.value = await api.categories.getAll.query()
+    // 加载所有提示词用于分类计数（不受筛选影响）
+    const result = await api.prompts.getAll.query({ page: 1, limit: 1000 })
+    allPrompts.value = result.data || []
   } catch (error) {
     console.error('加载分类失败:', error)
   }
@@ -569,7 +573,7 @@ const selectCategoryTab = (categoryId: number | null) => {
 
 // 获取分类下的提示词数量
 const getCategoryPromptCount = (categoryId: number) => {
-  return prompts.value.filter(p => p.categoryId === categoryId).length
+  return allPrompts.value.filter(p => p.categoryId === categoryId).length
 }
 
 // 打开创建分类弹窗
@@ -726,6 +730,13 @@ onIonViewWillEnter(() => {
     runRealtimeRefresh(isMutation || prompts.value.length === 0)
   } else {
     refreshAIConfigStatus()
+  }
+})
+
+// 筛选弹窗打开时重新加载分类计数
+watch(showFilterModal, (show) => {
+  if (show) {
+    loadCategories()
   }
 })
 
