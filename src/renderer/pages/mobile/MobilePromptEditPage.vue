@@ -647,6 +647,8 @@ const loadData = async () => {
       // Fork: 账号密码类型，解析密码列表
       if (prompt.type === 'credentials') {
         passwords.value = parsePasswords(prompt.description || '')
+        // 更新 formData.description 以反映当前密码状态，确保快照一致
+        formData.value.description = JSON.stringify(passwords.value.filter(p => p))
       }
       // 加载已有图片
       if (prompt.imageBlobs?.length) {
