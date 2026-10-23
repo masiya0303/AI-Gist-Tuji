@@ -171,6 +171,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Add loading flag to prevent false positive
 
+### 2026-10-23 — Fix Category Count Display (Commit 9aa5b0f)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Show correct prompt count for all categories
+
 ---
 
 ## Files NOT Modified
