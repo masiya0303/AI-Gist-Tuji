@@ -139,6 +139,12 @@
 #### Files with inline modification notices:
 - `src/renderer/components/mobile/MobileWaterfallView.vue` — Hide description for credentials type
 
+### 2026-10-23 — Support Multiple Passwords (Commit 7eb28fe)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Multiple password inputs with add/remove
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Display multiple passwords with copy buttons
+
 ---
 
 ## Files NOT Modified
