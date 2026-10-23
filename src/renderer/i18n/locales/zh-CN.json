@@ -1194,6 +1194,8 @@
     "passwordPlaceholder": "请输入密码",
     "passwords": "密码列表",
     "addPassword": "添加密码",
+    "url": "网页链接",
+    "urlPlaceholder": "请输入网址 (如 https://example.com)",
     "totalCategories": "共 {count} 个分类",
     "totalItems": "共 {count} 项",
     "unknownCategory": "未知分类",

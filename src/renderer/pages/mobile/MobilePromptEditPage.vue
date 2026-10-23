@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <!-- Fork: 账号密码类型 - 正文是账号，多个密码 -->
+          <!-- Fork: 账号密码类型 - 正文是账号，多个密码，网页链接 -->
           <template v-if="formData.type === 'credentials'">
             <div class="field-block">
               <span class="field-caption">{{ t('promptManagement.account') }}</span>
@@ -69,6 +69,15 @@
                 v-model="formData.content"
                 class="content-input"
                 :placeholder="t('promptManagement.accountPlaceholder')"
+                clear-button
+              />
+            </div>
+            <div class="field-block">
+              <span class="field-caption">{{ t('promptManagement.url') }}</span>
+              <ion-input
+                v-model="credentialsUrl"
+                class="content-input"
+                :placeholder="t('promptManagement.urlPlaceholder')"
                 clear-button
               />
             </div>
@@ -491,6 +500,8 @@ const formData = ref<Partial<Prompt>>({
 
 // Fork: 多个密码列表
 const passwords = ref<string[]>([''])
+// Fork: 网页链接
+const credentialsUrl = ref('')
 
 // Fork: 添加密码
 const addPassword = () => {
@@ -510,23 +521,37 @@ const updatePassword = (index: number, event: CustomEvent) => {
   passwords.value[index] = value
 }
 
-// Fork: 从 description 解析密码列表
+// Fork: 从 description 解析密码列表和链接
 const parsePasswords = (desc: string) => {
-  if (!desc) return ['']
+  if (!desc) return { passwords: [''], url: '' }
   try {
     const parsed = JSON.parse(desc)
+    // 新格式：{ passwords: [...], url: "..." }
+    if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed.passwords) {
+      return {
+        passwords: parsed.passwords.length > 0 ? parsed.passwords : [''],
+        url: parsed.url || ''
+      }
+    }
+    // 旧格式：["password1", "password2"]
     if (Array.isArray(parsed)) {
-      return parsed.length > 0 ? parsed : ['']
+      return {
+        passwords: parsed.length > 0 ? parsed : [''],
+        url: ''
+      }
     }
   } catch {
     // 不是 JSON，当作单个密码
   }
-  return [desc]
+  return { passwords: [desc], url: '' }
 }
 
-// Fork: 将密码列表保存为 JSON
+// Fork: 将密码列表和链接保存为 JSON
 const savePasswords = () => {
-  formData.value.description = JSON.stringify(passwords.value.filter(p => p))
+  formData.value.description = JSON.stringify({
+    passwords: passwords.value.filter(p => p),
+    url: credentialsUrl.value
+  })
 }
 
 const contentLength = computed(() => formData.value.content?.length || 0)
@@ -644,11 +669,16 @@ const loadData = async () => {
         isFavorite: prompt.isFavorite ?? false,
         useCount: prompt.useCount ?? 0
       }
-      // Fork: 账号密码类型，解析密码列表
+      // Fork: 账号密码类型，解析密码列表和链接
       if (prompt.type === 'credentials') {
-        passwords.value = parsePasswords(prompt.description || '')
-        // 更新 formData.description 以反映当前密码状态，确保快照一致
-        formData.value.description = JSON.stringify(passwords.value.filter(p => p))
+        const parsed = parsePasswords(prompt.description || '')
+        passwords.value = parsed.passwords
+        credentialsUrl.value = parsed.url
+        // 更新 formData.description 以反映当前状态，确保快照一致
+        formData.value.description = JSON.stringify({
+          passwords: parsed.passwords.filter(p => p),
+          url: parsed.url
+        })
       }
       // 加载已有图片
       if (prompt.imageBlobs?.length) {

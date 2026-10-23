@@ -108,7 +108,7 @@
             <h2>{{ t('promptManagement.detailModal.promptContent') }}</h2>
           </div>
 
-          <!-- Fork: 账号密码类型 - 账号和多个密码都有复制按钮 -->
+          <!-- Fork: 账号密码类型 - 账号、链接和多个密码都有复制/跳转按钮 -->
           <template v-if="isCredentialsType">
             <div class="credential-list">
               <div class="credential-item">
@@ -123,6 +123,27 @@
                     :disabled="!prompt.content"
                   >
                     <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+              <div v-if="credentialsUrl" class="credential-item">
+                <div class="credential-label">{{ t('promptManagement.url') }}</div>
+                <div class="credential-value-row">
+                  <a
+                    class="credential-value credential-link"
+                    :href="credentialsUrl"
+                    target="_blank"
+                    @click.prevent="openUrl(credentialsUrl)"
+                  >
+                    {{ credentialsUrl }}
+                  </a>
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    class="open-btn"
+                    @click="openUrl(credentialsUrl)"
+                  >
+                    <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
                   </ion-button>
                 </div>
               </div>
@@ -212,8 +233,10 @@ import {
   trashOutline,
   ellipsisVertical,
   eyeOutline,
-  eyeOffOutline
+  eyeOffOutline,
+  openOutline
 } from 'ionicons/icons'
+import { CapacitorApp } from '@ionic/core'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
@@ -270,6 +293,11 @@ const passwordList = computed(() => {
   if (!prompt.value?.description) return []
   try {
     const parsed = JSON.parse(prompt.value.description)
+    // 新格式：{ passwords: [...], url: "..." }
+    if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed.passwords) {
+      return parsed.passwords
+    }
+    // 旧格式：["password1", "password2"]
     if (Array.isArray(parsed)) {
       return parsed
     }
@@ -278,6 +306,32 @@ const passwordList = computed(() => {
   }
   return [prompt.value.description]
 })
+
+// Fork: 解析网页链接
+const credentialsUrl = computed(() => {
+  if (!prompt.value?.description) return ''
+  try {
+    const parsed = JSON.parse(prompt.value.description)
+    // 新格式：{ passwords: [...], url: "..." }
+    if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed.url) {
+      return parsed.url
+    }
+  } catch {
+    // 不是 JSON
+  }
+  return ''
+})
+
+// Fork: 打开网页链接
+const openUrl = async (url: string) => {
+  try {
+    await CapacitorApp.openURL({ url })
+  } catch (error) {
+    console.error('打开链接失败:', error)
+    // 回退到 window.open
+    window.open(url, '_blank')
+  }
+}
 
 // Fork: 复制单个字段值
 const copyCredential = async (value: string) => {
@@ -768,12 +822,29 @@ ion-chip {
   flex: 1;
 }
 
+/* Fork: 网页链接样式 */
+.credential-link {
+  color: var(--ion-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .copy-btn {
   --padding-start: 0;
   --padding-end: 0;
   width: 32px;
   height: 32px;
   flex-shrink: 0;
+}
+
+/* Fork: 打开链接按钮 */
+.open-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: var(--ion-color-primary);
 }
 
 .toggle-password-btn {
