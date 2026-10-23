@@ -145,6 +145,11 @@
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Multiple password inputs with add/remove
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Display multiple passwords with copy buttons
 
+### 2026-10-23 — Fix Unsaved Changes Dialog (Commit 5d4ed1f)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Update description when parsing passwords
+
 ---
 
 ## Files NOT Modified
