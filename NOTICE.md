@@ -150,6 +150,12 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Update description when parsing passwords
 
+### 2026-10-23 — Add URL Field to Credentials (Commit 566cb9f)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Add URL input for credentials type
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Show URL with click-to-open link
+
 ---
 
 ## Files NOT Modified
