@@ -161,6 +161,11 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Use window.open instead of CapacitorApp
 
+### 2026-10-23 — Fix URL Save (Commit b17fc91)
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Save URL to description JSON
+
 ---
 
 ## Files NOT Modified
