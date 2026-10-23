@@ -404,6 +404,7 @@ const promptId = computed(() => {
   return id ? parseInt(id, 10) : null
 })
 const saving = ref(false)
+const loading = ref(false)
 const categories = ref<Category[]>([])
 const popularTags = ref<string[]>([])
 const showTagsModal = ref(false)
@@ -597,6 +598,8 @@ const takeSnapshot = () => {
 }
 
 const hasRealChanges = (): boolean => {
+  // 加载中或保存中，不显示未保存提示
+  if (loading.value || saving.value) return false
   // 新建模式：有内容就算有改动
   if (!isEdit.value) {
     return !!(formData.value.title || formData.value.content)
@@ -617,6 +620,7 @@ const filteredPopularTags = computed(() => {
 
 // 加载数据
 const loadData = async () => {
+  loading.value = true
   try {
     // 加载分类
     categories.value = await api.categories.getAll.query()
@@ -694,6 +698,8 @@ const loadData = async () => {
     if (isEdit.value) {
       router.back()
     }
+  } finally {
+    loading.value = false
   }
 }
 
