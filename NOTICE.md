@@ -181,6 +181,12 @@
 #### Files with inline modification notices:
 - `src/renderer/pages/mobile/MobilePromptPage.vue` — Swipe-to-delete categories in filter modal
 
+### 2026-10-23 — Version Bump to 2.1.4 (Commit 03665a0)
+
+#### Files with inline modification notices:
+- `package.json` — version 2.1.3 -> 2.1.4, buildRevision 1 -> 2
+- `android/app/build.gradle` — versionCode 2010301 -> 2010402, versionName 2.1.3 -> 2.1.4
+
 ---
 
 ## Files NOT Modified
