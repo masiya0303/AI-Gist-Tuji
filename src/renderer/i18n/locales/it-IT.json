@@ -1316,25 +1316,17 @@
     "noConfigDescription": "Aggiungi e abilita una configurazione AI prima di ottimizzare i prompt.",
     "addConfig": "Aggiungi configurazione AI",
     "presets": {
-      "general": {
-        "name": "Generale",
-        "description": "Completa obiettivi, contesto, vincoli, flusso e formato di output"
-      },
-      "professional": {
-        "name": "Professionale",
-        "description": "Trasforma richieste vaghe in requisiti concreti ed eseguibili"
-      },
       "concise": {
         "name": "Conciso",
         "description": "Rimuovi ridondanze mantenendo obiettivo e vincoli chiave"
       },
       "structured": {
         "name": "Strutturato",
-        "description": "Riorganizza in ruolo, obiettivo, regole, flusso e output"
+        "description": "Completa ruolo, obiettivo, regole, flusso, formato output e confini"
       },
-      "format": {
-        "name": "Formato output",
-        "description": "Chiarisci campi, formato, esempi e condizioni limite"
+      "professional": {
+        "name": "Professionale",
+        "description": "Trasforma richieste vaghe in requisiti concreti ed eseguibili"
       },
       "custom": {
         "name": "Personalizzato",

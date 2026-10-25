@@ -1347,28 +1347,20 @@
     "noConfigDescription": "先添加并启用一个 AI 配置，才能使用提示词优化。",
     "addConfig": "去添加 AI 配置",
     "presets": {
-      "general": {
-        "name": "通用优化",
-        "description": "补齐目标、上下文、约束、流程与输出格式"
-      },
-      "professional": {
-        "name": "专业精准",
-        "description": "把模糊要求改成具体、可执行的标准"
-      },
       "concise": {
-        "name": "精简凝练",
-        "description": "去除冗余，保留核心目标与关键约束"
+        "name": "精简",
+        "description": "去冗余，保留核心目标与关键约束"
       },
       "structured": {
         "name": "结构化",
-        "description": "按角色、目标、规则、流程、输出重新组织"
+        "description": "补齐角色、目标、规则、流程、输出格式与边界"
       },
-      "format": {
-        "name": "输出格式强化",
-        "description": "明确字段、格式、示例和边界条件"
+      "professional": {
+        "name": "专业化",
+        "description": "把模糊要求改成具体、可执行的标准"
       },
       "custom": {
-        "name": "自定义要求",
+        "name": "自定义",
         "description": "用自己的话描述优化方向"
       }
     }

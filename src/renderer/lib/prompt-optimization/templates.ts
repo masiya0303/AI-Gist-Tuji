@@ -3,11 +3,9 @@ import { parsePromptTemplate } from '~/lib/utils/prompt-template'
 
 export type OptimizationTarget = 'user' | 'system'
 export type OptimizationPresetId =
-  | 'general'
-  | 'professional'
   | 'concise'
   | 'structured'
-  | 'format'
+  | 'professional'
   | 'custom'
 
 export interface OptimizationPreset {
@@ -103,18 +101,6 @@ const TARGET_LABEL: Record<OptimizationTarget, string> = {
 
 export const OPTIMIZATION_PRESETS: OptimizationPreset[] = [
   {
-    id: 'general',
-    nameKey: 'promptOptimization.presets.general.name',
-    descriptionKey: 'promptOptimization.presets.general.description',
-    direction: '在不改变原意的前提下全面优化：补齐目标、上下文、约束、执行步骤和输出格式，让提示词更清晰、更可执行。'
-  },
-  {
-    id: 'professional',
-    nameKey: 'promptOptimization.presets.professional.name',
-    descriptionKey: 'promptOptimization.presets.professional.description',
-    direction: '把泛泛而谈、模糊的表述改写成具体、精准、可量化的要求，明确角色、目标、边界和验收标准。'
-  },
-  {
     id: 'concise',
     nameKey: 'promptOptimization.presets.concise.name',
     descriptionKey: 'promptOptimization.presets.concise.description',
@@ -124,13 +110,13 @@ export const OPTIMIZATION_PRESETS: OptimizationPreset[] = [
     id: 'structured',
     nameKey: 'promptOptimization.presets.structured.name',
     descriptionKey: 'promptOptimization.presets.structured.description',
-    direction: '把提示词重组为清晰结构：角色 / 目标 / 背景 / 规则 / 工作流程 / 输出格式。内容不需要的章节直接省略，不要硬套空模板。'
+    direction: '补齐并重组为清晰结构：角色 / 目标 / 背景规则 / 工作流程 / 输出格式。内容不需要的章节直接省略，不要硬套空模板。同时明确输出结构、字段、示例和边界条件。'
   },
   {
-    id: 'format',
-    nameKey: 'promptOptimization.presets.format.name',
-    descriptionKey: 'promptOptimization.presets.format.description',
-    direction: '重点强化输出格式：明确输出结构、字段、顺序、示例、禁止项和边界条件，让结果可以直接使用。'
+    id: 'professional',
+    nameKey: 'promptOptimization.presets.professional.name',
+    descriptionKey: 'promptOptimization.presets.professional.description',
+    direction: '把泛泛而谈、模糊的表述改写成具体、精准、可量化的要求，明确角色、目标、边界和验收标准。'
   },
   {
     id: 'custom',

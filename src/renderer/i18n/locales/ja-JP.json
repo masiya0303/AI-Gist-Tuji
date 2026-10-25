@@ -1316,25 +1316,17 @@
     "noConfigDescription": "プロンプト最適化を使うには、AI 設定を追加して有効にしてください。",
     "addConfig": "AI 設定を追加",
     "presets": {
-      "general": {
-        "name": "汎用最適化",
-        "description": "目標・文脈・制約・手順・出力形式を補完"
-      },
-      "professional": {
-        "name": "プロフェッショナル",
-        "description": "曖昧な要求を具体的で実行可能な基準に変換"
-      },
       "concise": {
         "name": "簡潔化",
         "description": "冗長さを削り、核心目標と重要制約を保持"
       },
       "structured": {
         "name": "構造化",
-        "description": "役割・目標・ルール・手順・出力の構造に再編成"
+        "description": "役割・目標・ルール・手順・出力形式・境界を補完"
       },
-      "format": {
-        "name": "出力形式",
-        "description": "フィールド・形式・例・境界条件を明確化"
+      "professional": {
+        "name": "プロフェッショナル",
+        "description": "曖昧な要求を具体的で実行可能な基準に変換"
       },
       "custom": {
         "name": "カスタム",

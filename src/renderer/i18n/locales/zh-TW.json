@@ -1316,28 +1316,20 @@
     "noConfigDescription": "先新增並啟用一個 AI 設定，才能使用提示詞優化。",
     "addConfig": "去新增 AI 設定",
     "presets": {
-      "general": {
-        "name": "通用優化",
-        "description": "補齊目標、上下文、約束、流程與輸出格式"
-      },
-      "professional": {
-        "name": "專業精準",
-        "description": "把模糊要求改成具體、可執行的標準"
-      },
       "concise": {
-        "name": "精簡凝練",
-        "description": "去除冗餘，保留核心目標與關鍵約束"
+        "name": "精簡",
+        "description": "去冗餘，保留核心目標與關鍵約束"
       },
       "structured": {
         "name": "結構化",
-        "description": "按角色、目標、規則、流程、輸出重新組織"
+        "description": "補齊角色、目標、規則、流程、輸出格式與邊界"
       },
-      "format": {
-        "name": "輸出格式強化",
-        "description": "明確欄位、格式、範例和邊界條件"
+      "professional": {
+        "name": "專業化",
+        "description": "把模糊要求改成具體、可執行的標準"
       },
       "custom": {
-        "name": "自訂要求",
+        "name": "自訂",
         "description": "用自己的話描述優化方向"
       }
     }

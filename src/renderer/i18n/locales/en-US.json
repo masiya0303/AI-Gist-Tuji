@@ -1328,25 +1328,17 @@
     "noConfigDescription": "Add and enable an AI configuration before optimizing prompts.",
     "addConfig": "Add AI Configuration",
     "presets": {
-      "general": {
-        "name": "General",
-        "description": "Fill in goals, context, constraints, workflow, and output format"
-      },
-      "professional": {
-        "name": "Professional",
-        "description": "Turn vague requests into concrete, executable requirements"
-      },
       "concise": {
         "name": "Concise",
         "description": "Remove redundancy while keeping the core goal and key constraints"
       },
       "structured": {
         "name": "Structured",
-        "description": "Reorganize into role, goal, rules, workflow, and output sections"
+        "description": "Fill in role, goal, rules, workflow, output format and boundaries"
       },
-      "format": {
-        "name": "Output Format",
-        "description": "Clarify fields, formatting, examples, and boundary conditions"
+      "professional": {
+        "name": "Professional",
+        "description": "Turn vague requests into concrete, executable requirements"
       },
       "custom": {
         "name": "Custom",
