@@ -14,26 +14,12 @@
  *   iOS 只要求构建号在**同一个营销版本号内**递增，所以版本号一升（2.2.0），
  *   buildRevision 就归 1 重新开始。App Store Connect 显示成 "2.1.1 (1)"。
  *
- * ── Mac App Store（CFBundleVersion）
- *   用和 Android versionCode 相同的编码：2.1.1 (1) → 2010101。
- *   macOS 这条线和 iOS 不一样：App Store Connect 对 Mac 构建的 CFBundleVersion
- *   是**全局**比较的，跟营销版本号无关，只跟"这个 app 上传过的最大值"比。
- *   2.1.1 用 buildRevision=1 上传时被拒：
- *     "The value for key CFBundleVersion [1] must contain a higher version
- *      than that of the previously uploaded version [150]" (90061)
- *   —— 150 是历史上用 CI run_number 当构建号时留下的高水位。所以 Mac 只能用
- *   把版本号编进去的长整数，保证跨版本永远单调。用户看不到它。
- *
  * ── Android（versionCode）
  *   versionCode = major*1000000 + minor*10000 + patch*100 + buildRevision
  *   例：2.1.1 (1) → 2010101，2.1.2 (1) → 2010201，3.0.0 (1) → 3000001。
  *   Google Play 的 versionCode 是**全局单调**的整数，跟 versionName 无关，
  *   不能随版本号重置，所以只能用这种把版本号编进去的长整数。用户看不到它。
  *   读法是 2.01.01.01。
- *
- * ── 其他平台
- *   桌面端（electron-builder 的 NSIS / DMG / Snap）、Windows Store 的 appx
- *   版本、Web、CLI 都只用营销版本号，不需要额外的构建号。
  *
  * 约束：minor、patch 必须小于 100，buildRevision 必须在 1-99 之间，否则相邻
  * 版本的 versionCode 会撞车 —— 这里直接报错，不会悄悄算出个错的号。
@@ -71,8 +57,8 @@ function normalizeRevision(revision) {
 }
 
 /**
- * 把版本号编进一个全局递增的整数。Android 的 versionCode 和 Mac App Store 的
- * CFBundleVersion 都用它 —— 两边的要求是同一个：跨营销版本号全局单调。
+ * 把版本号编进一个全局递增的整数。Android 的 versionCode 用它 —— Google Play
+ * 要求跨营销版本号全局单调。
  */
 function computeVersionCode(version, revision) {
     const { major, minor, patch } = parseVersion(version);
@@ -102,8 +88,6 @@ function getVersionInfo() {
         buildRevision,
         // iOS 的 CFBundleVersion，每个版本号从 1 开始
         buildNumber: buildRevision,
-        // Mac App Store 的 CFBundleVersion，必须跨版本号全局单调
-        macBuildNumber: versionCode,
         // Android 的 versionCode，全局递增
         versionCode
     };
@@ -121,12 +105,10 @@ if (require.main === module) {
         console.log(info.version);
     } else if (field === '--build') {
         console.log(info.buildNumber);
-    } else if (field === '--mac-build') {
-        console.log(info.macBuildNumber);
     } else if (field === '--version-code') {
         console.log(info.versionCode);
     } else {
-        console.error('用法：node scripts/version.js [--json | --version | --build | --mac-build | --version-code]');
+        console.error('用法：node scripts/version.js [--json | --version | --build | --version-code]');
         process.exit(1);
     }
 }

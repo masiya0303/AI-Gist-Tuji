@@ -3,7 +3,8 @@
  * Modified by 兔叽 (msiya8160-star) on 2026-10-21
  * Change: Added /category route for mobile category management page
  * Change: Added /category/:id route for the mobile category prompt drill-down page
- * Change: Added /prompt/optimize/:id route for the mobile prompt optimization workbench
+ * Modified on 2026-10-26: 移除全部 AI 相关路由（AI 生成 / AI 优化 / AI 配置），
+ *   本分支只保留提示词管理、分类、设置与云同步能力。
  * Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
  * This fork is licensed under AGPL-3.0
  */
@@ -29,10 +30,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/mobile/MobilePromptPage.vue')
       },
       {
-        path: 'ai-config',
-        component: () => import('../pages/mobile/MobileAIConfigPage.vue')
-      },
-      {
         path: 'settings',
         component: () => import('../pages/mobile/MobileSettingsPage.vue')
       }
@@ -54,26 +51,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/prompt/detail/:id',
     component: () => import('../pages/mobile/MobilePromptDetailPage.vue')
-  },
-  {
-    path: '/prompt/optimize/:id',
-    component: () => import('../pages/mobile/MobilePromptOptimizePage.vue')
-  },
-  {
-    path: '/ai-config/create',
-    component: () => import('../pages/mobile/MobileAIConfigEditPage.vue')
-  },
-  {
-    path: '/ai-config/edit/:id',
-    component: () => import('../pages/mobile/MobileAIConfigEditPage.vue')
-  },
-  {
-    path: '/ai-config/:id',
-    component: () => import('../pages/mobile/MobileAIConfigDetailPage.vue')
-  },
-  {
-    path: '/ai-config/:id/system-prompt',
-    component: () => import('../pages/mobile/MobileSystemPromptEditPage.vue')
   },
   // 设置二级页面：设置首页只做导航，具体设置都在这些独立页面里
   {
@@ -104,10 +81,6 @@ const routes: RouteRecordRaw[] = [
     // 旧入口（应用内深链和历史记录）继续可用
     path: '/mobile/cloud-backup',
     redirect: '/mobile/settings/data-sync'
-  },
-  {
-    path: '/ai-generator',
-    component: () => import('../pages/mobile/MobileAIGeneratorPage.vue')
   },
   {
     path: '/mobile/about',

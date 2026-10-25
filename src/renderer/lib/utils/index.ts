@@ -3,6 +3,5 @@
  */
 
 export { generateUUID } from './uuid';
-export * from './ai.service';
 export { formatDateTime } from './date';
 export * from './data-sync-status';

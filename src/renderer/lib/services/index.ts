@@ -24,7 +24,6 @@ export { CloudSyncService, cloudSyncService } from './cloud-sync.service';
 export { CloudSyncV2Coordinator } from './cloud-sync-v2-coordinator';
 export { AutomaticBackupService, automaticBackupService } from './automatic-backup.service';
 export { LocalBackupService, localBackupService } from './local-backup.service';
-export { initializeCliBridgeExecutor } from './cli-bridge-executor.service';
 export { emitDataChange, onDataChange } from './data-change-events';
 export type { DataChangeEventPayload, DataStoreName, DataChangeAction } from './data-change-events';
 

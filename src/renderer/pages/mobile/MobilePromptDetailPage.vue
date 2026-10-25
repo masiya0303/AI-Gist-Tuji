@@ -197,10 +197,6 @@
         Fork: 账号密码类型不显示此按钮，因为已有内联复制按钮
       -->
       <div v-if="prompt && !isCredentialsType" class="action-buttons" slot="fixed">
-        <ion-button expand="block" fill="outline" class="optimize-button" @click="openOptimize">
-          <ion-icon slot="start" :icon="sparklesOutline"></ion-icon>
-          {{ t('promptOptimization.optimizeAction') }}
-        </ion-button>
         <ion-button expand="block" @click="copyContent">
           <ion-icon slot="start" :icon="copyOutline"></ion-icon>
           {{ t('promptManagement.detailModal.copyContent') }}
@@ -250,8 +246,7 @@ import {
   ellipsisVertical,
   eyeOutline,
   eyeOffOutline,
-  openOutline,
-  sparklesOutline
+  openOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
@@ -534,12 +529,6 @@ const showActionMenu = async () => {
 const handleEdit = () => {
   if (!prompt.value) return
   router.push(`/prompt/edit/${prompt.value.id}`)
-}
-
-// AI 优化工作台
-const openOptimize = () => {
-  if (!prompt.value?.id) return
-  router.push(`/prompt/optimize/${prompt.value.id}`)
 }
 
 // 删除

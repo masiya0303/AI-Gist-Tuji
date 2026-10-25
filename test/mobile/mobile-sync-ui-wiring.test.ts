@@ -22,7 +22,7 @@ describe('mobile sync and restore UI wiring', () => {
 
   it('refreshes visible prompt data from database change events after a remote apply', () => {
     const source = read('src/renderer/pages/mobile/MobilePromptPage.vue')
-    expect(source).toContain("onDataChange(['prompts', 'categories', 'ai_configs'], scheduleRealtimeRefresh)")
+    expect(source).toContain("onDataChange(['prompts', 'categories'], scheduleRealtimeRefresh)")
     expect(source).toContain('runRealtimeRefresh(false)')
   })
 

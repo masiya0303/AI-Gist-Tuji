@@ -18,7 +18,6 @@
       "@/*": ["src/renderer/*"],
       "~/*": ["src/renderer/*"],
       "@shared/*": ["src/shared/*"],
-      "@main/*": ["src/main/*"],
       "@renderer/*": ["src/renderer/*"],
       "@root/*": ["src/*"]
     }

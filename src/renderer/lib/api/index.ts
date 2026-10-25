@@ -6,31 +6,20 @@
 // 导入所有API客户端类和工厂函数
 import { CategoryApiClient, createCategoryApiClient } from './category.api';
 import { PromptApiClient, createPromptApiClient } from './prompt.api';
-import { AIConfigApiClient, createAIConfigApiClient } from './ai-config.api';
-import { AIGenerationHistoryApiClient, createAIGenerationHistoryApiClient } from './ai-generation-history.api';
 import { AppSettingsApiClient, createAppSettingsApiClient } from './app-settings.api';
-import { DataManagementAPI } from './data-management.api';
-import { QuickOptimizationApiClient, createQuickOptimizationApiClient } from './quick-optimization.api';
 
 // 导出所有API客户端类
 export { 
   CategoryApiClient,
   PromptApiClient,
-  AIConfigApiClient,
-  AIGenerationHistoryApiClient,
-  AppSettingsApiClient,
-  DataManagementAPI,
-  QuickOptimizationApiClient
+  AppSettingsApiClient
 };
 
 // 导出所有工厂函数
 export { 
   createCategoryApiClient,
   createPromptApiClient,
-  createAIConfigApiClient,
-  createAIGenerationHistoryApiClient,
-  createAppSettingsApiClient,
-  createQuickOptimizationApiClient
+  createAppSettingsApiClient
 };
 
 /**
@@ -43,19 +32,13 @@ export class ApiClientManager {
   // 各个API客户端实例
   public readonly category: CategoryApiClient;
   public readonly prompt: PromptApiClient;
-  public readonly aiConfig: AIConfigApiClient;
-  public readonly aiGenerationHistory: AIGenerationHistoryApiClient;
   public readonly appSettings: AppSettingsApiClient;
-  public readonly quickOptimization: QuickOptimizationApiClient;
 
   private constructor() {
     // 初始化所有API客户端实例
     this.category = createCategoryApiClient();
     this.prompt = createPromptApiClient();
-    this.aiConfig = createAIConfigApiClient();
-    this.aiGenerationHistory = createAIGenerationHistoryApiClient();
     this.appSettings = createAppSettingsApiClient();
-    this.quickOptimization = createQuickOptimizationApiClient();
   }
 
   /**
@@ -77,10 +60,7 @@ export class ApiClientManager {
 function createApiClient() {
   const categoryClient = createCategoryApiClient();
   const promptClient = createPromptApiClient();
-  const aiConfigClient = createAIConfigApiClient();
-  const aiGenerationHistoryClient = createAIGenerationHistoryApiClient();
   const appSettingsClient = createAppSettingsApiClient();
-  const quickOptimizationClient = createQuickOptimizationApiClient();
 
   return {
     // 分类相关API
@@ -91,18 +71,9 @@ function createApiClient() {
     promptVariables: promptClient.promptVariables,
     promptHistories: promptClient.promptHistories,
 
-    // AI配置相关API
-    aiConfigs: aiConfigClient.aiConfigs,
-
-    // AI生成历史相关API
-    aiGenerationHistory: aiGenerationHistoryClient.aiGenerationHistory,
-
     // 应用设置相关API
     appSettings: appSettingsClient.appSettings,
-    settingValues: appSettingsClient.values,
-
-    // 快速优化提示词配置相关API
-    quickOptimizationConfigs: quickOptimizationClient.quickOptimizationConfigs
+    settingValues: appSettingsClient.values
   };
 }
 

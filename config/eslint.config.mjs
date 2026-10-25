@@ -46,16 +46,6 @@ export default await tseslint.config(
     },
   },
 
-  // 针对 src/main 的 tsconfig
-  {
-    files: ["src/main/**/*.{ts,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: repoRoot,
-        project: "./src/main/tsconfig.json",
-      },
-    },
-  },
 
   // 支持 Vue 文件（全局范围）
   {

@@ -38,7 +38,8 @@ const collectStaticTranslationKeys = (): Set<string> => {
 describe('renderer static translations', () => {
   it('defines every statically referenced dotted translation key in all locales', () => {
     const keys = collectStaticTranslationKeys();
-    expect(keys.size).toBeGreaterThan(800);
+    // 本分支只保留移动端页面，静态引用的翻译键数量因此远小于桌面 + 移动端并存时的 800+
+    expect(keys.size).toBeGreaterThan(200);
 
     for (const locale of localeNames) {
       const messages = JSON.parse(readFileSync(

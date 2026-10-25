@@ -7,7 +7,7 @@
  *   - ios/App/App.xcodeproj/project.pbxproj：MARKETING_VERSION / CURRENT_PROJECT_VERSION
  *     （CURRENT_PROJECT_VERSION 就是 buildRevision，每个版本号从 1 开始）
  *
- * 桌面端（electron-builder）和 Web 端直接读 package.json，不需要同步。
+ * 本分支只打移动端包，没有其他需要同步版本号的产物。
  *
  * 用法：
  *   node scripts/sync-version.js          写入

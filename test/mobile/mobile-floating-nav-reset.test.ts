@@ -20,10 +20,9 @@
 import { describe, it, expect } from 'vitest'
 import { isTabRootPath, shouldResetFloatingNav } from '~/lib/mobile/floating-nav-reset'
 
-describe('isTabRootPath — 是否是三个 Tab 根路径之一', () => {
+describe('isTabRootPath — 是否是两个 Tab 根路径之一', () => {
   it('/tabs/* 下的路径判定为 Tab 根路径', () => {
     expect(isTabRootPath('/tabs/prompts')).toBe(true)
-    expect(isTabRootPath('/tabs/ai-config')).toBe(true)
     expect(isTabRootPath('/tabs/settings')).toBe(true)
   })
 
@@ -31,14 +30,12 @@ describe('isTabRootPath — 是否是三个 Tab 根路径之一', () => {
     expect(isTabRootPath('/prompt/detail/4')).toBe(false)
     expect(isTabRootPath('/prompt/create')).toBe(false)
     expect(isTabRootPath('/mobile/settings/general')).toBe(false)
-    expect(isTabRootPath('/ai-config/create')).toBe(false)
   })
 })
 
 describe('shouldResetFloatingNav — 悬浮导航条是否应该重置收起状态', () => {
-  it('三个 Tab 之间互相切换时应该重置（原有意图，不能回归）', () => {
-    expect(shouldResetFloatingNav('/tabs/prompts', '/tabs/ai-config')).toBe(true)
-    expect(shouldResetFloatingNav('/tabs/ai-config', '/tabs/settings')).toBe(true)
+  it('两个 Tab 之间互相切换时应该重置（原有意图，不能回归）', () => {
+    expect(shouldResetFloatingNav('/tabs/prompts', '/tabs/settings')).toBe(true)
     expect(shouldResetFloatingNav('/tabs/settings', '/tabs/prompts')).toBe(true)
   })
 

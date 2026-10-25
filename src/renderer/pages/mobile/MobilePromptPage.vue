@@ -39,9 +39,6 @@
         ></ion-searchbar>
 
         <ion-buttons v-if="!isSearchActive" slot="end">
-          <ion-button v-if="hasAIConfig" @click="navigateToAIGenerator">
-            <ion-icon :icon="sparklesOutline"></ion-icon>
-          </ion-button>
           <ion-button @click="showFilterModal = true">
             <ion-icon :icon="funnelOutline"></ion-icon>
           </ion-button>
@@ -404,7 +401,6 @@ import {
   checkmark,
   createOutline,
   trashOutline,
-  sparklesOutline,
   listOutline,
   gridOutline,
   searchOutline,
@@ -412,7 +408,6 @@ import {
   layersOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
-import { useAIConfigStatus } from '~/composables/useAIConfigStatus'
 import { api } from '~/lib/api'
 import { onDataChange } from '~/lib/services/data-change-events'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
@@ -480,9 +475,6 @@ const COLOR_OPTIONS = [
   '#06b6d4', // 青色
   '#ec4899'  // 粉色
 ]
-// 是否存在已启用的 AI 配置：跨组件共享状态，另见底部浮动导航的两态按钮布局
-// （src/renderer/pages/MobileMainPage.vue），两处依赖同一份数据，不再各自查库。
-const { hasAIConfig, refreshAIConfigStatus } = useAIConfigStatus()
 const viewMode = ref<'list' | 'waterfall'>(
   (localStorage.getItem('mobilePromptViewMode') as 'list' | 'waterfall') || 'list'
 )
@@ -804,11 +796,6 @@ const handleCreate = () => {
   router.push('/prompt/create')
 }
 
-// 导航到AI生成器
-const navigateToAIGenerator = () => {
-  router.push('/ai-generator')
-}
-
 // 导航到分类管理
 // 删除提示词
 const handleDelete = async (prompt: Prompt) => {
@@ -854,8 +841,7 @@ const showToast = async (message: string, color: string = 'success') => {
 const reloadRealtimeData = async (showLoading = false) => {
   await Promise.all([
     loadCategories(),
-    loadPrompts(false, { showLoading }),
-    refreshAIConfigStatus()
+    loadPrompts(false, { showLoading })
   ])
 }
 
@@ -889,13 +875,12 @@ const scheduleRealtimeRefresh = () => {
   }, 80)
 }
 
-const unsubscribeDataChanges = onDataChange(['prompts', 'categories', 'ai_configs'], scheduleRealtimeRefresh)
+const unsubscribeDataChanges = onDataChange(['prompts', 'categories'], scheduleRealtimeRefresh)
 
 // 初始化
 onMounted(async () => {
   await loadCategories()
   await loadPrompts()
-  await refreshAIConfigStatus()
 })
 
 // 离开页面时保存滚动位置
@@ -915,8 +900,6 @@ onIonViewWillEnter(() => {
   didReloadOnEnter = shouldReload
   if (shouldReload) {
     runRealtimeRefresh(isMutation || prompts.value.length === 0)
-  } else {
-    refreshAIConfigStatus()
   }
 })
 
@@ -934,13 +917,11 @@ onIonViewDidEnter(async () => {
   }
 })
 
-// keep-alive 激活时仅检查 AI 配置
+// keep-alive 激活时仅处理数据层变更
 onActivated(() => {
   isPageActive = true
   if (pendingRealtimeRefresh) {
     runRealtimeRefresh(false)
-  } else {
-    refreshAIConfigStatus()
   }
 })
 

@@ -43,11 +43,6 @@ import type {
   CloudSyncV2StoredObject,
   CloudSyncV2StoredObjectInfo
 } from '../cloud-sync-v2-repository';
-import type {
-  CliBridgeRequest,
-  CliBridgeResponse,
-  CliBridgeStatus,
-} from './cli-bridge';
 
 /**
  * Electron API 接口定义
@@ -245,16 +240,6 @@ export default interface ElectronApi {
 
   // 快捷键管理
   shortcuts: ShortcutsAPI
-
-  // 本地 CLI 桥接
-  cliBridge: CliBridgeAPI
-}
-
-export interface CliBridgeAPI {
-  getStatus: () => Promise<CliBridgeStatus>;
-  setEnabled: (enabled: boolean) => Promise<CliBridgeStatus>;
-  onInvokeRequest: (callback: (request: CliBridgeRequest) => void) => () => void;
-  sendInvokeResponse: (response: CliBridgeResponse) => void;
 }
 
 export interface ShortcutsAPI {

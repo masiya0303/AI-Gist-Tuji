@@ -67,7 +67,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@renderer': resolve(repoRoot, 'src/renderer'),
-      '@main': resolve(repoRoot, 'src/main'),
       '@shared': resolve(repoRoot, 'src/shared'),
       '@test': resolve(repoRoot, 'test'),
       '@': resolve(repoRoot, 'src/renderer'),

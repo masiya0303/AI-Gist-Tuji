@@ -31,7 +31,6 @@ const config = defineConfig({
         alias: {
             '@renderer': Path.resolve(Root, 'src/renderer'),
             '@shared': Path.resolve(Root, 'src/shared'),
-            '@main': Path.resolve(Root, 'src/main'),
             '@root': Path.resolve(Root, 'src'),
             '@': Path.resolve(Root, 'src/renderer'),
             '~': Path.resolve(Root, 'src/renderer'),

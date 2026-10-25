@@ -1,3 +1,10 @@
+> 🔀 **本分支（`no-ai-mobile`）与主分支不同，以下内容需要打折读**
+>
+> 这个分支把**全部 AI 功能**（AI 生成、AI 优化工作台、AI 提取变量、AI 配置管理）和**整个桌面端**（Electron、electron-builder、本地 CLI）都删掉了，只保留 **iOS / Android（Capacitor）** 构建链。
+> 因此下面关于 AI 模型接入、AI 生成/调优、桌面端（Windows / macOS / Linux）、Microsoft Store / Snap、以及桌面截图的部分**不适用于本分支**，它们是为了和上游保持一致而原样保留的。
+> 移动端可用的能力是：提示词管理（分类 / 标签 / 收藏 / 搜索）、变量填充与 Jinja 模板、版本历史、本地备份、云端备份与多设备同步、多语言。
+> 构建与开发请走 `yarn dev`、`yarn build`、`yarn cap:ios`、`yarn cap:android`，测试走 `yarn test:run`。
+
 > ⚠️ **本项目是 [AI Gist](https://github.com/yarin-zhang/AI-Gist) 的 Fork**
 >
 > - **原作者**：Yarin Zhang（[GitHub](https://github.com/yarin-zhang)）

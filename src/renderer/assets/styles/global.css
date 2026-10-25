@@ -162,24 +162,6 @@ html, body, #app {
   background-color: var(--surface-body, #f4f6f8);
 }
 
-html.ai-gist-launcher,
-html.ai-gist-launcher.light,
-html.ai-gist-launcher.dark,
-body.ai-gist-launcher,
-body.ai-gist-launcher.light,
-body.ai-gist-launcher.dark,
-body.ai-gist-launcher #app {
-  background: var(--surface-body, #f4f6f8) !important;
-}
-
-body.ai-gist-launcher #initial-loading {
-  display: none;
-}
-
-body.ai-gist-launcher {
-  transition: none !important;
-}
-
 /* 为窗口拖拽区域设置背景色 */
 html.light {
   background-color: var(--surface-body, #f4f6f8) !important;
@@ -187,43 +169,6 @@ html.light {
 
 html.dark {
   background-color: var(--surface-body, #0f1115) !important;
-}
-
-/* Electron webContents 的根容器样式 */
-webview {
-  background-color: var(--surface-body, #f4f6f8);
-}
-
-/* 全屏Modal样式 - 统一处理 */
-.n-modal-container .n-modal.fullscreen-modal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-}
-
-.n-modal-container .n-modal.fullscreen-modal .n-card {
-  height: 100% !important;
-  border-radius: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-.n-modal-container .n-modal.fullscreen-modal .n-card .n-card-content,
-.n-modal-container .n-modal.fullscreen-modal .n-card .n-card__content {
-  flex: 1 !important;
-  overflow: auto !important;
-}
-
-.n-modal-container .n-modal.fullscreen-modal .n-card .n-card__footer {
-  flex-shrink: 0 !important;
 }
 
 /* 滚动条样式 */

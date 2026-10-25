@@ -256,6 +256,36 @@
 
 ---
 
+### 2026-10-26 — Mobile-only branch: AI features and desktop app removed (branch `no-ai-mobile`)
+
+This branch deletes the whole AI feature set and the entire desktop application. It only ships iOS / Android builds through Capacitor.
+
+#### Deleted
+- `src/main/` — the entire Electron main process (main.ts, preload.ts, ai/, cloud/, data/, electron/, ipc)
+- `bin/` — local CLI entry point
+- `docker/`, `docker-compose.web.yml`, `.dockerignore`, `.github/workflows/build-release.yml` — desktop / container release tooling
+- `config/electron-builder.json`, `config/electron-builder.mas.js`, `config/electron-builder.snap.js`, `config/vite.config.js`, `config/vite.config.web.js`
+- `scripts/build.js`, `scripts/dev-server.js`, `scripts/web-server.js`, `scripts/adhoc-sign-mac.js`, `scripts/private/`
+- `src/shared/ai-provider-metadata.ts`, `src/shared/types/cli-bridge.ts`
+- Desktop pages, AI pages, AI components, AI services and API clients, desktop settings / shortcuts / example components, and the matching test suites (see the branch diff for the full file list)
+
+#### Modified
+- `package.json` — dropped `main`, `bin`, desktop build scripts, and the electron / desktop / AI dependencies
+- `src/renderer/App.vue`, `src/renderer/main.ts`, `src/renderer/router/mobile.ts` — mobile-only shell and router (AI config, generator and optimize routes gone)
+- `src/renderer/pages/MobileMainPage.vue`, `src/renderer/pages/mobile/MobilePromptPage.vue`, `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — AI tab, AI generator modal and optimize entry removed
+- `src/renderer/composables/useTheme.ts`, `src/renderer/theme/index.ts` — Naive UI theme overrides removed
+- `src/renderer/lib/services/index.ts`, `src/renderer/lib/api/index.ts` — AI exports removed
+- `src/shared/index.ts`, `src/shared/types/index.ts`, `src/shared/types/electron-api.ts` — cli-bridge exports removed
+- `config/eslint.config.mjs`, `tsconfig.json`, `src/renderer/tsconfig.json`, `config/vite.config.mobile.js`, `config/vitest.config.ts` — `@main` alias removed
+- `src/renderer/i18n/locales/*.json` — AI and desktop-only translation keys removed, missing mobile keys added
+- `src/renderer/assets/styles/global.css` — launcher and Naive UI modal rules removed
+- `scripts/version.js`, `scripts/sync-version.js`, `docs/versioning.md` — desktop / Mac App Store version outputs removed
+- `AGENTS.md`, `README.md` — desktop and AI references updated
+
+The dated entries above are kept as a historical record of earlier modifications; some of the files they list were later deleted by this branch.
+
+---
+
 ## Files NOT Modified
 
 The following critical files remain **unchanged** from the original project:

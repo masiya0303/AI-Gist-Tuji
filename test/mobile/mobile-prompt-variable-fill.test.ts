@@ -118,7 +118,8 @@ describe('mobile prompt variable fill — 页面接线（wiring）检查', () =>
     expect(source).toContain("'promptWorkspace.completeRequired'")
     expect(source).toContain("'promptWorkspace.renderFailed'")
     // 校验不通过必须 return，不能继续往下走到 clipboard.writeText
-    expect(source).toMatch(/if \(!valid \|\| rendered\.value\.error\) \{[\s\S]*?return\n\s*\}/)
+    // \r?\n 兼容 CRLF 源文件
+    expect(source).toMatch(/if \(!valid \|\| rendered\.value\.error\) \{[\s\S]*?return\r?\n\s*\}/)
   })
 
   it('复制的是替换变量后的最终文本（rendered.content），有变量时不会复制原始模板', () => {

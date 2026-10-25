@@ -34,3 +34,6 @@ docs/reference/
 
 # 多 worktree 协作方案的临时工作区
 .worktree/
+
+# 本地 agent 会话记录
+.zcode/
