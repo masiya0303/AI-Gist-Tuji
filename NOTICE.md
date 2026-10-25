@@ -216,6 +216,21 @@
 - `README.md` — Added Prompt Optimizer attribution line to the top fork banner, linking to the detailed notice at the bottom
 - `docs/README.en.md` — Added the same attribution line to the top fork banner
 
+### 2026-10-26 — Native HTTP Fallback for AI Requests (SenseNova-class gateways)
+
+#### Files with inline modification notices:
+- `src/renderer/lib/services/native-http.ts` — New file: fetch-like helper that retries WebView network-layer failures (e.g. CORS preflight 404 from `https://token.sensenova.cn/v1`) once through CapacitorHttp on native builds; includes a Response-equivalent shim
+- `src/renderer/lib/services/mobile-ai.service.ts` — `fetchWithTimeout` and the intelligent-test request paths now go through `fetchWithNativeFallback`; `readErrorMessage` accepts the response shim
+- `src/renderer/lib/services/mobile-ai-generator.service.ts` — OpenAI-compatible and Anthropic chat calls degrade to a native non-streaming request when the WebView streaming fetch fails at the network layer on native builds (no AbortSignal on the native path; `onProgress` fires once with the full result)
+
+#### New tests:
+- `test/mobile/native-http-fallback.test.ts` — Covers fallback trigger conditions (TypeError only, native builds only, HTTP error responses not retried), the response shim, JSON body parsing, and the generator's degraded chat path
+
+#### Background:
+- Some OpenAI-compatible gateways (notably SenseNova Token Plan at `https://token.sensenova.cn/v1`) respond to CORS preflight (OPTIONS) with 404, so WKWebView / Android WebView blocks requests before they are sent. Native CapacitorHttp has no CORS concept and reaches these endpoints directly. Web and Electron builds are unchanged.
+
+---
+
 ### 2026-10-26 — Execution-Based Evaluation for the Mobile Optimization Workbench
 
 #### Files with inline modification notices:

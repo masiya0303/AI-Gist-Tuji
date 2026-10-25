@@ -11,6 +11,7 @@ import {
   getDefaultBaseURL,
   getDefaultModels as getProviderDefaultModels
 } from '@shared/ai-provider-metadata'
+import { canUseNativeHttp, isNetworkLayerError, nativeHttpRequest } from './native-http'
 
 const GOOGLE_BASE_URL = 'https://generativelanguage.googleapis.com'
 const GOOGLE_API_VERSION = 'v1beta'
@@ -238,6 +239,10 @@ export class AIGeneratorService {
 
   /**
    * 调用 OpenAI 兼容的 API（支持流式传输）
+   *
+   * Fork addition (AGPL v3.0 Section 5a): 2026-10-26 by 兔叽 (msiya8160-star)
+   * WebView fetch 网络层失败（如 SenseNova 网关对 CORS 预检返回 404）时，
+   * 在原生构建上降级为 CapacitorHttp 非流式请求，保证这类网关在移动端可用。
    */
   private static async callOpenAICompatibleAPI(
     request: AIGenerationRequest,
@@ -250,22 +255,35 @@ export class AIGeneratorService {
     const baseURL = getConfiguredBaseURL(config.type, config.baseURL).replace(/\/+$/, '')
     const url = `${baseURL}/chat/completions`
     const model = request.model || config.defaultModel || ''
+    const headers = buildOpenAICompatibleHeaders(config)
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: buildOpenAICompatibleHeaders(config),
-      signal: options.signal,
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: options.temperature ?? 0.7,
-        max_tokens: options.maxTokens ?? 2000,
-        stream: !!onProgress // 如果有回调函数，启用流式传输
+    const payload: Record<string, unknown> = {
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 2000
+    }
+
+    let response: Response
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers,
+        signal: options.signal,
+        body: JSON.stringify(onProgress ? { ...payload, stream: true } : payload)
       })
-    })
+    } catch (error) {
+      if (!isNetworkLayerError(error) || !canUseNativeHttp()) throw error
+      console.warn('[NativeHttp] WebView 流式请求被拦截（疑似 CORS 预检失败），降级为原生非流式请求:', url)
+      return await this.nativeChatRequest(
+        url, headers, payload, request, config, model,
+        data => data.choices?.[0]?.message?.content || '',
+        onProgress
+      )
+    }
 
     if (!response.ok) {
       const error = await response.text()
@@ -280,6 +298,46 @@ export class AIGeneratorService {
     // 非流式传输
     const data = await response.json()
     const generatedPrompt = data.choices?.[0]?.message?.content || ''
+
+    return {
+      id: `gen_${Date.now()}`,
+      configId: config.configId,
+      topic: request.topic,
+      model,
+      generatedPrompt,
+      createdAt: new Date()
+    }
+  }
+
+  /**
+   * 原生非流式聊天请求（CapacitorHttp，无 CORS 概念）。
+   * 注意：不支持 AbortSignal，“停止生成”只能等本次请求自然结束；
+   * onProgress 会在拿到完整结果时一次性回调。
+   */
+  private static async nativeChatRequest(
+    url: string,
+    headers: Record<string, string>,
+    payload: Record<string, unknown>,
+    request: AIGenerationRequest,
+    config: AIConfig,
+    model: string,
+    extractContent: (data: any) => string,
+    onProgress?: (content: string) => void
+  ): Promise<AIGenerationResult> {
+    const response = await nativeHttpRequest(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+      timeoutMs: 120000
+    })
+
+    if (!response.ok) {
+      throw new Error(`API 调用失败: ${response.status} ${await response.text()}`)
+    }
+
+    const data = await response.json()
+    const generatedPrompt = extractContent(data)
+    if (generatedPrompt && onProgress) onProgress(generatedPrompt)
 
     return {
       id: `gen_${Date.now()}`,
@@ -358,26 +416,39 @@ export class AIGeneratorService {
     const baseURL = (config.baseURL || 'https://api.anthropic.com').replace(/\/+$/, '')
     const url = `${baseURL}/v1/messages`
     const model = request.model || config.defaultModel || getProviderDefaultModels('anthropic')[0]
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': config.apiKey || '',
+      'anthropic-version': '2023-06-01'
+    }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      signal: options.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': config.apiKey || '',
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: options.maxTokens ?? 2000,
-        temperature: options.temperature ?? 0.7,
-        system: systemPrompt,
-        messages: [
-          { role: 'user', content: userPrompt }
-        ],
-        stream: !!onProgress
+    const payload: Record<string, unknown> = {
+      model,
+      max_tokens: options.maxTokens ?? 2000,
+      temperature: options.temperature ?? 0.7,
+      system: systemPrompt,
+      messages: [
+        { role: 'user', content: userPrompt }
+      ]
+    }
+
+    let response: Response
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        signal: options.signal,
+        headers,
+        body: JSON.stringify(onProgress ? { ...payload, stream: true } : payload)
       })
-    })
+    } catch (error) {
+      if (!isNetworkLayerError(error) || !canUseNativeHttp()) throw error
+      console.warn('[NativeHttp] WebView 流式请求被拦截（疑似 CORS 预检失败），降级为原生非流式请求:', url)
+      return await this.nativeChatRequest(
+        url, headers, payload, request, config, model,
+        data => data.content?.[0]?.text || '',
+        onProgress
+      )
+    }
 
     if (!response.ok) {
       const error = await response.text()

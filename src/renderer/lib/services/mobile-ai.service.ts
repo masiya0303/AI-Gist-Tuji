@@ -9,6 +9,7 @@ import {
   getConfiguredBaseURL,
   getDefaultModels as getProviderDefaultModels
 } from '@shared/ai-provider-metadata'
+import { fetchWithNativeFallback, type HttpResponseLike } from './native-http'
 
 const GOOGLE_BASE_URL = 'https://generativelanguage.googleapis.com'
 const GOOGLE_API_VERSION = 'v1beta'
@@ -30,12 +31,18 @@ function parseModelIds(data: any): string[] {
     .filter((id: unknown): id is string => typeof id === 'string' && id.trim().length > 0)
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 15000): Promise<Response> {
-  const fetchPromise = fetch(url, options)
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error('请求超时')), timeoutMs)
+/**
+ * 统一带超时的请求入口。原生构建上，WebView fetch 因 CORS 预检失败等
+ * 网络层错误被拦截时（如 SenseNova token.sensenova.cn 对 OPTIONS 返回
+ * 404），自动改用 CapacitorHttp 原生请求重试一次；Web/Electron 不受影响。
+ */
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 15000): Promise<HttpResponseLike> {
+  return fetchWithNativeFallback(url, {
+    method: options.method,
+    headers: options.headers as Record<string, string> | undefined,
+    body: options.body as string | undefined,
+    timeoutMs
   })
-  return await Promise.race([fetchPromise, timeoutPromise])
 }
 
 /**
@@ -60,7 +67,7 @@ function isNetworkLayerError(error: unknown): boolean {
   return error instanceof TypeError
 }
 
-async function readErrorMessage(response: Response): Promise<string> {
+async function readErrorMessage(response: HttpResponseLike): Promise<string> {
   let errorMessage = `HTTP ${response.status}`
   try {
     const contentType = response.headers.get('content-type')
@@ -209,7 +216,7 @@ async function intelligentTestOpenAICompatible(
     console.log('[AI Service] 智能测试请求 URL:', url)
     console.log('[AI Service] 使用模型:', model)
 
-    const fetchPromise = fetch(url, {
+    const response = await fetchWithNativeFallback(url, {
       method: 'POST',
       headers: buildOpenAICompatibleHeaders(config),
       body: JSON.stringify({
@@ -222,15 +229,8 @@ async function intelligentTestOpenAICompatible(
         ],
         max_tokens: 100
       }),
-      mode: 'cors',
-      cache: 'no-cache'
+      timeoutMs: 30000
     })
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('请求超时')), 30000)
-    })
-
-    const response = await Promise.race([fetchPromise, timeoutPromise])
 
     console.log('[AI Service] 智能测试响应状态:', response.status)
 
@@ -278,7 +278,7 @@ async function intelligentTestAnthropic(
   inputPrompt?: string
 }> {
   try {
-    const fetchPromise = fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetchWithNativeFallback('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -295,15 +295,8 @@ async function intelligentTestAnthropic(
           }
         ]
       }),
-      mode: 'cors',
-      cache: 'no-cache'
+      timeoutMs: 30000
     })
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('请求超时')), 30000)
-    })
-
-    const response = await Promise.race([fetchPromise, timeoutPromise])
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
