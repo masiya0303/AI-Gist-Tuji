@@ -109,6 +109,15 @@ If GitHub downloads are slow, you can try Baidu Netdisk or SourceForge instead.
 - Add an AI model first.
 - On the prompt editing page, quickly refine an existing prompt with actions such as “Extract Variables” or “Make It More Specific”. You can also provide custom refinement instructions.
 
+### AI Optimization Workbench (mobile)
+
+- Add and enable an AI model first.
+- Open a prompt's detail page and tap “AI Optimize” to enter the optimization workbench.
+- Choose the optimization target (user prompt / system prompt) and a direction (general, professional, concise, structured, output format, or custom).
+- Stream the optimized result, keep improving over multiple rounds, compare original vs. optimized line by line, and get an AI score evaluation.
+- Apply the result back to the prompt in one tap; the original content is automatically preserved in prompt history.
+- `{{variable}}` placeholders are preserved verbatim. If the optimized result loses a variable, you will be warned before applying.
+
 ## Development
 
 ### Install dependencies
@@ -237,3 +246,14 @@ Light mode
 ## License
 
 This project is licensed under the [AGPL License](../LICENSE). Please comply with its terms when using the project.
+
+## Acknowledgements & Open Source Notice
+
+The mobile “Prompt Optimization Workbench” in this fork (the interaction flow and prompt-design ideas behind single-click optimization, multi-round iteration, side-by-side comparison, and AI evaluation) draws inspiration from the open-source project [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) by [linshenkx](https://github.com/linshenkx).
+
+- **Prompt Optimizer** is licensed under **AGPL-3.0**, which is compatible with this project's license.
+- This fork does **not** copy its source files verbatim. After studying its optimization flow and prompt-engineering approach, the feature was implemented independently on top of AI Gist's own data model, AI service layer, and mobile UI, and is released under AGPL-3.0 as part of this fork.
+- In accordance with AGPL-3.0 Section 5(a), the scope of inspiration and the per-file modification record are documented in [NOTICE.md](../NOTICE.md).
+- Thanks to both [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) and the upstream [yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist) projects.
+
+> 📄 If you offer a network service based on this project (including the inspired implementation above), please comply with AGPL-3.0 and make the modified source code available to your users.
