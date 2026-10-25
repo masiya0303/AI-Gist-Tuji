@@ -180,7 +180,9 @@ yarn build:linux    # 构建 Linux 安装包
 
 ## 贡献
 
-本项目主要由个人开发，所有代码完全开源。如果你喜欢这个项目，请点击右上角的 Star ⭐️ 来支持我！这将激励我继续改进和维护这个项目。
+本 Fork 在上游 [AI Gist](https://github.com/yarin-zhang/AI-Gist)（作者 Yarin Zhang）基础上维护，部分功能思路借鉴自 [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer)（作者 linshenkx），由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）持续修改与扩展，所有代码完全开源。
+
+如果你喜欢这个项目，请点击右上角的 Star ⭐️ 来支持我！这将激励我继续改进和维护这个项目。
 
 如果有问题或建议，欢迎在 GitHub 上提交 Issue 或 Pull Request。
 

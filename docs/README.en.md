@@ -179,7 +179,9 @@ For detailed development documentation, see the following files:
 
 ## Contributing
 
-This project is primarily developed by one person, and all code is open source. If you find it useful, click the Star button in the upper-right corner to support the project. It helps motivate continued improvement and maintenance.
+This fork builds on the upstream [AI Gist](https://github.com/yarin-zhang/AI-Gist) (by Yarin Zhang) and draws inspiration from [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) (by linshenkx). It is maintained and extended by 兔叽 ([@msiya8160-star](https://github.com/msiya8160-star)), and all code is open source.
+
+If you find it useful, click the Star button in the upper-right corner to support the project. It helps motivate continued improvement and maintenance.
 
 For questions or suggestions, feel free to open an Issue or Pull Request on GitHub.
 
