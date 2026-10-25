@@ -2,6 +2,7 @@
  * Fork modification notice (AGPL v3.0 Section 5a):
  * Modified by 兔叽 (msiya8160-star) on 2026-10-21
  * Change: Added /category route for mobile category management page
+ * Change: Added /category/:id route for the mobile category prompt drill-down page
  * Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
  * This fork is licensed under AGPL-3.0
  */
@@ -35,6 +36,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/mobile/MobileSettingsPage.vue')
       }
     ]
+  },
+  {
+    // 分类提示词页：/category/12、/category/all、/category/uncategorized
+    path: '/category/:id',
+    component: () => import('../pages/mobile/MobileCategoryPromptPage.vue')
   },
   {
     path: '/prompt/create',

@@ -854,6 +854,7 @@
     "categoryManageTitle": "Gestione delle categorie",
     "categoryName": "Nome della categoria",
     "categoryNamePlaceholder": "Inserisci il nome della categoria",
+    "categoryNotFound": "Questa categoria non esiste più",
     "categoryOrderUpdatedFailed": "Impossibile aggiornare l'ordine delle categorie",
     "categoryOrderUpdatedSuccess": "Ordine delle categorie aggiornato",
     "categoryPlaceholder": "Seleziona categoria",

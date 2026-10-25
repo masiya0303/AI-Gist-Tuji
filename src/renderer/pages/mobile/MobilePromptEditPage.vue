@@ -2,6 +2,7 @@
   Fork modification notice (AGPL v3.0 Section 5a):
   Modified by 兔叽 (msiya8160-star) on 2026-10-21
   Change: Added inline category creation feature in prompt edit page
+  Change: Accept categoryId query to preselect a category when creating from a category page
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -689,6 +690,19 @@ const loadData = async () => {
         loadExistingImages(prompt.imageBlobs)
       }
     }
+
+    // Fork: 从分类提示词页点“新建”时，把当前分类作为初始值带上，
+    // 但不写进快照差异里——用户没改动其他字段时仍可直接退出。
+    if (!isEdit.value) {
+      const presetCategoryId = Number(route.query.categoryId)
+      if (
+        Number.isInteger(presetCategoryId)
+        && categories.value.some(category => category.id === presetCategoryId)
+      ) {
+        formData.value.categoryId = presetCategoryId
+      }
+    }
+
     // 加载完成后记录快照，用于判断是否有真实改动
     takeSnapshot()
   } catch (error) {

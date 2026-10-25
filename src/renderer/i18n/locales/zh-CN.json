@@ -857,6 +857,7 @@
     "categoryName": "分类名称",
     "categoryNamePlaceholder": "请输入分类名称",
     "categoryNameRequired": "请输入分类名称",
+    "categoryNotFound": "该分类不存在或已被删除",
     "categoryOrderUpdatedFailed": "更新分类顺序失败",
     "categoryOrderUpdatedSuccess": "分类顺序已更新",
     "categoryPlaceholder": "选择分类",

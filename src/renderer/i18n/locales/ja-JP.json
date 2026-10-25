@@ -854,6 +854,7 @@
     "categoryManageTitle": "カテゴリ管理",
     "categoryName": "カテゴリ名",
     "categoryNamePlaceholder": "カテゴリ名を入力",
+    "categoryNotFound": "このカテゴリは存在しないか、削除されました",
     "categoryOrderUpdatedFailed": "カテゴリの順序を更新できませんでした",
     "categoryOrderUpdatedSuccess": "カテゴリの順序を更新しました",
     "categoryPlaceholder": "カテゴリを選択",

@@ -854,6 +854,7 @@
     "categoryManageTitle": "分類管理",
     "categoryName": "分類名稱",
     "categoryNamePlaceholder": "請輸入分類名稱",
+    "categoryNotFound": "此分類不存在或已被刪除",
     "categoryOrderUpdatedFailed": "更新分類順序失敗",
     "categoryOrderUpdatedSuccess": "分類順序已更新",
     "categoryPlaceholder": "選擇分類",

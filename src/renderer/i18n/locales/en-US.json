@@ -854,6 +854,7 @@
     "categoryManageTitle": "Category Management",
     "categoryName": "Category Name",
     "categoryNamePlaceholder": "Enter category name",
+    "categoryNotFound": "This category no longer exists",
     "categoryOrderUpdatedFailed": "Failed to update category order",
     "categoryOrderUpdatedSuccess": "Category order updated",
     "categoryPlaceholder": "Select category",

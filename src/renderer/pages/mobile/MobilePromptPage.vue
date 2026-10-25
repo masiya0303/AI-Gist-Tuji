@@ -3,6 +3,7 @@
   Modified by 兔叽 (msiya8160-star) on 2026-10-21
   Change: Added category tabs for quick filtering at top of page
   Change: Added category management (create/edit/delete) to filter modal
+  Change: Replaced category tabs with a two-column category card grid that opens a category prompt page
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -62,61 +63,90 @@
         <h1 class="mobile-large-title-text" aria-hidden="true">{{ t('mainPage.menu.prompts') }}</h1>
       </div>
 
-      <!-- 分类切换 -->
-      <div v-if="categories.length > 0" class="category-tabs-container">
-        <div class="category-tabs-scroll">
+      <!--
+        首页默认就是分类总览：所有分类以双列卡片呈现（与提示词卡片的边框/
+        圆角/层级一致），点开任意卡片进入该分类的提示词页；「全部提示词」和
+        「未分类」也各占一张卡片，保证分类之外的两个入口不会消失。
+      -->
+      <section v-if="showCategoryOverview" class="category-overview" aria-labelledby="category-overview-title">
+        <div class="category-overview__header">
+          <h2 id="category-overview-title" class="section-title">
+            {{ t('promptManagement.categories') }}
+          </h2>
+          <span class="category-overview__count">
+            {{ t('promptManagement.totalCategories', { count: categories.length }) }}
+          </span>
+        </div>
+
+        <div class="category-card-grid">
+          <!-- 全部提示词：保留一个不经分类的直达入口 -->
           <button
             type="button"
-            class="category-tab"
-            :class="{ active: selectedCategory === null }"
-            @click="selectCategoryTab(null)"
+            class="category-card category-card--all"
+            @click="openAllPrompts"
           >
-            {{ t('promptManagement.allCategories') }}
+            <span class="category-card__top">
+              <ion-icon :icon="layersOutline" class="category-card__icon"></ion-icon>
+              <ion-icon :icon="chevronForward" class="category-card__chevron"></ion-icon>
+            </span>
+            <span class="category-card__name">{{ t('promptWorkspace.allPrompts') }}</span>
+            <span class="category-card__meta">
+              {{ t('promptManagement.categoryPromptCount', { count: totalPromptCount }) }}
+            </span>
           </button>
+
           <button
             v-for="category in categories"
             :key="category.id"
             type="button"
-            class="category-tab"
-            :class="{ active: selectedCategory === category.id }"
-            @click="selectCategoryTab(category.id)"
+            class="category-card"
+            :class="{ 'category-card--active': selectedCategory === category.id }"
+            @click="openCategory(category)"
           >
-            {{ category.name }}
+            <span class="category-card__top">
+              <span
+                class="category-card__dot"
+                :style="{ backgroundColor: category.color || 'var(--accent-success)' }"
+              ></span>
+              <ion-icon :icon="chevronForward" class="category-card__chevron"></ion-icon>
+            </span>
+            <span class="category-card__name">{{ category.name }}</span>
+            <span v-if="category.description" class="category-card__desc">
+              {{ category.description }}
+            </span>
+            <span class="category-card__meta">
+              {{ t('promptManagement.categoryPromptCount', { count: getCategoryPromptCount(category.id) }) }}
+            </span>
+          </button>
+
+          <button
+            v-if="uncategorizedCount > 0"
+            type="button"
+            class="category-card category-card--muted"
+            @click="openUncategorized"
+          >
+            <span class="category-card__top">
+              <span class="category-card__dot category-card__dot--muted"></span>
+              <ion-icon :icon="chevronForward" class="category-card__chevron"></ion-icon>
+            </span>
+            <span class="category-card__name">{{ t('promptManagement.noCategory') }}</span>
+            <span class="category-card__meta">
+              {{ t('promptManagement.categoryPromptCount', { count: uncategorizedCount }) }}
+            </span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <!-- 筛选标签 -->
-      <div v-if="hasActiveFilters && (showFavoritesOnly || selectedTag)" class="filter-chips">
-        <ion-chip v-if="showFavoritesOnly" @click="showFavoritesOnly = false">
-          <ion-label>{{ t('promptManagement.favorites') }}</ion-label>
-          <ion-icon :icon="closeCircle"></ion-icon>
-        </ion-chip>
-        <ion-chip v-if="selectedTag" @click="selectedTag = null">
-          <ion-label>{{ selectedTag }}</ion-label>
-          <ion-icon :icon="closeCircle"></ion-icon>
-        </ion-chip>
-      </div>
-
-      <div v-if="!loading && prompts.length > 0" class="mobile-list-toolbar">
-        <span>{{ t('promptManagement.mobileResultCount', { count: totalCount }) }}</span>
-        <ion-segment v-model="viewMode" class="view-mode-segment">
-          <ion-segment-button value="list" :aria-label="t('promptManagement.viewModeList')">
-            <ion-icon :icon="listOutline"></ion-icon>
-          </ion-segment-button>
-          <ion-segment-button value="waterfall" :aria-label="t('promptManagement.viewModeWaterfall')">
-            <ion-icon :icon="gridOutline"></ion-icon>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-
-      <!-- 加载状态 -->
-      <div v-if="loading" class="loading-container">
+      <!-- 首次进入、分类还没加载出来时的占位 -->
+      <div v-if="loading && !showPromptList && categories.length === 0" class="loading-container">
         <ion-spinner></ion-spinner>
       </div>
 
       <!-- 空状态：完全没有提示词（首次使用） -->
-      <div v-else-if="prompts.length === 0 && !isSearchOrFilterActive" class="empty-container">
+      <div
+        v-else-if="!loading && !showCategoryOverview && !showPromptList"
+        class="empty-container"
+      >
         <EmptyPromptsIllustration />
         <p class="empty-text">{{ t('promptManagement.noPrompts') }}</p>
         <p class="empty-description">{{ t('promptManagement.noPromptsDescription') }}</p>
@@ -125,75 +155,115 @@
         </ion-button>
       </div>
 
-      <!-- 空状态：搜索/筛选后没有匹配结果，与「完全没有数据」区分开 -->
-      <div v-else-if="prompts.length === 0" class="empty-container">
-        <NoSearchResultsIllustration />
-        <p class="empty-text">{{ t('promptManagement.noSearchResults') }}</p>
-        <p class="empty-description">{{ t('promptManagement.noSearchResultsDescription') }}</p>
-        <ion-button fill="outline" @click="clearSearchAndFilters">
-          {{ t('promptManagement.clearSearchAndFilters') }}
-        </ion-button>
-      </div>
+      <!-- 搜索 / 筛选结果：只有这时才展示原来的提示词列表 -->
+      <template v-if="showPromptList">
+        <!-- 筛选标签 -->
+        <div v-if="hasActiveFilters" class="filter-chips">
+          <ion-chip v-if="selectedCategory" @click="clearCategory">
+            <ion-label>{{ getCategoryName(selectedCategory) }}</ion-label>
+            <ion-icon :icon="closeCircle"></ion-icon>
+          </ion-chip>
+          <ion-chip v-if="showFavoritesOnly" @click="showFavoritesOnly = false">
+            <ion-label>{{ t('promptManagement.favorites') }}</ion-label>
+            <ion-icon :icon="closeCircle"></ion-icon>
+          </ion-chip>
+          <ion-chip v-if="selectedTag" @click="selectedTag = null">
+            <ion-label>{{ selectedTag }}</ion-label>
+            <ion-icon :icon="closeCircle"></ion-icon>
+          </ion-chip>
+        </div>
 
-      <!-- 提示词列表（列表视图） -->
-      <div v-else-if="viewMode === 'list'" class="mobile-grouped-card">
-        <ion-list>
-          <ion-item-sliding v-for="prompt in prompts" :key="prompt.id">
-            <ion-item button @click="handleView(prompt)">
-              <ion-label>
-                <h2 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h2>
-                <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
-                <p v-if="prompt.description && prompt.type === 'prompt'" class="prompt-description">{{ prompt.description }}</p>
-                <div class="prompt-meta">
-                  <ion-chip v-if="prompt.categoryId" size="small" outline>
-                    <ion-label>{{ getCategoryName(prompt.categoryId) }}</ion-label>
-                  </ion-chip>
-                  <ion-chip v-for="tag in getTagsArray(prompt.tags).slice(0, 2)" :key="tag" size="small">
-                    <ion-label>{{ tag }}</ion-label>
-                  </ion-chip>
-                  <ion-chip v-if="getTagsArray(prompt.tags).length > 2" size="small">
-                    <ion-label>+{{ getTagsArray(prompt.tags).length - 2 }}</ion-label>
-                  </ion-chip>
-                </div>
-              </ion-label>
-              <ion-icon
-                v-if="prompt.isFavorite"
-                :icon="heart"
-                slot="end"
-                color="danger"
-              ></ion-icon>
-            </ion-item>
+        <div class="prompt-section-header">
+          <h2 class="section-title">{{ promptSectionTitle }}</h2>
+        </div>
 
-            <ion-item-options side="end">
-              <ion-item-option color="primary" @click="handleEdit(prompt)">
-                <ion-icon :icon="createOutline"></ion-icon>
-                {{ t('common.edit') }}
-              </ion-item-option>
-              <ion-item-option color="danger" @click="handleDelete(prompt)">
-                <ion-icon :icon="trashOutline"></ion-icon>
-                {{ t('common.delete') }}
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
-        </ion-list>
-      </div>
+        <div v-if="!loading && prompts.length > 0" class="mobile-list-toolbar">
+          <span>{{ t('promptManagement.mobileResultCount', { count: totalCount }) }}</span>
+          <ion-segment v-model="viewMode" class="view-mode-segment">
+            <ion-segment-button value="list" :aria-label="t('promptManagement.viewModeList')">
+              <ion-icon :icon="listOutline"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="waterfall" :aria-label="t('promptManagement.viewModeWaterfall')">
+              <ion-icon :icon="gridOutline"></ion-icon>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
 
-      <!-- 瀑布流视图 -->
-      <mobile-waterfall-view
-        v-else
-        :prompts="prompts"
-        :categories="categories"
-        @view="handleView"
-      ></mobile-waterfall-view>
+        <!-- 加载状态 -->
+        <div v-if="loading" class="loading-container">
+          <ion-spinner></ion-spinner>
+        </div>
 
-      <!-- 加载更多 -->
-      <ion-infinite-scroll
-        v-if="hasNextPage"
-        @ionInfinite="loadMore"
-        threshold="100px"
-      >
-        <ion-infinite-scroll-content></ion-infinite-scroll-content>
-      </ion-infinite-scroll>
+        <!-- 空状态：搜索/筛选后没有匹配结果 -->
+        <div v-else-if="prompts.length === 0" class="empty-container">
+          <NoSearchResultsIllustration />
+          <p class="empty-text">{{ t('promptManagement.noSearchResults') }}</p>
+          <p class="empty-description">{{ t('promptManagement.noSearchResultsDescription') }}</p>
+          <ion-button fill="outline" @click="clearSearchAndFilters">
+            {{ t('promptManagement.clearSearchAndFilters') }}
+          </ion-button>
+        </div>
+
+        <!-- 提示词列表（列表视图） -->
+        <div v-else-if="viewMode === 'list'" class="mobile-grouped-card">
+          <ion-list>
+            <ion-item-sliding v-for="prompt in prompts" :key="prompt.id">
+              <ion-item button @click="handleView(prompt)">
+                <ion-label>
+                  <h2 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h2>
+                  <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
+                  <p v-if="prompt.description && prompt.type === 'prompt'" class="prompt-description">{{ prompt.description }}</p>
+                  <div class="prompt-meta">
+                    <ion-chip v-if="prompt.categoryId" size="small" outline>
+                      <ion-label>{{ getCategoryName(prompt.categoryId) }}</ion-label>
+                    </ion-chip>
+                    <ion-chip v-for="tag in getTagsArray(prompt.tags).slice(0, 2)" :key="tag" size="small">
+                      <ion-label>{{ tag }}</ion-label>
+                    </ion-chip>
+                    <ion-chip v-if="getTagsArray(prompt.tags).length > 2" size="small">
+                      <ion-label>+{{ getTagsArray(prompt.tags).length - 2 }}</ion-label>
+                    </ion-chip>
+                  </div>
+                </ion-label>
+                <ion-icon
+                  v-if="prompt.isFavorite"
+                  :icon="heart"
+                  slot="end"
+                  color="danger"
+                ></ion-icon>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="primary" @click="handleEdit(prompt)">
+                  <ion-icon :icon="createOutline"></ion-icon>
+                  {{ t('common.edit') }}
+                </ion-item-option>
+                <ion-item-option color="danger" @click="handleDelete(prompt)">
+                  <ion-icon :icon="trashOutline"></ion-icon>
+                  {{ t('common.delete') }}
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-list>
+        </div>
+
+        <!-- 瀑布流视图 -->
+        <mobile-waterfall-view
+          v-else
+          :prompts="prompts"
+          :categories="categories"
+          @view="handleView"
+        ></mobile-waterfall-view>
+
+        <!-- 加载更多 -->
+        <ion-infinite-scroll
+          v-if="hasNextPage"
+          @ionInfinite="loadMore"
+          threshold="100px"
+        >
+          <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </template>
     </ion-content>
 
     <!-- 筛选模态框 -->
@@ -337,7 +407,9 @@ import {
   sparklesOutline,
   listOutline,
   gridOutline,
-  searchOutline
+  searchOutline,
+  chevronForward,
+  layersOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { useAIConfigStatus } from '~/composables/useAIConfigStatus'
@@ -345,7 +417,7 @@ import { api } from '~/lib/api'
 import { onDataChange } from '~/lib/services/data-change-events'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
 import { getTagsArray } from '~/lib/utils/tag-colors'
-import type { Prompt, Category } from '@shared/types'
+import type { Prompt, Category, CategoryWithRelations } from '@shared/types'
 import { useRouter } from 'vue-router'
 import MobileWaterfallView from '~/components/mobile/MobileWaterfallView.vue'
 import EmptyPromptsIllustration from '~/components/mobile/illustrations/EmptyPromptsIllustration.vue'
@@ -370,8 +442,9 @@ let promptLoadSequence = 0
 
 // 状态
 const prompts = ref<Prompt[]>([])
-const allPrompts = ref<Prompt[]>([]) // 用于分类计数，不受筛选影响
-const categories = ref<Category[]>([])
+const categories = ref<CategoryWithRelations[]>([])
+// 全部提示词数量（不受当前搜索/筛选影响），用于分类卡片与“未分类”计数
+const totalPromptCount = ref(0)
 const loading = ref(true)
 const searchText = ref('')
 // 搜索栏展开状态：默认收起为左上角图标，点击后原地展开为 ion-searchbar
@@ -434,6 +507,22 @@ const isSearchOrFilterActive = computed(() => {
   return hasActiveFilters.value || searchText.value.trim().length > 0
 })
 
+const categorizedPromptCount = computed(() => {
+  return categories.value.reduce((sum, category) => sum + (category.prompts?.length || 0), 0)
+})
+
+// 未分类数量 = 全部提示词 - 各分类下提示词之和
+const uncategorizedCount = computed(() => {
+  return Math.max(0, totalPromptCount.value - categorizedPromptCount.value)
+})
+
+// 首页默认展示分类总览；搜索或筛选时让位给结果列表
+const showCategoryOverview = computed(() => {
+  return !isSearchOrFilterActive.value && (categories.value.length > 0 || totalPromptCount.value > 0)
+})
+
+const showPromptList = computed(() => isSearchOrFilterActive.value)
+
 // 加载提示词列表
 const loadPrompts = async (append = false, options: { showLoading?: boolean } = {}) => {
   const showLoading = options.showLoading ?? true
@@ -470,6 +559,12 @@ const loadPrompts = async (append = false, options: { showLoading?: boolean } = 
     }
     hasNextPage.value = result.hasNextPage || false
     totalCount.value = result.total || 0
+
+    // 无搜索/筛选时这次查询就是全量列表，顺手兜底总数：
+    // 即使分类接口临时失败，首页仍能显示“全部提示词”卡片而不是空状态。
+    if (!isSearchOrFilterActive.value) {
+      totalPromptCount.value = result.total || 0
+    }
   } catch (error) {
     if (loadId !== promptLoadSequence) {
       return
@@ -484,12 +579,25 @@ const loadPrompts = async (append = false, options: { showLoading?: boolean } = 
 }
 
 // 加载分类
+//
+// categories.getAll 会一并带回每个分类下的提示词，卡片计数直接取该数组长度，
+// 不再额外拉取前 1000 条提示词。另一个 limit: 1 的查询只取 total，用来计算
+// 「未分类」数量；搜索/筛选不会影响这份总数。
 const loadCategories = async () => {
   try {
-    categories.value = await api.categories.getAll.query()
-    // 加载所有提示词用于分类计数（不受筛选影响）
-    const result = await api.prompts.getAll.query({ page: 1, limit: 1000 })
-    allPrompts.value = result.data || []
+    const nextCategories = await api.categories.getAll.query()
+    categories.value = nextCategories
+
+    try {
+      const totalResult = await api.prompts.getAll.query({ page: 1, limit: 1 })
+      totalPromptCount.value = totalResult.total ?? 0
+    } catch (error) {
+      console.error('加载提示词总数失败:', error)
+      totalPromptCount.value = nextCategories.reduce(
+        (sum, category) => sum + (category.prompts?.length || 0),
+        0
+      )
+    }
   } catch (error) {
     console.error('加载分类失败:', error)
   }
@@ -501,6 +609,16 @@ const getCategoryName = (categoryId: number | null) => {
   const category = categories.value.find(c => c.id === categoryId)
   return category?.name || t('promptManagement.noCategory')
 }
+
+// 提示词列表的区块标题：分类筛选时用分类名，搜索/其他筛选时用“筛选结果”
+const promptSectionTitle = computed(() => {
+  if (selectedCategory.value !== null) {
+    return getCategoryName(selectedCategory.value)
+  }
+  return isSearchOrFilterActive.value
+    ? t('promptManagement.filteredResults')
+    : t('promptWorkspace.allPrompts')
+})
 
 // 获取内容的第一行
 const getFirstLineOfContent = (content: string | undefined) => {
@@ -573,15 +691,26 @@ const clearCategory = () => {
   loadPrompts()
 }
 
-// 选择分类标签
-const selectCategoryTab = (categoryId: number | null) => {
-  selectedCategory.value = categoryId
-  loadPrompts()
+// 打开分类：进入该分类的提示词页（与首页的全部分类卡片一一对应）
+const openCategory = (category: Category) => {
+  if (category.id == null) return
+  router.push(`/category/${category.id}`)
+}
+
+// 全部提示词：保留一个不经过分类的直达入口
+const openAllPrompts = () => {
+  router.push('/category/all')
+}
+
+// 未分类提示词单独成页，方便把散落的提示词集中处理
+const openUncategorized = () => {
+  router.push('/category/uncategorized')
 }
 
 // 获取分类下的提示词数量
-const getCategoryPromptCount = (categoryId: number) => {
-  return allPrompts.value.filter(p => p.categoryId === categoryId).length
+const getCategoryPromptCount = (categoryId: number | undefined) => {
+  if (categoryId == null) return 0
+  return categories.value.find(category => category.id === categoryId)?.prompts?.length || 0
 }
 
 // 删除分类
@@ -949,46 +1078,121 @@ ion-content {
   --padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--mobile-nav-clearance));
 }
 
-/* 分类切换标签 */
-.category-tabs-container {
-  padding: 4px var(--content-padding);
+/* 分类总览：双列卡片，视觉语言与 MobileWaterfallView 的提示词卡片一致 */
+.category-overview {
+  padding: 4px var(--mobile-page-gutter) 0;
 }
 
-.category-tabs-scroll {
+.category-overview__header {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
-.category-tabs-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.category-tab {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  border: 1px solid var(--border-subtle, var(--ion-border-color));
-  border-radius: 20px;
-  background: var(--surface-primary, var(--ion-background-color));
-  color: var(--content-secondary, var(--ion-color-medium));
+.category-overview__count {
+  color: var(--content-secondary);
   font-size: var(--mobile-font-size-footnote);
-  font-weight: 500;
+}
+
+.category-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-height: 104px;
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-primary);
+  color: var(--content-primary);
+  font-family: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
 }
 
-.category-tab:hover {
-  border-color: var(--ion-color-primary);
+.category-card:active,
+.category-card--active {
+  /* 选中/按压只是状态染色，不额外加边框（见设计契约） */
+  background: var(--surface-tertiary);
 }
 
-.category-tab.active {
-  border-color: var(--ion-color-primary);
-  background: var(--ion-color-primary);
-  color: var(--ion-color-primary-contrast);
+.category-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.category-card__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.category-card__dot--muted {
+  background: var(--content-tertiary);
+}
+
+.category-card__icon {
+  color: var(--accent-primary);
+  font-size: var(--mobile-icon-size-lg);
+}
+
+.category-card--all .category-card__name {
+  font-weight: 600;
+}
+
+.category-card__chevron {
+  color: var(--content-tertiary);
+  font-size: var(--mobile-icon-size-sm);
+}
+
+.category-card__name {
+  font-size: var(--mobile-font-size-body);
+  font-weight: 600;
+  line-height: var(--mobile-line-height-normal);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.category-card__desc {
+  color: var(--content-secondary);
+  font-size: var(--mobile-font-size-footnote);
+  line-height: var(--mobile-line-height-normal);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.category-card__meta {
+  margin-top: auto;
+  color: var(--content-secondary);
+  font-size: var(--mobile-font-size-caption);
+}
+
+.category-card--muted .category-card__name {
+  color: var(--content-secondary);
+}
+
+.prompt-section-header {
+  margin: var(--spacing-md) 0 var(--spacing-xs);
+  padding: 0 var(--mobile-page-gutter);
 }
 
 /* 分类管理表单 */
