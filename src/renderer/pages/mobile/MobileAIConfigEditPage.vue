@@ -67,11 +67,16 @@
           <!-- API Key -->
           <ion-item v-if="formData.type && needsApiKey" lines="none">
             <ion-input
+              ref="apiKeyInputRef"
               v-model="formData.apiKey"
               label-placement="stacked"
               :label="getApiKeyLabel"
               placeholder="API Key"
               type="password"
+              autocomplete="off"
+              @ionInput="syncApiKeyFromInput"
+              @ionChange="syncApiKeyFromInput"
+              @ionBlur="syncApiKeyFromInput"
             ></ion-input>
           </ion-item>
 
@@ -114,7 +119,7 @@
             button
             :detail="false"
             lines="none"
-            :disabled="testingConnection || !canTestConnection"
+            :disabled="testingConnection"
             @click="handleTestConnection"
           >
             <ion-icon :icon="flashOutline" slot="start" color="primary"></ion-icon>
@@ -314,6 +319,12 @@ const {
 // 状态
 const saving = ref(false)
 const testingConnection = ref(false)
+// API Key 输入框的 DOM 引用：部分移动端密码管理器/自动填充只改原生 input 的值，
+// 不触发 ionInput，导致 v-model 看起来有字、formData 仍是空。校验和保存前显式
+// 从 DOM 同步一次，保证“看到的就是提交的”。
+// ion-input 是 Ionic 的 Vue 包装组件，模板 ref 拿到的是组件实例，
+// 真正的宿主元素在 $el 上（与 ion-searchbar 的 setFocus 用法一致）。
+const apiKeyInputRef = ref<any>(null)
 const testResult = ref<{
   success: boolean
   message: string
@@ -526,16 +537,16 @@ const selectedProviderChoice = computed(() =>
 )
 const isCustomSelected = computed(() => Boolean(selectedProviderChoice.value.custom))
 
-// needsBaseURL / canTestConnection / getBaseURLInfo / getApiKeyInfo：在组合式函数原始值
+// needsBaseURL / getBaseURLInfo / getApiKeyInfo：在组合式函数原始值
 // 基础上叠加「自定义服务」的差异化展示逻辑（参照桌面端 isCustomProviderChoice 的处理）：
 // - 自定义 Claude 兼容服务的 type 是 anthropic，但和普通 Anthropic 不同，必须填 Base URL；
 // - Base URL 标签/占位符改为「兼容服务地址」+ 具体协议示例，不使用官方默认地址自动填充；
 // - 自定义服务没有已知的获取 Key / 文档链接，不展示这两个按钮。
+//
+// 测试连接按钮不再根据 canTestConnection 预先禁用：移动端自动填充可能不触发
+// ionInput，导致 canTestConnection 仍认为 Token 为空、按钮一直点不了。现在
+// 允许点击，进 handler 后先 syncApiKeyFromInput()，再给出具体缺项提示。
 const needsBaseURL = computed(() => isCustomSelected.value || baseNeedsBaseURL.value)
-const canTestConnection = computed(() => (
-  (!needsApiKey.value || Boolean(formData.apiKey.trim()))
-  && (!needsBaseURL.value || Boolean(formData.baseURL.trim()))
-))
 const getBaseURLInfo = computed(() => isCustomSelected.value
   ? {
       label: t('aiConfig.workspace.customServiceEndpoint'),
@@ -545,6 +556,15 @@ const getBaseURLInfo = computed(() => isCustomSelected.value
 const getApiKeyInfo = computed(() => isCustomSelected.value
   ? { apiKeyUrl: '', docUrl: '' }
   : baseGetApiKeyInfo.value)
+
+// 把 ion-input 当前显示的值同步回 formData，兜住自动填充/密码管理器不派发
+// ionInput 的情况。普通手动输入时这个函数是无操作（值已经一致）。
+const syncApiKeyFromInput = () => {
+  const inputValue = apiKeyInputRef.value?.$el?.value
+  if (typeof inputValue === 'string' && inputValue !== formData.apiKey) {
+    formData.apiKey = inputValue
+  }
+}
 
 const selectType = (choice: ProviderCardChoice) => {
   const isSame = selectedChoiceId.value === choice.id
@@ -586,7 +606,9 @@ const loadConfig = async () => {
       formData.type = config.type
       formData.name = config.name
       formData.baseURL = config.baseURL
-      formData.apiKey = config.apiKey || ''
+      // 不覆盖用户已经输入的内容：移动端数据库读取较慢时，用户可能在
+      // loadConfig 完成前就开始粘贴 Token
+      formData.apiKey = formData.apiKey || config.apiKey || ''
       formData.models = config.models
       formData.defaultModel = config.defaultModel || ''
       formData.customModel = config.customModel || ''
@@ -646,7 +668,8 @@ const handleTestConnection = async () => {
     showToast(t('aiConfig.pleaseEnterBaseURL'), 'warning')
     return
   }
-  if (needsApiKey.value && !formData.apiKey) {
+  syncApiKeyFromInput()
+  if (needsApiKey.value && !formData.apiKey.trim()) {
     showToast(t('aiConfig.pleaseEnterAPIKey'), 'warning')
     return
   }
@@ -659,7 +682,7 @@ const handleTestConnection = async () => {
     const result = await api.aiConfigs.test.mutate({
       type: formData.type,
       baseURL: formData.baseURL,
-      apiKey: formData.apiKey
+      apiKey: formData.apiKey.trim()
     })
 
     if (result.success) {
@@ -768,7 +791,8 @@ const handleSave = async () => {
     showToast(t('aiConfig.pleaseEnterBaseURL'), 'warning')
     return
   }
-  if (needsApiKey.value && !formData.apiKey) {
+  syncApiKeyFromInput()
+  if (needsApiKey.value && !formData.apiKey.trim()) {
     showToast(t('aiConfig.pleaseEnterAPIKey'), 'warning')
     return
   }
@@ -787,7 +811,7 @@ const handleSave = async () => {
       type: formData.type,
       name: formData.name,
       baseURL: formData.baseURL,
-      apiKey: formData.apiKey,
+      apiKey: formData.apiKey.trim(),
       models: formData.models,
       defaultModel: formData.defaultModel,
       customModel: formData.customModel,
