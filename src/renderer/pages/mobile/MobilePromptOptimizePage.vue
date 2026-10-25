@@ -4,6 +4,9 @@
   Purpose: Mobile AI prompt optimization workbench, opened from prompt detail.
   Inspired by the prompt-optimizer project's optimization / compare / evaluation
   flow, implemented against AI Gist's existing mobile AI config and prompt model.
+  Extended on 2026-10-25 with execution-based evaluation (shared test inputs,
+  original vs optimized output snapshots, evidence-grounded comparison),
+  inspired by prompt-optimizer's test-case / snapshot / compare evaluation design.
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -244,28 +247,47 @@
                   :class="row.type"
                 >
                   <span class="diff-sign">{{ row.type === 'added' ? '+' : row.type === 'removed' ? '-' : ' ' }}</span>
-                  <span class="diff-text">{{ row.text || ' ' }}</span>
+                  <span class="diff-text"><template v-if="row.segments"><span
+                    v-for="(segment, segmentIndex) in row.segments"
+                    :key="segmentIndex"
+                    class="diff-word"
+                    :class="segment.type"
+                  >{{ segment.text }}</span></template><template v-else>{{ row.text || ' ' }}</template></span>
                 </div>
               </div>
             </div>
 
             <div v-else class="tab-panel">
-              <div v-if="evaluation" class="evaluation-result">
+              <ion-segment v-model="evaluationMode" class="eval-mode-segment">
+                <ion-segment-button value="quick">
+                  <ion-label>{{ t('promptOptimization.evalModeQuick') }}</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="execution">
+                  <ion-label>{{ t('promptOptimization.evalModeExecution') }}</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+              <p class="field-hint">
+                {{ evaluationMode === 'quick'
+                  ? t('promptOptimization.evalModeQuickHint')
+                  : t('promptOptimization.evalModeExecutionHint') }}
+              </p>
+
+              <div v-if="displayEvaluation" class="evaluation-result">
                 <div class="score-row">
                   <div class="score-block">
-                    <span class="score-value">{{ evaluation.originalScore }}</span>
+                    <span class="score-value">{{ displayEvaluation.originalScore }}</span>
                     <span class="score-label">{{ t('promptOptimization.original') }}</span>
                   </div>
                   <ion-icon :icon="arrowForward" class="score-arrow"></ion-icon>
                   <div class="score-block optimized">
-                    <span class="score-value">{{ evaluation.optimizedScore }}</span>
+                    <span class="score-value">{{ displayEvaluation.optimizedScore }}</span>
                     <span class="score-label">{{ t('promptOptimization.optimized') }}</span>
                   </div>
                   <ion-chip :color="verdictColor" size="small">{{ verdictLabel }}</ion-chip>
                 </div>
 
                 <div class="dimension-list">
-                  <div v-for="dimension in evaluation.dimensions" :key="dimension.key" class="dimension">
+                  <div v-for="dimension in displayEvaluation.dimensions" :key="dimension.key" class="dimension">
                     <div class="dimension-header">
                       <span>{{ getDimensionLabel(dimension) }}</span>
                       <span>{{ dimension.originalScore }} → {{ dimension.optimizedScore }}</span>
@@ -277,24 +299,55 @@
                   </div>
                 </div>
 
-                <p v-if="evaluation.summary" class="evaluation-summary">{{ evaluation.summary }}</p>
+                <div
+                  v-if="evaluationMode === 'execution' && executionEvaluation?.testCaseFindings.length"
+                  class="finding-list"
+                >
+                  <h3>{{ t('promptOptimization.findingsTitle') }}</h3>
+                  <div
+                    v-for="finding in executionEvaluation.testCaseFindings"
+                    :key="finding.testCaseId"
+                    class="finding-item"
+                  >
+                    <div class="finding-header">
+                      <span class="finding-case">{{ testCaseDisplayName(finding.testCaseId) }}</span>
+                      <ion-chip :color="verdictColorFor(finding.verdict)" size="small">
+                        {{ verdictLabelFor(finding.verdict) }}
+                      </ion-chip>
+                    </div>
+                    <p v-if="finding.finding" class="finding-text">{{ finding.finding }}</p>
+                  </div>
+                </div>
 
-                <div v-if="evaluation.improvements.length" class="improvement-list">
+                <p v-if="displayEvaluation.summary" class="evaluation-summary">{{ displayEvaluation.summary }}</p>
+
+                <div v-if="displayEvaluation.improvements.length" class="improvement-list">
                   <h3>{{ t('promptOptimization.improvements') }}</h3>
                   <ul>
-                    <li v-for="(improvement, index) in evaluation.improvements" :key="index">{{ improvement }}</li>
+                    <li v-for="(improvement, index) in displayEvaluation.improvements" :key="index">{{ improvement }}</li>
                   </ul>
                 </div>
               </div>
 
-              <div v-else-if="evaluationError" class="evaluation-error">
+              <div v-else-if="evaluationMode === 'quick' && evaluationError" class="evaluation-error">
                 <p>{{ evaluationError }}</p>
                 <pre v-if="activeRound?.evaluationRaw" class="evaluation-raw">{{ activeRound.evaluationRaw }}</pre>
               </div>
 
-              <p v-else class="evaluation-hint">{{ t('promptOptimization.evaluationHint') }}</p>
+              <div v-else-if="evaluationMode === 'execution' && executionError" class="evaluation-error">
+                <p>{{ executionError }}</p>
+                <pre v-if="activeRound?.execution?.raw" class="evaluation-raw">{{ activeRound.execution.raw }}</pre>
+              </div>
 
+              <p v-else class="evaluation-hint">
+                {{ evaluationMode === 'quick'
+                  ? t('promptOptimization.evaluationHint')
+                  : t('promptOptimization.executionHint') }}
+              </p>
+
+              <!-- 快速评估 -->
               <ion-button
+                v-if="evaluationMode === 'quick'"
                 expand="block"
                 fill="outline"
                 :disabled="evaluating || !activeResult"
@@ -304,6 +357,137 @@
                 <ion-icon v-else :icon="analyticsOutline" slot="start"></ion-icon>
                 {{ evaluating ? t('promptOptimization.evaluating') : t('promptOptimization.evaluate') }}
               </ion-button>
+
+              <!-- 执行评估 -->
+              <template v-else>
+                <div class="field-block">
+                  <div class="field-label-row">
+                    <span class="field-label">{{ t('promptOptimization.testCasesTitle') }}</span>
+                    <button
+                      type="button"
+                      class="text-action"
+                      :disabled="generatingInputs || executing || comparing"
+                      @click="generateTestInputs"
+                    >
+                      <ion-spinner v-if="generatingInputs" name="crescent"></ion-spinner>
+                      <ion-icon v-else :icon="sparklesOutline"></ion-icon>
+                      {{ t('promptOptimization.generateTestInputs') }}
+                    </button>
+                  </div>
+                  <p class="field-hint">{{ t('promptOptimization.testCasesHint', { count: testCases.length }) }}</p>
+
+                  <div
+                    v-for="(testCase, index) in testCases"
+                    :key="testCase.id"
+                    class="test-case-card"
+                  >
+                    <div class="test-case-header">
+                      <span>{{ t('promptOptimization.testCaseLabel', { index: index + 1 }) }}</span>
+                      <button
+                        v-if="testCases.length > 1"
+                        type="button"
+                        class="text-action danger"
+                        :aria-label="t('promptOptimization.removeTestCase')"
+                        @click="removeTestCase(testCase.id)"
+                      >
+                        <ion-icon :icon="trashOutline"></ion-icon>
+                      </button>
+                    </div>
+                    <div v-if="originalVariables.length" class="case-values">
+                      <ion-input
+                        v-for="variable in originalVariables"
+                        :key="variable"
+                        v-model="testCase.values[variable]"
+                        class="case-value-input"
+                        :label="variable"
+                        label-placement="stacked"
+                        fill="outline"
+                      ></ion-input>
+                    </div>
+                    <ion-textarea
+                      v-if="target === 'system'"
+                      v-model="testCase.userMessage"
+                      class="prompt-textarea"
+                      :placeholder="t('promptOptimization.testCaseUserMessagePlaceholder')"
+                      :rows="2"
+                      :auto-grow="true"
+                    ></ion-textarea>
+                  </div>
+
+                  <ion-button
+                    v-if="testCases.length < maxExecutionTestCases"
+                    fill="outline"
+                    size="small"
+                    :disabled="executing || comparing"
+                    @click="addTestCase"
+                  >
+                    <ion-icon :icon="addOutline" slot="start"></ion-icon>
+                    {{ t('promptOptimization.addTestCase') }}
+                  </ion-button>
+                </div>
+
+                <div v-if="executionState?.snapshots.length" class="snapshot-list">
+                  <h3>{{ t('promptOptimization.snapshotsTitle') }}</h3>
+                  <div v-for="testCase in testCases" :key="testCase.id" class="snapshot-group">
+                    <button type="button" class="snapshot-header" @click="toggleCaseExpanded(testCase.id)">
+                      <span>{{ testCaseDisplayName(testCase.id) }}</span>
+                      <ion-icon
+                        :icon="isCaseExpanded(testCase.id) ? chevronUpOutline : chevronDownOutline"
+                      ></ion-icon>
+                    </button>
+                    <div v-if="isCaseExpanded(testCase.id)" class="snapshot-body">
+                      <div
+                        v-for="snapshot in snapshotsForCase(testCase.id)"
+                        :key="snapshot.id"
+                        class="snapshot-item"
+                      >
+                        <span class="snapshot-tag" :class="snapshot.promptRef">
+                          {{ snapshot.promptRef === 'original'
+                            ? t('promptOptimization.executionOriginal')
+                            : t('promptOptimization.executionOptimized') }}
+                        </span>
+                        <pre class="snapshot-output">{{ snapshot.output || t('promptOptimization.testCaseOutputEmpty') }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <p v-if="executing" class="execution-progress">{{ executionProgress }}</p>
+
+                <div class="inline-actions">
+                  <ion-button
+                    fill="outline"
+                    size="small"
+                    :disabled="!canExecuteTests"
+                    @click="runExecutionTests"
+                  >
+                    <ion-spinner v-if="executing" name="crescent" slot="start"></ion-spinner>
+                    <ion-icon v-else :icon="playOutline" slot="start"></ion-icon>
+                    {{ executing ? t('promptOptimization.executingTests') : t('promptOptimization.runTests') }}
+                  </ion-button>
+                  <ion-button
+                    v-if="executing"
+                    fill="clear"
+                    size="small"
+                    color="danger"
+                    @click="stopExecution"
+                  >
+                    <ion-icon :icon="stopCircleOutline" slot="start"></ion-icon>
+                    {{ t('promptOptimization.stop') }}
+                  </ion-button>
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    :disabled="!canRunExecutionCompare"
+                    @click="runExecutionCompare"
+                  >
+                    <ion-spinner v-if="comparing" name="crescent" slot="start"></ion-spinner>
+                    <ion-icon v-else :icon="analyticsOutline" slot="start"></ion-icon>
+                    {{ comparing ? t('promptOptimization.evaluating') : t('promptOptimization.compareEvaluate') }}
+                  </ion-button>
+                </div>
+                <p class="field-hint">{{ t('promptOptimization.executionCostHint', { calls: estimatedExecutionCalls }) }}</p>
+              </template>
             </div>
           </section>
 
@@ -392,7 +576,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   IonPage,
@@ -410,6 +594,7 @@ import {
   IonLabel,
   IonTextarea,
   IonChip,
+  IonInput,
   IonModal,
   IonList,
   IonListHeader,
@@ -430,7 +615,10 @@ import {
   documentTextOutline,
   checkmark,
   star,
-  arrowForward
+  arrowForward,
+  trashOutline,
+  addOutline,
+  playOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
@@ -450,7 +638,18 @@ import {
   type OptimizationPresetId,
   type OptimizationTarget
 } from '~/lib/prompt-optimization/templates'
-import { countDiffRows, diffLines } from '~/lib/prompt-optimization/diff'
+import { countDiffRows, diffRowsWithWords } from '~/lib/prompt-optimization/diff'
+import {
+  MAX_EXECUTION_TEST_CASES,
+  buildAITestInputsPrompt,
+  buildExecutionEvalPrompt,
+  buildExecutionMessages,
+  parseAITestInputs,
+  parseExecutionEvalResponse,
+  type ExecutionEvaluation,
+  type ExecutionSnapshot,
+  type ExecutionTestCase
+} from '~/lib/prompt-optimization/execution-eval'
 import type { AIConfig, PromptWithRelations } from '@shared/types'
 import EmptyAIConfigIllustration from '~/components/mobile/illustrations/EmptyAIConfigIllustration.vue'
 
@@ -463,6 +662,11 @@ interface OptimizationRound {
   stopped: boolean
   evaluation: OptimizationEvaluation | null
   evaluationRaw: string
+  execution: {
+    snapshots: ExecutionSnapshot[]
+    evaluation: ExecutionEvaluation | null
+    raw: string
+  } | null
 }
 
 const { t } = useI18n()
@@ -490,6 +694,16 @@ const iterationInstruction = ref('')
 const evaluating = ref(false)
 const evaluationError = ref('')
 const applying = ref(false)
+
+const evaluationMode = ref<'quick' | 'execution'>('quick')
+const testCases = ref<ExecutionTestCase[]>([])
+const generatingInputs = ref(false)
+const executing = ref(false)
+const executingStopped = ref(false)
+const executionProgress = ref('')
+const executionError = ref('')
+const comparing = ref(false)
+const expandedCaseIds = ref<string[]>([])
 
 let roundSequence = 0
 
@@ -529,31 +743,42 @@ const activeResult = computed<string>({
     round.result = value
     round.evaluation = null
     round.evaluationRaw = ''
+    // 结果被改动后，之前的执行快照对应的已经是旧文本，整体作废
+    round.execution = null
     evaluationError.value = ''
+    executionError.value = ''
   }
 })
 
 const resultCharCount = computed(() => activeResult.value.length)
 const missingVariables = computed(() => getMissingVariableNames(originalContent.value, activeResult.value))
-const diffRows = computed(() => diffLines(originalContent.value, activeResult.value))
+const diffRows = computed(() => diffRowsWithWords(originalContent.value, activeResult.value))
 const diffStats = computed(() => countDiffRows(diffRows.value))
 
 const evaluation = computed(() => activeRound.value?.evaluation || null)
-const verdictLabel = computed(() => {
-  if (!evaluation.value) return ''
-  return evaluation.value.verdict === 'better'
+const executionState = computed(() => activeRound.value?.execution || null)
+const executionEvaluation = computed(() => executionState.value?.evaluation || null)
+const displayEvaluation = computed(() => {
+  return evaluationMode.value === 'quick' ? evaluation.value : executionEvaluation.value
+})
+
+const verdictLabelFor = (verdict: string): string => {
+  return verdict === 'better'
     ? t('promptOptimization.verdictBetter')
-    : evaluation.value.verdict === 'worse'
+    : verdict === 'worse'
       ? t('promptOptimization.verdictWorse')
       : t('promptOptimization.verdictSimilar')
+}
+const verdictColorFor = (verdict: string): string => {
+  return verdict === 'better' ? 'success' : verdict === 'worse' ? 'danger' : 'medium'
+}
+const verdictLabel = computed(() => {
+  if (!displayEvaluation.value) return ''
+  return verdictLabelFor(displayEvaluation.value.verdict)
 })
 const verdictColor = computed(() => {
-  if (!evaluation.value) return 'medium'
-  return evaluation.value.verdict === 'better'
-    ? 'success'
-    : evaluation.value.verdict === 'worse'
-      ? 'danger'
-      : 'medium'
+  if (!displayEvaluation.value) return 'medium'
+  return verdictColorFor(displayEvaluation.value.verdict)
 })
 
 // 模型返回的维度 label 可能是中文；UI 语言不是中文时优先使用本地化文案
@@ -639,6 +864,8 @@ const loadPage = async () => {
       return
     }
     prompt.value = loadedPrompt
+    loadStoredTestCases()
+    if (testCases.value.length === 0) addTestCase()
   } catch (error) {
     console.error('加载提示词失败:', error)
     loadError.value = t('promptOptimization.loadFailed')
@@ -659,6 +886,7 @@ const openAIConfig = () => {
 const selectRound = (index: number) => {
   activeRoundIndex.value = index
   evaluationError.value = ''
+  executionError.value = ''
 }
 
 const removeRound = (roundId: number) => {
@@ -693,7 +921,8 @@ const startRound = async (options: {
     createdAt: Date.now(),
     stopped: false,
     evaluation: null,
-    evaluationRaw: ''
+    evaluationRaw: '',
+    execution: null
   }
   rounds.value.push(round)
   activeRoundIndex.value = rounds.value.length - 1
@@ -841,6 +1070,279 @@ const runEvaluation = async () => {
   }
 }
 
+// ========== 执行式评估（借鉴 prompt-optimizer 的测试输入/快照/对比评估） ==========
+
+const maxExecutionTestCases = MAX_EXECUTION_TEST_CASES
+
+const executionStorageKey = computed(() => `promptOptimization:testCases:${prompt.value?.id ?? 'none'}`)
+
+const createEmptyCase = (): ExecutionTestCase => ({
+  id: `case_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+  values: Object.fromEntries(originalVariables.value.map(name => [name, ''])),
+  userMessage: ''
+})
+
+const addTestCase = () => {
+  if (testCases.value.length >= MAX_EXECUTION_TEST_CASES) return
+  testCases.value.push(createEmptyCase())
+}
+
+const removeTestCase = (id: string) => {
+  testCases.value = testCases.value.filter(testCase => testCase.id !== id)
+  expandedCaseIds.value = expandedCaseIds.value.filter(caseId => caseId !== id)
+}
+
+const isCaseExpanded = (id: string): boolean => expandedCaseIds.value.includes(id)
+
+const toggleCaseExpanded = (id: string) => {
+  expandedCaseIds.value = isCaseExpanded(id)
+    ? expandedCaseIds.value.filter(caseId => caseId !== id)
+    : [...expandedCaseIds.value, id]
+}
+
+const snapshotsForCase = (testCaseId: string): ExecutionSnapshot[] => {
+  return (executionState.value?.snapshots || []).filter(snapshot => snapshot.testCaseId === testCaseId)
+}
+
+const testCaseDisplayName = (testCaseId: string): string => {
+  const index = testCases.value.findIndex(testCase => testCase.id === testCaseId)
+  return index >= 0
+    ? t('promptOptimization.testCaseLabel', { index: index + 1 })
+    : testCaseId
+}
+
+const loadStoredTestCases = () => {
+  try {
+    const raw = localStorage.getItem(executionStorageKey.value)
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return
+    testCases.value = parsed
+      .filter((item: any) => item && typeof item === 'object')
+      .slice(0, MAX_EXECUTION_TEST_CASES)
+      .map((item: any, index: number) => ({
+        id: `case_${index + 1}_${Math.random().toString(36).slice(2, 6)}`,
+        values: Object.fromEntries(
+          originalVariables.value.map(name => [
+            name,
+            typeof item.values?.[name] === 'string' ? item.values[name] : ''
+          ])
+        ),
+        userMessage: typeof item.userMessage === 'string' ? item.userMessage : ''
+      }))
+  } catch {
+    // 本地缓存只是便利功能，损坏时直接忽略
+  }
+}
+
+watch(testCases, () => {
+  try {
+    localStorage.setItem(
+      executionStorageKey.value,
+      JSON.stringify(testCases.value.map(({ values, userMessage }) => ({ values, userMessage })))
+    )
+  } catch {
+    // 私有模式或空间不足时静默放弃持久化
+  }
+}, { deep: true })
+
+const generateTestInputs = async () => {
+  const config = selectedConfig.value
+  const model = selectedModel.value
+  if (!config || !model || generatingInputs.value) {
+    if (!config || !model) showToast(t('promptOptimization.noModel'), 'warning')
+    return
+  }
+
+  generatingInputs.value = true
+  try {
+    // 无变量的用户提示词只有一种执行方式，一组即可；其余生成满额供挑选
+    const count = originalVariables.value.length > 0 ? MAX_EXECUTION_TEST_CASES : 1
+    const pair = buildAITestInputsPrompt({
+      content: originalContent.value,
+      target: target.value,
+      variables: originalVariables.value,
+      count
+    })
+    const raw = await AIGeneratorService.generateChat(
+      config, model, pair.system, pair.user, undefined, { temperature: 0.3, maxTokens: 2000 }
+    )
+    const parsed = parseAITestInputs(raw, originalVariables.value, count)
+    if (!parsed) {
+      showToast(t('promptOptimization.testInputParseFailed'), 'danger')
+      return
+    }
+    testCases.value = parsed
+    expandedCaseIds.value = []
+    showToast(t('promptOptimization.testInputGenerated'), 'success')
+  } catch (error) {
+    showToast(`${t('promptOptimization.testInputFailed')}: ${(error as Error).message}`, 'danger')
+  } finally {
+    generatingInputs.value = false
+  }
+}
+
+const estimatedExecutionCalls = computed(() => testCases.value.length * 2 + 1)
+
+const canExecuteTests = computed(() => {
+  return Boolean(
+    activeRound.value
+    && activeResult.value.trim()
+    && selectedConfig.value
+    && selectedModel.value
+    && testCases.value.length > 0
+    && missingVariables.value.length === 0
+    && !executing.value
+    && !comparing.value
+    && !optimizing.value
+  )
+})
+
+const canRunExecutionCompare = computed(() => {
+  return Boolean(
+    executionState.value
+    && executionState.value.snapshots.length > 0
+    && selectedConfig.value
+    && selectedModel.value
+    && !executing.value
+    && !comparing.value
+    && !optimizing.value
+  )
+})
+
+const runExecutionTests = async () => {
+  const round = activeRound.value
+  const config = selectedConfig.value
+  const model = selectedModel.value
+  if (!round || !round.result.trim() || !config || !model || executing.value) {
+    if (!round?.result.trim()) showToast(t('promptOptimization.noResult'), 'warning')
+    return
+  }
+  if (missingVariables.value.length > 0) {
+    showToast(t('promptOptimization.executionBlockedVariables', {
+      variables: missingVariables.value.join(', ')
+    }), 'warning')
+    return
+  }
+  if (testCases.value.length === 0) addTestCase()
+
+  executing.value = true
+  executingStopped.value = false
+  executionError.value = ''
+  round.execution = { snapshots: [], evaluation: null, raw: '' }
+
+  const snapshots: ExecutionSnapshot[] = []
+  const total = testCases.value.length
+
+  try {
+    for (let index = 0; index < total; index += 1) {
+      const testCase = testCases.value[index]
+
+      for (const promptRef of ['original', 'optimized'] as const) {
+        if (executingStopped.value) break
+
+        executionProgress.value = t('promptOptimization.executionProgress', {
+          index: index + 1,
+          total,
+          version: promptRef === 'original'
+            ? t('promptOptimization.executionOriginal')
+            : t('promptOptimization.executionOptimized')
+        })
+
+        const content = promptRef === 'original' ? originalContent.value : round.result
+        const messages = buildExecutionMessages({
+          content,
+          testCase,
+          target: target.value,
+          isJinja: prompt.value?.isJinjaTemplate || false
+        })
+
+        const output = await AIGeneratorService.generateChat(
+          config, model, messages.system, messages.user, undefined,
+          { temperature: 0.7, maxTokens: 2000 }
+        )
+
+        snapshots.push({
+          id: `snap_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          testCaseId: testCase.id,
+          promptRef,
+          // 记录实际发给模型的那一侧：系统提示词场景是 system，用户提示词场景是 user
+          promptText: target.value === 'system' ? messages.system : messages.user,
+          output,
+          createdAt: Date.now()
+        })
+        // 逐个快照推进，UI 能看到进度
+        round.execution = { snapshots: [...snapshots], evaluation: null, raw: '' }
+      }
+      if (executingStopped.value) break
+    }
+
+    if (executingStopped.value) {
+      showToast(t('promptOptimization.stopped'), 'warning')
+    } else if (snapshots.length === 0) {
+      executionError.value = t('promptOptimization.executionFailed', { error: 'no output' })
+    } else {
+      showToast(t('promptOptimization.executionDone'), 'success')
+    }
+  } catch (error) {
+    if (executingStopped.value || (error as Error).name === 'AbortError') {
+      showToast(t('promptOptimization.stopped'), 'warning')
+    } else {
+      executionError.value = t('promptOptimization.executionFailed', { error: (error as Error).message })
+    }
+  } finally {
+    executing.value = false
+    executingStopped.value = false
+    executionProgress.value = ''
+  }
+}
+
+const stopExecution = () => {
+  executingStopped.value = true
+  AIGeneratorService.stopChat()
+}
+
+const runExecutionCompare = async () => {
+  const round = activeRound.value
+  const config = selectedConfig.value
+  const model = selectedModel.value
+  const snapshots = round?.execution?.snapshots || []
+  if (!round || !config || !model || !snapshots.length || comparing.value) {
+    if (!snapshots.length) showToast(t('promptOptimization.executionTestsRequired'), 'warning')
+    return
+  }
+
+  comparing.value = true
+  executionError.value = ''
+  if (!round.execution) return
+  round.execution.evaluation = null
+  round.execution.raw = ''
+
+  const pair = buildExecutionEvalPrompt({
+    target: target.value,
+    variables: originalVariables.value,
+    testCases: testCases.value,
+    snapshots
+  })
+
+  try {
+    const raw = await AIGeneratorService.generateChat(
+      config, model, pair.system, pair.user, undefined, { temperature: 0.1, maxTokens: 2500 }
+    )
+    round.execution.raw = raw
+    const parsed = parseExecutionEvalResponse(raw)
+    if (!parsed) {
+      executionError.value = t('promptOptimization.evaluationParseFailed')
+      return
+    }
+    round.execution.evaluation = parsed
+  } catch (error) {
+    executionError.value = t('promptOptimization.evaluationFailed', { error: (error as Error).message })
+  } finally {
+    comparing.value = false
+  }
+}
+
 const copyResult = async () => {
   if (!activeResult.value.trim()) {
     showToast(t('promptOptimization.noResult'), 'warning')
@@ -940,7 +1442,7 @@ onIonViewWillEnter(() => {
 })
 
 onUnmounted(() => {
-  if (optimizing.value) {
+  if (optimizing.value || executing.value || generatingInputs.value) {
     AIGeneratorService.stopChat()
   }
 })
@@ -1315,6 +1817,16 @@ onUnmounted(() => {
   min-width: 0;
 }
 
+.diff-word.removed {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent-error) 26%, transparent);
+}
+
+.diff-word.added {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent-success) 26%, transparent);
+}
+
 .score-row {
   display: flex;
   align-items: center;
@@ -1435,6 +1947,173 @@ onUnmounted(() => {
   font-size: var(--mobile-font-size-caption);
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.eval-mode-segment {
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.text-action.danger {
+  color: var(--accent-error);
+}
+
+.test-case-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-secondary);
+}
+
+.test-case-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--content-primary);
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 600;
+}
+
+.case-values {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.case-value-input {
+  --background: var(--surface-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--mobile-font-size-body);
+}
+
+.snapshot-list {
+  margin-top: var(--spacing-md);
+}
+
+.snapshot-list h3,
+.finding-list h3 {
+  margin: 0 0 6px;
+  color: var(--content-secondary);
+  font-size: var(--mobile-font-size-footnote);
+}
+
+.snapshot-group {
+  margin-bottom: var(--spacing-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.snapshot-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  border: 0;
+  background: var(--surface-secondary);
+  color: var(--content-primary);
+  font-family: inherit;
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.snapshot-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.snapshot-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snapshot-tag {
+  align-self: flex-start;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: var(--mobile-font-size-caption);
+}
+
+.snapshot-tag.original {
+  background: var(--surface-tertiary);
+  color: var(--content-secondary);
+}
+
+.snapshot-tag.optimized {
+  background: color-mix(in srgb, var(--accent-primary) 14%, transparent);
+  color: var(--accent-primary);
+}
+
+.snapshot-output {
+  margin: 0;
+  max-height: 200px;
+  overflow: auto;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-secondary);
+  color: var(--content-primary);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--mobile-font-size-caption);
+  line-height: var(--mobile-line-height-normal);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.execution-progress {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--content-secondary);
+  font-size: var(--mobile-font-size-footnote);
+}
+
+.finding-list {
+  margin-top: var(--spacing-md);
+}
+
+.finding-item {
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.finding-item:last-child {
+  border-bottom: 0;
+}
+
+.finding-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.finding-case {
+  color: var(--content-primary);
+  font-size: var(--mobile-font-size-footnote);
+  font-weight: 600;
+}
+
+.finding-text {
+  margin: 4px 0 0;
+  color: var(--content-secondary);
+  font-size: var(--mobile-font-size-caption);
+  line-height: var(--mobile-line-height-normal);
 }
 
 .warning-text {

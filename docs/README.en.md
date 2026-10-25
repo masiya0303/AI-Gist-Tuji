@@ -3,6 +3,7 @@
 > - **Original author**: Yarin Zhang ([GitHub](https://github.com/yarin-zhang))
 > - **Original project** is licensed under AGPL-3.0; this fork has been modified from the original
 > - **This Fork** is also licensed under AGPL-3.0, maintained by 兔叽 ([@msiya8160-star](https://github.com/msiya8160-star))
+> - The mobile "Prompt Optimization Workbench" draws on the interaction flow and prompt-design ideas of [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) (AGPL-3.0, by linshenkx) — see [Acknowledgements & Open Source Notice](#acknowledgements--open-source-notice) at the end of this document
 > - If you provide a service based on this project over a network (SaaS), you must make the modified source code available to users (AGPL-3.0 Section 13)
 
 ---

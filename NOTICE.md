@@ -210,6 +210,35 @@
 #### Reference / inspiration:
 - The mobile optimization flow (single-click optimization, multi-round iteration, comparison, and AI evaluation) is inspired by [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) by linshenkx, licensed under AGPL-3.0. The implementation is adapted to AI Gist's existing prompt model and is not a verbatim copy of that project's source files.
 
+### 2026-10-25 — Surface Prompt Optimizer Attribution in README Banner
+
+#### Files with inline modification notices:
+- `README.md` — Added Prompt Optimizer attribution line to the top fork banner, linking to the detailed notice at the bottom
+- `docs/README.en.md` — Added the same attribution line to the top fork banner
+
+### 2026-10-26 — Execution-Based Evaluation for the Mobile Optimization Workbench
+
+#### Files with inline modification notices:
+- `src/renderer/lib/prompt-optimization/execution-eval.ts` — New file: test-input generation prompts, variable filling (`fillPromptContent`), execution snapshot evidence model, execution-based comparison evaluation builder and lenient parser
+- `src/renderer/lib/prompt-optimization/templates.ts` — Added a "理解示例" (anti-execution few-shot) section to the shared optimization system prompt
+- `src/renderer/lib/prompt-optimization/diff.ts` — Added word-level inline diff (`tokenizeForDiff`, `diffRowsWithWords`) on top of the existing line-level LCS
+- `src/renderer/pages/mobile/MobilePromptOptimizePage.vue` — Added evaluation mode switch (quick review / run-based), test-input editor with per-prompt localStorage persistence, AI test-input generation, sequential execution of original vs optimized prompts, snapshot list, per-test-case findings, and word-level compare rendering
+
+#### Files modified (JSON format, no inline comments possible):
+- `src/renderer/i18n/locales/zh-CN.json` — Added execution evaluation keys and 3 new evaluation dimension labels
+- `src/renderer/i18n/locales/zh-TW.json` — Same as above
+- `src/renderer/i18n/locales/en-US.json` — Same as above
+- `src/renderer/i18n/locales/ja-JP.json` — Same as above
+- `src/renderer/i18n/locales/it-IT.json` — Same as above
+
+#### New tests:
+- `test/mobile/prompt-optimization-execution-eval.test.ts` — Unit tests for filling, execution messages, test-input generation/parsing, evaluation prompt evidence, response parsing, and word-level diff
+
+#### Reference / inspiration:
+- The execution-based evaluation flow (shared test inputs → running both prompt versions against the same model → comparing the real outputs with a single evidence-grounded evaluation call) is inspired by the evaluation design of [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) by linshenkx (AGPL-3.0): its `EvaluationTestCase` / `EvaluationSnapshot` / compare-evaluation types in `packages/core/src/services/evaluation` and its test-input/variable-value generation templates. The implementation is adapted to AI Gist's single-prompt data model and the mobile AI service layer, and is not a verbatim copy of that project's source files.
+- The anti-execution few-shot examples in the optimization system prompt follow the pedagogical idea of Prompt Optimizer's iterate template examples (distinguishing "modifying the prompt" from "executing the prompt"), rewritten independently.
+- The word-level compare display follows Prompt Optimizer's word-diff presentation idea (it uses the jsdiff library); this fork implements an equivalent zero-dependency token-level LCS.
+
 ---
 
 ## Files NOT Modified

@@ -3,6 +3,7 @@
 > - **原作者**：Yarin Zhang（[GitHub](https://github.com/yarin-zhang)）
 > - **原项目**采用 AGPL-3.0 许可证，本项目在原项目基础上进行了修改
 > - **本 Fork** 同样采用 AGPL-3.0 许可证，修改由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）完成
+> - 移动端「提示词优化工作台」借鉴了 [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer)（AGPL-3.0，作者 linshenkx）的交互流程与提示词思路，详见文末[「致谢与开源声明」](#致谢与开源声明)
 > - 如果你通过网络（SaaS）方式提供基于本项目的服务，必须向用户公开修改后的完整源代码（AGPL-3.0 第 13 条）
 
 ---
