@@ -18,7 +18,7 @@
           <img :src="item.imageUrl" class="card-image" loading="lazy" />
         </div>
         <div class="card-content">
-          <p class="card-title">{{ item.prompt.title || getFirstLine(item.prompt.content) }}</p>
+          <p class="card-title">{{ getPromptDisplayTitle(item.prompt) }}</p>
           <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
           <p v-if="item.prompt.description && item.prompt.type === 'prompt'" class="card-desc">{{ item.prompt.description }}</p>
           <div v-if="getTagList(item.prompt).length" class="card-tags">
@@ -53,7 +53,7 @@
           <img :src="item.imageUrl" class="card-image" loading="lazy" />
         </div>
         <div class="card-content">
-          <p class="card-title">{{ item.prompt.title || getFirstLine(item.prompt.content) }}</p>
+          <p class="card-title">{{ getPromptDisplayTitle(item.prompt) }}</p>
           <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
           <p v-if="item.prompt.description && item.prompt.type === 'prompt'" class="card-desc">{{ item.prompt.description }}</p>
           <div v-if="getTagList(item.prompt).length" class="card-tags">
@@ -85,6 +85,7 @@ import { IonIcon } from '@ionic/vue'
 import { heart } from 'ionicons/icons'
 import type { Prompt, Category } from '@shared/types'
 import { getTagsArray } from '~/lib/utils/tag-colors'
+import { getPromptDisplayTitle } from '~/lib/utils/prompt-display'
 
 interface WaterfallItem {
   prompt: Prompt
@@ -106,12 +107,6 @@ const objectUrls: string[] = []
 const getCategoryName = (categoryId: number | undefined) => {
   if (!categoryId) return ''
   return props.categories.find(c => c.id === categoryId)?.name || ''
-}
-
-const getFirstLine = (content: string | undefined) => {
-  if (!content) return ''
-  const line = content.split('\n')[0].trim()
-  return line.length > 40 ? line.substring(0, 40) + '…' : line
 }
 
 const getTagList = (prompt: Prompt): string[] => {

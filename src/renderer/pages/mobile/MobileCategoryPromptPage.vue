@@ -107,7 +107,7 @@
           <ion-item-sliding v-for="prompt in prompts" :key="prompt.id">
             <ion-item button @click="handleView(prompt)">
               <ion-label>
-                <h2 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h2>
+                <h2 class="prompt-title">{{ getPromptDisplayTitle(prompt, t('promptManagement.detailModal.noDescription')) }}</h2>
                 <p v-if="prompt.description && prompt.type === 'prompt'" class="prompt-description">
                   {{ prompt.description }}
                 </p>
@@ -213,6 +213,7 @@ import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
 import { getTagsArray } from '~/lib/utils/tag-colors'
+import { getPromptDisplayTitle } from '~/lib/utils/prompt-display'
 import type { Category, Prompt } from '@shared/types'
 import MobileWaterfallView from '~/components/mobile/MobileWaterfallView.vue'
 import EmptyPromptsIllustration from '~/components/mobile/illustrations/EmptyPromptsIllustration.vue'
@@ -473,12 +474,6 @@ const getCategoryName = (categoryId: number | null | undefined) => {
   if (categoryId == null) return t('promptManagement.noCategory')
   return allCategories.value.find(category => category.id === categoryId)?.name
     || t('promptManagement.noCategory')
-}
-
-const getFirstLineOfContent = (content: string | undefined) => {
-  if (!content) return t('promptManagement.detailModal.noDescription')
-  const firstLine = content.split('\n')[0].trim()
-  return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine
 }
 
 const showToast = async (message: string, color: string = 'success') => {

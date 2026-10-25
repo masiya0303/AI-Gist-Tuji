@@ -897,6 +897,7 @@
     "contentPlaceholder": "请输入提示词内容，使用 {'{{'}变量名{'}}'} 来定义变量",
     "contentPreview": "内容预览",
     "contentRequired": "请输入提示词内容",
+    "credentialsRequired": "请至少填写网站、账号或密码中的一项",
     "copyFailed": "复制失败",
     "copyOriginalContent": "复制原始内容",
     "copyOriginalContentSuccess": "原始内容已复制到剪贴板",

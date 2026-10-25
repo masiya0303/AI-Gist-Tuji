@@ -878,6 +878,7 @@
     "contentPlaceholder": "プロンプト内容を入力し、{'{{'}変数名{'}}'}を使用して変数を定義",
     "contentPreview": "内容プレビュー",
     "contentRequired": "プロンプト内容を入力してください",
+    "credentialsRequired": "ウェブサイト、アカウント、パスワードのいずれかを入力してください",
     "copyFailed": "コピーに失敗",
     "copyOriginalContent": "元のコンテンツをコピーします",
     "copyOriginalContentSuccess": "オリジナルのコンテンツはクリップボードにコピーされています",

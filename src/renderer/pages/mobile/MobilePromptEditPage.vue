@@ -3,6 +3,7 @@
   Modified by 兔叽 (msiya8160-star) on 2026-10-21
   Change: Added inline category creation feature in prompt edit page
   Change: Accept categoryId query to preselect a category when creating from a category page
+  Change: Allow account/password records to save with only a website
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -587,28 +588,46 @@ const tagChipStyle = (tag: string) => {
 // 用于判断是否有真实改动（编辑模式下记录原始值）
 const originalSnapshot = ref<string>('')
 const originalImageSignature = ref('')
+const originalCredentialSignature = ref('')
 
 const getImageSignature = () => {
   return imageBlobs.value.map(blob => `${blob.size}:${blob.type}`).join('|')
+}
+
+// 网站/密码是独立于 formData 的 ref，单独算一份签名，避免只改链接时
+// “未保存修改”判断不到（账号密码类型没有把这两个字段绑进 formData）
+const getCredentialSignature = () => {
+  return JSON.stringify({
+    url: credentialsUrl.value.trim(),
+    passwords: passwords.value.filter(password => password.trim())
+  })
 }
 
 const takeSnapshot = () => {
   const { imageBlobs: _blobs, ...rest } = formData.value as any
   originalSnapshot.value = JSON.stringify(rest)
   originalImageSignature.value = getImageSignature()
+  originalCredentialSignature.value = getCredentialSignature()
 }
 
 const hasRealChanges = (): boolean => {
   // 加载中或保存中，不显示未保存提示
   if (loading.value || saving.value) return false
-  // 新建模式：有内容就算有改动
+  // 新建模式：标题/正文或账号密码类型里的任意字段有值就算有改动
   if (!isEdit.value) {
-    return !!(formData.value.title || formData.value.content)
+    return !!(
+      formData.value.title
+      || formData.value.content
+      || (formData.value.type === 'credentials'
+        && (credentialsUrl.value.trim() || passwords.value.some(password => password.trim())))
+    )
   }
   // 编辑模式：与快照比较
   const { imageBlobs: _blobs, ...rest } = formData.value as any
   const currentSnapshot = JSON.stringify(rest)
-  return currentSnapshot !== originalSnapshot.value || getImageSignature() !== originalImageSignature.value
+  return currentSnapshot !== originalSnapshot.value
+    || getImageSignature() !== originalImageSignature.value
+    || getCredentialSignature() !== originalCredentialSignature.value
 }
 
 // 过滤后的热门标签
@@ -795,8 +814,18 @@ const handleTagSearch = () => {
 
 // 保存
 const handleSave = async () => {
-  // 验证
-  if (!formData.value.content?.trim()) {
+  // 验证：普通提示词必须填写正文；账号密码类型允许只填网站、只填账号或只填密码。
+  const account = formData.value.content?.trim() || ''
+  const hasUrl = !!credentialsUrl.value.trim()
+  const hasPassword = passwords.value.some(password => password.trim())
+  const isCredentials = formData.value.type === 'credentials'
+
+  if (isCredentials) {
+    if (!account && !hasUrl && !hasPassword) {
+      showToast(t('promptManagement.credentialsRequired'), 'warning')
+      return
+    }
+  } else if (!account) {
     showToast(t('promptManagement.contentRequired'), 'warning')
     return
   }
@@ -808,12 +837,16 @@ const handleSave = async () => {
       ...formData.value,
       imageBlobs: imageBlobs.value
     }
-    // Fork: 账号密码类型，保存密码列表和链接到 description
+    // Fork: 账号密码类型，保存密码列表和链接到 description。
+    // 三个字段都允许单独存在，因此空密码和空链接不再写入。
     if (formData.value.type === 'credentials') {
       dataToSave.description = JSON.stringify({
-        passwords: passwords.value.filter(p => p),
-        url: credentialsUrl.value
+        // 密码可能包含有意义的前后空格，只过滤空白项，不改写原值
+        passwords: passwords.value.filter(password => password.trim()),
+        url: credentialsUrl.value.trim()
       })
+      // 允许只有网站：账号正文为空时保持空字符串，而不是写入占位符
+      dataToSave.content = formData.value.content?.trim() || ''
     }
     if (isEdit.value && promptId.value) {
       // 更新

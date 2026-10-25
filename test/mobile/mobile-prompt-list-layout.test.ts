@@ -9,7 +9,7 @@ const promptPage = readFileSync(
 
 describe('移动端提示词列表布局', () => {
   it('限制提示词标题最多显示两行并使用省略号', () => {
-    expect(promptPage).toMatch(/<h2 class="prompt-title">\{\{ prompt\.title \|\| getFirstLineOfContent\(prompt\.content\) \}\}<\/h2>/)
+    expect(promptPage).toContain('<h2 class="prompt-title">{{ getPromptDisplayTitle(prompt,')
 
     const titleStyle = promptPage.match(/\.prompt-title\s*\{([^}]*)\}/)?.[1] || ''
     expect(titleStyle).toContain('-webkit-line-clamp: 2')

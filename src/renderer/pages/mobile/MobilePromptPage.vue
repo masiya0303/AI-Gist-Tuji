@@ -210,7 +210,7 @@
             <ion-item-sliding v-for="prompt in prompts" :key="prompt.id">
               <ion-item button @click="handleView(prompt)">
                 <ion-label>
-                  <h2 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h2>
+                  <h2 class="prompt-title">{{ getPromptDisplayTitle(prompt, t('promptManagement.detailModal.noDescription')) }}</h2>
                   <!-- Fork: 只有提示词类型显示描述，账号密码类型不显示 -->
                   <p v-if="prompt.description && prompt.type === 'prompt'" class="prompt-description">{{ prompt.description }}</p>
                   <div class="prompt-meta">
@@ -417,6 +417,7 @@ import { api } from '~/lib/api'
 import { onDataChange } from '~/lib/services/data-change-events'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
 import { getTagsArray } from '~/lib/utils/tag-colors'
+import { getPromptDisplayTitle } from '~/lib/utils/prompt-display'
 import type { Prompt, Category, CategoryWithRelations } from '@shared/types'
 import { useRouter } from 'vue-router'
 import MobileWaterfallView from '~/components/mobile/MobileWaterfallView.vue'
@@ -619,13 +620,6 @@ const promptSectionTitle = computed(() => {
     ? t('promptManagement.filteredResults')
     : t('promptWorkspace.allPrompts')
 })
-
-// 获取内容的第一行
-const getFirstLineOfContent = (content: string | undefined) => {
-  if (!content) return t('promptManagement.detailModal.noDescription')
-  const firstLine = content.split('\n')[0].trim()
-  return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine
-}
 
 // 展开搜索框：先切到展开态渲染出 ion-searchbar，再等它挂载后调用官方的 setFocus()
 // 自动聚焦，避免手写 CSS 展开动画——过渡效果交给 ion-searchbar 自身的 animated 属性。

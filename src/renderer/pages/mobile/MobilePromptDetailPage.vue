@@ -2,6 +2,7 @@
   Fork modification notice (AGPL v3.0 Section 5a):
   Modified by 兔叽 (msiya8160-star) on 2026-10-22
   Change: Added field-based copy feature for account/password type prompts
+  Change: Hide empty account/password rows and support website-only credentials
   Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
   This fork is licensed under AGPL-3.0
 -->
@@ -37,7 +38,7 @@
       <div v-else class="prompt-detail-body">
         <!-- 标题和描述 -->
         <div class="prompt-header">
-          <h1 class="prompt-title">{{ prompt.title || getFirstLineOfContent(prompt.content) }}</h1>
+          <h1 class="prompt-title">{{ promptHeading }}</h1>
           <!-- Fork: 账号密码类型不显示描述（密码在下方单独显示） -->
           <p v-if="prompt.description && !isCredentialsType" class="prompt-description">{{ prompt.description }}</p>
           <div class="prompt-meta-row">
@@ -108,32 +109,35 @@
             <h2>{{ t('promptManagement.detailModal.promptContent') }}</h2>
           </div>
 
-          <!-- Fork: 账号密码类型 - 账号、链接和多个密码都有复制/跳转按钮 -->
+          <!--
+            Fork: 账号密码类型 - 账号、链接和多个密码各自独立展示。
+            只填网站时仅出现一行网站，不再强制补一行空账号或空密码。
+          -->
           <template v-if="isCredentialsType">
             <div class="credential-list">
-              <div class="credential-item">
+              <div v-if="hasAccount" class="credential-item">
                 <div class="credential-label">{{ t('promptManagement.account') }}</div>
                 <div class="credential-value-row">
-                  <span class="credential-value">{{ prompt.content || '-' }}</span>
+                  <span class="credential-value">{{ prompt.content }}</span>
                   <ion-button
                     fill="clear"
                     size="small"
                     class="copy-btn"
                     @click="copyCredential(prompt.content || '')"
-                    :disabled="!prompt.content"
                   >
                     <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
                   </ion-button>
                 </div>
               </div>
+
               <div v-if="credentialsUrl" class="credential-item">
                 <div class="credential-label">{{ t('promptManagement.url') }}</div>
                 <div class="credential-value-row">
                   <a
                     class="credential-value credential-link"
-                    :href="credentialsUrl"
+                    :href="credentialsHref"
                     target="_blank"
-                    @click.prevent="openUrl(credentialsUrl)"
+                    @click.prevent="openUrl(credentialsHref)"
                   >
                     {{ credentialsUrl }}
                   </a>
@@ -141,27 +145,35 @@
                     fill="clear"
                     size="small"
                     class="open-btn"
-                    @click="openUrl(credentialsUrl)"
+                    @click="openUrl(credentialsHref)"
                   >
                     <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
                   </ion-button>
                 </div>
               </div>
-              <div class="credential-item">
+
+              <div v-if="hasPasswords" class="credential-item">
                 <div class="credential-label">{{ t('promptManagement.passwords') }}</div>
                 <div v-for="(password, index) in passwordList" :key="index" class="password-item">
                   <div class="credential-value-row">
-                    <span class="credential-value">{{ password || '-' }}</span>
+                    <span class="credential-value">{{ password }}</span>
                     <ion-button
                       fill="clear"
                       size="small"
                       class="copy-btn"
                       @click="copyCredential(password)"
-                      :disabled="!password"
                     >
                       <ion-icon slot="icon-only" :icon="copyOutline"></ion-icon>
                     </ion-button>
                   </div>
+                </div>
+              </div>
+
+              <!-- 兼容历史数据：三个字段都为空时给一个明确的占位，而不是空白区域 -->
+              <div v-if="!hasAccount && !credentialsUrl && !hasPasswords" class="credential-item">
+                <div class="credential-label">{{ t('promptManagement.detailModal.promptContent') }}</div>
+                <div class="credential-value-row">
+                  <span class="credential-value">{{ t('promptManagement.detailModal.contentEmpty') }}</span>
                 </div>
               </div>
             </div>
@@ -240,6 +252,7 @@ import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
 import { presentMobileToast } from '~/lib/utils/mobile-toast'
 import { recordPromptUsage } from '~/lib/utils/prompt-usage'
+import { parseCredentialData } from '~/lib/utils/prompt-display'
 import {
   getActivePromptVariables,
   createPromptDraft,
@@ -287,39 +300,23 @@ const promptTags = computed(() => {
 // Fork: 账号密码类型判断
 const isCredentialsType = computed(() => prompt.value?.type === 'credentials')
 
-// Fork: 解析密码列表
-const passwordList = computed(() => {
-  if (!prompt.value?.description) return []
-  try {
-    const parsed = JSON.parse(prompt.value.description)
-    // 新格式：{ passwords: [...], url: "..." }
-    if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed.passwords) {
-      return parsed.passwords
-    }
-    // 旧格式：["password1", "password2"]
-    if (Array.isArray(parsed)) {
-      return parsed
-    }
-  } catch {
-    // 不是 JSON，当作单个密码
-  }
-  return [prompt.value.description]
-})
+// Fork: 账号/密码/网站三个字段都允许单独存在
+const hasAccount = computed(() => !!prompt.value?.content?.trim())
 
-// Fork: 解析网页链接
-const credentialsUrl = computed(() => {
-  if (!prompt.value?.description) return ''
-  try {
-    const parsed = JSON.parse(prompt.value.description)
-    // 新格式：{ passwords: [...], url: "..." }
-    if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed.url) {
-      return parsed.url
-    }
-  } catch {
-    // 不是 JSON
-  }
-  return ''
-})
+// Fork: 统一解析账号密码类型保存在 description 里的网站和密码列表
+const credentialData = computed(() => parseCredentialData(prompt.value?.description))
+const passwordList = computed(() => credentialData.value.passwords)
+const hasPasswords = computed(() => passwordList.value.length > 0)
+const credentialsUrl = computed(() => credentialData.value.url)
+
+// Fork: 用户可能只输入 example.com，补上协议后再打开
+const normalizeUrl = (value: string) => {
+  const trimmed = value.trim()
+  if (!trimmed) return ''
+  return /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+}
+
+const credentialsHref = computed(() => normalizeUrl(credentialsUrl.value))
 
 // Fork: 打开网页链接
 const openUrl = (url: string) => {
@@ -408,6 +405,16 @@ const getFirstLineOfContent = (content: string | undefined) => {
   const firstLine = content.split('\n')[0].trim()
   return firstLine.length > 64 ? `${firstLine.slice(0, 64)}...` : firstLine
 }
+
+// 只填网站的账号密码记录没有标题也没有账号，用网站作为标题兜底
+const promptHeading = computed(() => {
+  if (!prompt.value) return ''
+  const title = prompt.value.title?.trim()
+  if (title) return title
+  if (prompt.value.content?.trim()) return getFirstLineOfContent(prompt.value.content)
+  if (isCredentialsType.value && credentialsUrl.value) return credentialsUrl.value
+  return getFirstLineOfContent(prompt.value.content)
+})
 
 const formatDate = (date: Date | string | undefined) => {
   if (!date) return ''

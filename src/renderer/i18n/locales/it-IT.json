@@ -878,6 +878,7 @@
     "contentPlaceholder": "Immettere il contenuto del prompt, utilizzare {'{{'}variableName{'}}'} per definire le variabili",
     "contentPreview": "Anteprima del contenuto",
     "contentRequired": "Inserisci il contenuto richiesto",
+    "credentialsRequired": "Inserisci almeno uno tra sito web, account o password",
     "copyFailed": "Copia non riuscita",
     "copyOriginalContent": "Copia il contenuto originale",
     "copyOriginalContentSuccess": "Il contenuto originale è stato copiato negli appunti",

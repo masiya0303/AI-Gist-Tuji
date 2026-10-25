@@ -878,6 +878,7 @@
     "contentPlaceholder": "Enter prompt content, use {'{{'}variableName{'}}'} to define variables",
     "contentPreview": "Content Preview",
     "contentRequired": "Please enter prompt content",
+    "credentialsRequired": "Enter at least one of website, account, or password",
     "copyFailed": "Copy failed",
     "copyOriginalContent": "Copy the original content",
     "copyOriginalContentSuccess": "Original content has been copied to clipboard",
