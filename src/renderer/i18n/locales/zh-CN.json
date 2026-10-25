@@ -1241,6 +1241,106 @@
     "viewModeWaterfall": "瀑布流视图",
     "warning": "警告"
   },
+  "promptOptimization": {
+    "title": "提示词优化",
+    "optimizeAction": "AI 优化",
+    "originalPrompt": "原始提示词",
+    "expand": "展开",
+    "collapse": "收起",
+    "variables": "变量",
+    "noVariables": "无变量",
+    "settings": "优化设置",
+    "target": "优化对象",
+    "targetUser": "用户提示词",
+    "targetSystem": "系统提示词",
+    "targetUserHint": "优化你直接发给 AI 的任务描述、输入和约束。",
+    "targetSystemHint": "优化角色设定、规则、边界和输出要求。",
+    "direction": "优化方向",
+    "customDirection": "自定义要求",
+    "customDirectionPlaceholder": "描述你希望怎么改，例如：更简短、增加输出格式、改写成客服语气",
+    "customRequired": "请先填写自定义优化要求",
+    "model": "使用模型",
+    "selectModel": "选择模型",
+    "noModel": "当前配置没有可用模型",
+    "noModelHint": "请先在 AI 配置里添加或拉取模型",
+    "startOptimize": "开始优化",
+    "optimizing": "正在优化…",
+    "stop": "停止生成",
+    "stopped": "已停止生成，保留当前结果",
+    "result": "优化结果",
+    "round": "第 {index} 轮",
+    "resultPlaceholder": "优化结果会显示在这里，也可以手动修改",
+    "compare": "对比",
+    "evaluation": "评估",
+    "original": "原版",
+    "optimized": "优化版",
+    "charCount": "{count} 字符",
+    "variablesPreserved": "变量已保留",
+    "missingVariables": "优化结果缺少变量：{variables}，请手动补回后再应用",
+    "copyResult": "复制结果",
+    "copySuccess": "已复制优化结果",
+    "copyFailed": "复制优化结果失败",
+    "apply": "应用到提示词",
+    "applying": "正在应用…",
+    "applyConfirmTitle": "应用优化结果",
+    "applyConfirmMessage": "将用优化后的内容覆盖当前提示词，原内容会保留在提示词历史记录中。",
+    "applied": "已应用到提示词",
+    "applyFailed": "应用优化结果失败",
+    "noResult": "先运行一次优化",
+    "iterateTitle": "继续优化",
+    "iteratePlaceholder": "例如：再精简一些，并补上 JSON 输出格式",
+    "iterate": "继续优化",
+    "evaluate": "AI 评估",
+    "evaluating": "评估中…",
+    "evaluationHint": "让 AI 对比原版和优化版，给出评分与可继续改进的建议。",
+    "evaluationFailed": "评估失败：{error}",
+    "evaluationParseFailed": "评估结果解析失败，请重试或查看原始返回",
+    "improvements": "改进建议",
+    "dimensions": {
+      "goalClarity": "目标清晰度",
+      "instructionCompleteness": "指令完备度",
+      "structuralExecutability": "结构可执行性",
+      "ambiguityControl": "歧义控制",
+      "robustness": "稳健性"
+    },
+    "verdictBetter": "优于原版",
+    "verdictSimilar": "与原版接近",
+    "verdictWorse": "不如原版",
+    "optimizeSuccess": "优化完成",
+    "optimizeFailed": "优化失败",
+    "historyChangeDescription": "AI 优化",
+    "promptNotFound": "提示词不存在",
+    "loadFailed": "加载提示词失败",
+    "noConfig": "还没有可用的 AI 配置",
+    "noConfigDescription": "先添加并启用一个 AI 配置，才能使用提示词优化。",
+    "addConfig": "去添加 AI 配置",
+    "presets": {
+      "general": {
+        "name": "通用优化",
+        "description": "补齐目标、上下文、约束、流程与输出格式"
+      },
+      "professional": {
+        "name": "专业精准",
+        "description": "把模糊要求改成具体、可执行的标准"
+      },
+      "concise": {
+        "name": "精简凝练",
+        "description": "去除冗余，保留核心目标与关键约束"
+      },
+      "structured": {
+        "name": "结构化",
+        "description": "按角色、目标、规则、流程、输出重新组织"
+      },
+      "format": {
+        "name": "输出格式强化",
+        "description": "明确字段、格式、示例和边界条件"
+      },
+      "custom": {
+        "name": "自定义要求",
+        "description": "用自己的话描述优化方向"
+      }
+    }
+  },
   "promptWorkspace": {
     "addDescription": "添加描述",
     "aiResponse": "AI 响应",

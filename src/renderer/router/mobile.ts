@@ -3,6 +3,7 @@
  * Modified by 兔叽 (msiya8160-star) on 2026-10-21
  * Change: Added /category route for mobile category management page
  * Change: Added /category/:id route for the mobile category prompt drill-down page
+ * Change: Added /prompt/optimize/:id route for the mobile prompt optimization workbench
  * Original project: AI Gist by Yarin Zhang (https://github.com/yarin-zhang/AI-Gist)
  * This fork is licensed under AGPL-3.0
  */
@@ -53,6 +54,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/prompt/detail/:id',
     component: () => import('../pages/mobile/MobilePromptDetailPage.vue')
+  },
+  {
+    path: '/prompt/optimize/:id',
+    component: () => import('../pages/mobile/MobilePromptOptimizePage.vue')
   },
   {
     path: '/ai-config/create',

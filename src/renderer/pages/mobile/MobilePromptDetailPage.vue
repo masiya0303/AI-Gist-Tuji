@@ -197,6 +197,10 @@
         Fork: 账号密码类型不显示此按钮，因为已有内联复制按钮
       -->
       <div v-if="prompt && !isCredentialsType" class="action-buttons" slot="fixed">
+        <ion-button expand="block" fill="outline" class="optimize-button" @click="openOptimize">
+          <ion-icon slot="start" :icon="sparklesOutline"></ion-icon>
+          {{ t('promptOptimization.optimizeAction') }}
+        </ion-button>
         <ion-button expand="block" @click="copyContent">
           <ion-icon slot="start" :icon="copyOutline"></ion-icon>
           {{ t('promptManagement.detailModal.copyContent') }}
@@ -246,7 +250,8 @@ import {
   ellipsisVertical,
   eyeOutline,
   eyeOffOutline,
-  openOutline
+  openOutline,
+  sparklesOutline
 } from 'ionicons/icons'
 import { useI18n } from '~/composables/useI18n'
 import { api } from '~/lib/api'
@@ -531,6 +536,12 @@ const handleEdit = () => {
   router.push(`/prompt/edit/${prompt.value.id}`)
 }
 
+// AI 优化工作台
+const openOptimize = () => {
+  if (!prompt.value?.id) return
+  router.push(`/prompt/optimize/${prompt.value.id}`)
+}
+
 // 删除
 const handleDelete = async () => {
   if (!prompt.value) return
@@ -740,11 +751,20 @@ onUnmounted(() => {
   bottom: 0;
   z-index: 10;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 8px;
   background: var(--ion-background-color);
   border-top: 1px solid var(--border-default);
   padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px);
+}
+
+.action-buttons ion-button {
+  flex: 1 1 0;
+  min-width: 0;
+  --padding-start: 6px;
+  --padding-end: 6px;
+  font-size: var(--mobile-font-size-footnote);
 }
 
 ion-chip {

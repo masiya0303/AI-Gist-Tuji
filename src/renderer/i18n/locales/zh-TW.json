@@ -1210,6 +1210,106 @@
     "viewModeWaterfall": "瀑布流視圖",
     "warning": "警告"
   },
+  "promptOptimization": {
+    "title": "提示詞優化",
+    "optimizeAction": "AI 優化",
+    "originalPrompt": "原始提示詞",
+    "expand": "展開",
+    "collapse": "收起",
+    "variables": "變量",
+    "noVariables": "無變量",
+    "settings": "優化設定",
+    "target": "優化對象",
+    "targetUser": "使用者提示詞",
+    "targetSystem": "系統提示詞",
+    "targetUserHint": "優化你直接傳給 AI 的任務描述、輸入和約束。",
+    "targetSystemHint": "優化角色設定、規則、邊界和輸出要求。",
+    "direction": "優化方向",
+    "customDirection": "自訂要求",
+    "customDirectionPlaceholder": "描述你希望怎麼改，例如：更簡短、增加輸出格式、改寫成客服語氣",
+    "customRequired": "請先填寫自訂優化要求",
+    "model": "使用模型",
+    "selectModel": "選擇模型",
+    "noModel": "目前設定沒有可用模型",
+    "noModelHint": "請先在 AI 設定裡新增或拉取模型",
+    "startOptimize": "開始優化",
+    "optimizing": "正在優化…",
+    "stop": "停止生成",
+    "stopped": "已停止生成，保留目前結果",
+    "result": "優化結果",
+    "round": "第 {index} 輪",
+    "resultPlaceholder": "優化結果會顯示在這裡，也可以手動修改",
+    "compare": "對比",
+    "evaluation": "評估",
+    "original": "原版",
+    "optimized": "優化版",
+    "charCount": "{count} 字元",
+    "variablesPreserved": "變量已保留",
+    "missingVariables": "優化結果缺少變量：{variables}，請手動補回後再套用",
+    "copyResult": "複製結果",
+    "copySuccess": "已複製優化結果",
+    "copyFailed": "複製優化結果失敗",
+    "apply": "套用到提示詞",
+    "applying": "正在套用…",
+    "applyConfirmTitle": "套用優化結果",
+    "applyConfirmMessage": "將用優化後的內容覆蓋目前提示詞，原內容會保留在提示詞歷史記錄中。",
+    "applied": "已套用到提示詞",
+    "applyFailed": "套用優化結果失敗",
+    "noResult": "先執行一次優化",
+    "iterateTitle": "繼續優化",
+    "iteratePlaceholder": "例如：再精簡一些，並補上 JSON 輸出格式",
+    "iterate": "繼續優化",
+    "evaluate": "AI 評估",
+    "evaluating": "評估中…",
+    "evaluationHint": "讓 AI 對比原版和優化版，給出評分與可繼續改進的建議。",
+    "evaluationFailed": "評估失敗：{error}",
+    "evaluationParseFailed": "評估結果解析失敗，請重試或查看原始回傳",
+    "improvements": "改進建議",
+    "dimensions": {
+      "goalClarity": "目標清晰度",
+      "instructionCompleteness": "指令完備度",
+      "structuralExecutability": "結構可執行性",
+      "ambiguityControl": "歧義控制",
+      "robustness": "穩健性"
+    },
+    "verdictBetter": "優於原版",
+    "verdictSimilar": "與原版接近",
+    "verdictWorse": "不如原版",
+    "optimizeSuccess": "優化完成",
+    "optimizeFailed": "優化失敗",
+    "historyChangeDescription": "AI 優化",
+    "promptNotFound": "提示詞不存在",
+    "loadFailed": "載入提示詞失敗",
+    "noConfig": "還沒有可用的 AI 設定",
+    "noConfigDescription": "先新增並啟用一個 AI 設定，才能使用提示詞優化。",
+    "addConfig": "去新增 AI 設定",
+    "presets": {
+      "general": {
+        "name": "通用優化",
+        "description": "補齊目標、上下文、約束、流程與輸出格式"
+      },
+      "professional": {
+        "name": "專業精準",
+        "description": "把模糊要求改成具體、可執行的標準"
+      },
+      "concise": {
+        "name": "精簡凝練",
+        "description": "去除冗餘，保留核心目標與關鍵約束"
+      },
+      "structured": {
+        "name": "結構化",
+        "description": "按角色、目標、規則、流程、輸出重新組織"
+      },
+      "format": {
+        "name": "輸出格式強化",
+        "description": "明確欄位、格式、範例和邊界條件"
+      },
+      "custom": {
+        "name": "自訂要求",
+        "description": "用自己的話描述優化方向"
+      }
+    }
+  },
   "promptWorkspace": {
     "addDescription": "新增描述",
     "aiResponse": "AI 回應",

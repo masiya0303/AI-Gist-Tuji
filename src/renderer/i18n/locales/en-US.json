@@ -1222,6 +1222,106 @@
     "viewModeWaterfall": "Waterfall view",
     "warning": "warn"
   },
+  "promptOptimization": {
+    "title": "Prompt Optimization",
+    "optimizeAction": "AI Optimize",
+    "originalPrompt": "Original Prompt",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "variables": "Variables",
+    "noVariables": "No variables",
+    "settings": "Optimization Settings",
+    "target": "Optimize As",
+    "targetUser": "User Prompt",
+    "targetSystem": "System Prompt",
+    "targetUserHint": "Improve the task, input, and constraints you send directly to the AI.",
+    "targetSystemHint": "Improve role definition, rules, boundaries, and output requirements.",
+    "direction": "Direction",
+    "customDirection": "Custom Direction",
+    "customDirectionPlaceholder": "Describe how to improve it, e.g. shorter, add JSON output, rewrite in a support tone",
+    "customRequired": "Enter a custom optimization direction first",
+    "model": "Model",
+    "selectModel": "Select Model",
+    "noModel": "This configuration has no available models",
+    "noModelHint": "Add or fetch models in the AI configuration first",
+    "startOptimize": "Start Optimizing",
+    "optimizing": "Optimizing…",
+    "stop": "Stop Generating",
+    "stopped": "Generation stopped; the current result was kept",
+    "result": "Optimized Result",
+    "round": "Round {index}",
+    "resultPlaceholder": "The optimized prompt appears here and can be edited",
+    "compare": "Compare",
+    "evaluation": "Evaluation",
+    "original": "Original",
+    "optimized": "Optimized",
+    "charCount": "{count} characters",
+    "variablesPreserved": "Variables preserved",
+    "missingVariables": "The result is missing variables: {variables}. Add them back before applying.",
+    "copyResult": "Copy Result",
+    "copySuccess": "Optimized result copied",
+    "copyFailed": "Failed to copy the optimized result",
+    "apply": "Apply to Prompt",
+    "applying": "Applying…",
+    "applyConfirmTitle": "Apply Optimized Result",
+    "applyConfirmMessage": "This will replace the current prompt content. The original content will remain in prompt history.",
+    "applied": "Applied to the prompt",
+    "applyFailed": "Failed to apply the optimized result",
+    "noResult": "Run an optimization first",
+    "iterateTitle": "Keep Improving",
+    "iteratePlaceholder": "e.g. make it shorter and add a JSON output format",
+    "iterate": "Optimize Again",
+    "evaluate": "AI Evaluation",
+    "evaluating": "Evaluating…",
+    "evaluationHint": "Let AI compare the original and optimized versions and score the improvement.",
+    "evaluationFailed": "Evaluation failed: {error}",
+    "evaluationParseFailed": "Could not parse the evaluation response. Try again or inspect the raw output.",
+    "improvements": "Suggested Improvements",
+    "dimensions": {
+      "goalClarity": "Goal Clarity",
+      "instructionCompleteness": "Instruction Completeness",
+      "structuralExecutability": "Structural Executability",
+      "ambiguityControl": "Ambiguity Control",
+      "robustness": "Robustness"
+    },
+    "verdictBetter": "Better than original",
+    "verdictSimilar": "Close to original",
+    "verdictWorse": "Worse than original",
+    "optimizeSuccess": "Optimization complete",
+    "optimizeFailed": "Optimization failed",
+    "historyChangeDescription": "AI optimization",
+    "promptNotFound": "Prompt not found",
+    "loadFailed": "Failed to load the prompt",
+    "noConfig": "No AI configuration available",
+    "noConfigDescription": "Add and enable an AI configuration before optimizing prompts.",
+    "addConfig": "Add AI Configuration",
+    "presets": {
+      "general": {
+        "name": "General",
+        "description": "Fill in goals, context, constraints, workflow, and output format"
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "Turn vague requests into concrete, executable requirements"
+      },
+      "concise": {
+        "name": "Concise",
+        "description": "Remove redundancy while keeping the core goal and key constraints"
+      },
+      "structured": {
+        "name": "Structured",
+        "description": "Reorganize into role, goal, rules, workflow, and output sections"
+      },
+      "format": {
+        "name": "Output Format",
+        "description": "Clarify fields, formatting, examples, and boundary conditions"
+      },
+      "custom": {
+        "name": "Custom",
+        "description": "Describe the optimization direction in your own words"
+      }
+    }
+  },
   "promptWorkspace": {
     "addDescription": "Add a description",
     "aiResponse": "AI response",

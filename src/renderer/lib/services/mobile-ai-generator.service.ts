@@ -8,16 +8,27 @@ import type { AIConfig, AIGenerationRequest, AIGenerationResult } from '@shared/
 import { PlatformDetector } from '@shared/platform'
 import {
   getConfiguredBaseURL,
+  getDefaultBaseURL,
   getDefaultModels as getProviderDefaultModels
 } from '@shared/ai-provider-metadata'
 
 const GOOGLE_BASE_URL = 'https://generativelanguage.googleapis.com'
 const GOOGLE_API_VERSION = 'v1beta'
 
+interface ChatCallOptions {
+  temperature?: number
+  maxTokens?: number
+  signal?: AbortSignal
+}
+
 function buildOpenAICompatibleHeaders(config: AIConfig): Record<string, string> {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${config.apiKey}`
+    'Content-Type': 'application/json'
+  }
+
+  // 本地 Ollama / LM Studio 通常不需要鉴权；不要发送空的 Bearer 头
+  if (config.apiKey?.trim()) {
+    headers.Authorization = `Bearer ${config.apiKey.trim()}`
   }
 
   if (config.type === 'openrouter') {
@@ -46,6 +57,104 @@ const DEFAULT_SYSTEM_PROMPT = `你是一个专业的 AI 提示词工程师。你
  * AI 生成服务类
  */
 export class AIGeneratorService {
+  private static activeChatAbortController: AbortController | null = null
+
+  /**
+   * 使用指定的系统/用户提示词做一次通用对话。
+   *
+   * 与 generatePrompt 区分开：generatePrompt 会把 topic 再包一层“用户需求”，
+   * 适合“从主题生成提示词”；这里要的是原样发送提示词优化/评估指令。
+   * 目前服务于移动端提示词优化工作台，支持流式回调与主动停止。
+   */
+  static async generateChat(
+    config: AIConfig,
+    model: string,
+    systemPrompt: string,
+    userPrompt: string,
+    onProgress?: (content: string) => void,
+    options: { temperature?: number; maxTokens?: number } = {}
+  ): Promise<string> {
+    const request: AIGenerationRequest = {
+      configId: config.configId,
+      model,
+      topic: userPrompt,
+      customPrompt: userPrompt
+    }
+    const controller = new AbortController()
+    this.activeChatAbortController = controller
+    const callOptions: ChatCallOptions = {
+      temperature: options.temperature,
+      maxTokens: options.maxTokens,
+      signal: controller.signal
+    }
+
+    try {
+      let result: AIGenerationResult
+
+      switch (config.type) {
+        case 'openai':
+        case 'deepseek':
+        case 'siliconflow':
+        case 'tencent':
+        case 'aliyun':
+        case 'zhipu':
+        case 'mistral':
+        case 'openrouter':
+          result = await this.callOpenAICompatibleAPI(
+            request, config, systemPrompt, userPrompt, onProgress, callOptions
+          )
+          break
+
+        case 'anthropic':
+          result = await this.callAnthropicAPI(
+            request, config, systemPrompt, userPrompt, onProgress, callOptions
+          )
+          break
+
+        case 'google':
+          result = await this.callGoogleAPI(
+            request, config, systemPrompt, userPrompt, onProgress, callOptions
+          )
+          break
+
+        // Ollama / LM Studio 都提供 OpenAI 兼容的 /v1/chat/completions。
+        // 复用 OpenAI 兼容调用，避免移动端优化只支持云端服务。
+        case 'ollama':
+        case 'lmstudio': {
+          const configuredBase = (config.baseURL?.trim() || getDefaultBaseURL(config.type))
+            .replace(/\/+$/, '')
+          const baseURL = configuredBase.endsWith('/v1')
+            ? configuredBase
+            : `${configuredBase}/v1`
+          const openAICompatibleConfig: AIConfig = {
+            ...config,
+            type: 'openai',
+            baseURL
+          }
+          result = await this.callOpenAICompatibleAPI(
+            request, openAICompatibleConfig, systemPrompt, userPrompt, onProgress, callOptions
+          )
+          break
+        }
+
+        default:
+          throw new Error(`移动端提示词优化暂不支持 ${config.type} 类型的 AI 服务`)
+      }
+
+      return result.generatedPrompt
+    } finally {
+      if (this.activeChatAbortController === controller) {
+        this.activeChatAbortController = null
+      }
+    }
+  }
+
+  /** 停止当前通用对话的流式请求 */
+  static stopChat(): void {
+    this.activeChatAbortController?.abort()
+    this.activeChatAbortController = null
+  }
+
   /**
    * 生成提示词（支持流式传输）
    */
@@ -135,7 +244,8 @@ export class AIGeneratorService {
     config: AIConfig,
     systemPrompt: string,
     userPrompt: string,
-    onProgress?: (content: string) => void
+    onProgress?: (content: string) => void,
+    options: ChatCallOptions = {}
   ): Promise<AIGenerationResult> {
     const baseURL = getConfiguredBaseURL(config.type, config.baseURL).replace(/\/+$/, '')
     const url = `${baseURL}/chat/completions`
@@ -144,14 +254,15 @@ export class AIGeneratorService {
     const response = await fetch(url, {
       method: 'POST',
       headers: buildOpenAICompatibleHeaders(config),
+      signal: options.signal,
       body: JSON.stringify({
         model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: options.temperature ?? 0.7,
+        max_tokens: options.maxTokens ?? 2000,
         stream: !!onProgress // 如果有回调函数，启用流式传输
       })
     })
@@ -241,7 +352,8 @@ export class AIGeneratorService {
     config: AIConfig,
     systemPrompt: string,
     userPrompt: string,
-    onProgress?: (content: string) => void
+    onProgress?: (content: string) => void,
+    options: ChatCallOptions = {}
   ): Promise<AIGenerationResult> {
     const baseURL = (config.baseURL || 'https://api.anthropic.com').replace(/\/+$/, '')
     const url = `${baseURL}/v1/messages`
@@ -249,6 +361,7 @@ export class AIGeneratorService {
 
     const response = await fetch(url, {
       method: 'POST',
+      signal: options.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': config.apiKey || '',
@@ -256,7 +369,8 @@ export class AIGeneratorService {
       },
       body: JSON.stringify({
         model,
-        max_tokens: 2000,
+        max_tokens: options.maxTokens ?? 2000,
+        temperature: options.temperature ?? 0.7,
         system: systemPrompt,
         messages: [
           { role: 'user', content: userPrompt }
@@ -350,7 +464,8 @@ export class AIGeneratorService {
     config: AIConfig,
     systemPrompt: string,
     userPrompt: string,
-    onProgress?: (content: string) => void
+    onProgress?: (content: string) => void,
+    options: ChatCallOptions = {}
   ): Promise<AIGenerationResult> {
     const baseURL = (config.baseURL || GOOGLE_BASE_URL).replace(/\/+$/, '')
     const model = request.model || config.defaultModel || getProviderDefaultModels('google')[0]
@@ -358,6 +473,7 @@ export class AIGeneratorService {
 
     const response = await fetch(url, {
       method: 'POST',
+      signal: options.signal,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -368,8 +484,8 @@ export class AIGeneratorService {
           }]
         }],
         generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2000
+          temperature: options.temperature ?? 0.7,
+          maxOutputTokens: options.maxTokens ?? 2000
         }
       })
     })

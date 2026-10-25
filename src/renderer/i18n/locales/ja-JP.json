@@ -1210,6 +1210,106 @@
     "viewModeWaterfall": "滝の眺め",
     "warning": "警告"
   },
+  "promptOptimization": {
+    "title": "プロンプト最適化",
+    "optimizeAction": "AI 最適化",
+    "originalPrompt": "元のプロンプト",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "variables": "変数",
+    "noVariables": "変数なし",
+    "settings": "最適化設定",
+    "target": "最適化対象",
+    "targetUser": "ユーザープロンプト",
+    "targetSystem": "システムプロンプト",
+    "targetUserHint": "AI に直接送るタスク説明・入力・制約を改善します。",
+    "targetSystemHint": "ロール設定・ルール・境界・出力要件を改善します。",
+    "direction": "最適化の方向",
+    "customDirection": "カスタム要件",
+    "customDirectionPlaceholder": "例：もっと短く、JSON 出力を追加、サポート担当の口調に変更",
+    "customRequired": "カスタム最適化要件を入力してください",
+    "model": "使用モデル",
+    "selectModel": "モデルを選択",
+    "noModel": "この設定に利用可能なモデルがありません",
+    "noModelHint": "先に AI 設定でモデルを追加または取得してください",
+    "startOptimize": "最適化を開始",
+    "optimizing": "最適化中…",
+    "stop": "生成を停止",
+    "stopped": "生成を停止しました。現在の結果を保持しています",
+    "result": "最適化結果",
+    "round": "第 {index} ラウンド",
+    "resultPlaceholder": "最適化結果がここに表示されます。手動で編集もできます",
+    "compare": "比較",
+    "evaluation": "評価",
+    "original": "元版",
+    "optimized": "最適化版",
+    "charCount": "{count} 文字",
+    "variablesPreserved": "変数は保持されています",
+    "missingVariables": "最適化結果に変数がありません：{variables}。適用前に手動で戻してください",
+    "copyResult": "結果をコピー",
+    "copySuccess": "最適化結果をコピーしました",
+    "copyFailed": "最適化結果のコピーに失敗しました",
+    "apply": "プロンプトに適用",
+    "applying": "適用中…",
+    "applyConfirmTitle": "最適化結果を適用",
+    "applyConfirmMessage": "現在のプロンプト内容を最適化後の内容で上書きします。元の内容はプロンプト履歴に残ります。",
+    "applied": "プロンプトに適用しました",
+    "applyFailed": "最適化結果の適用に失敗しました",
+    "noResult": "先に最適化を実行してください",
+    "iterateTitle": "さらに最適化",
+    "iteratePlaceholder": "例：さらに短くし、JSON 出力形式を追加",
+    "iterate": "続けて最適化",
+    "evaluate": "AI 評価",
+    "evaluating": "評価中…",
+    "evaluationHint": "AI に元版と最適化版を比較させ、スコアと改善提案を出します。",
+    "evaluationFailed": "評価に失敗しました：{error}",
+    "evaluationParseFailed": "評価結果を解析できませんでした。再試行するか元の応答を確認してください",
+    "improvements": "改善提案",
+    "dimensions": {
+      "goalClarity": "目標の明確さ",
+      "instructionCompleteness": "指示の完全性",
+      "structuralExecutability": "構造の実行可能性",
+      "ambiguityControl": "曖昧さの制御",
+      "robustness": "堅牢性"
+    },
+    "verdictBetter": "元版より良い",
+    "verdictSimilar": "元版と同程度",
+    "verdictWorse": "元版より悪い",
+    "optimizeSuccess": "最適化が完了しました",
+    "optimizeFailed": "最適化に失敗しました",
+    "historyChangeDescription": "AI 最適化",
+    "promptNotFound": "プロンプトが見つかりません",
+    "loadFailed": "プロンプトの読み込みに失敗しました",
+    "noConfig": "利用可能な AI 設定がありません",
+    "noConfigDescription": "プロンプト最適化を使うには、AI 設定を追加して有効にしてください。",
+    "addConfig": "AI 設定を追加",
+    "presets": {
+      "general": {
+        "name": "汎用最適化",
+        "description": "目標・文脈・制約・手順・出力形式を補完"
+      },
+      "professional": {
+        "name": "プロフェッショナル",
+        "description": "曖昧な要求を具体的で実行可能な基準に変換"
+      },
+      "concise": {
+        "name": "簡潔化",
+        "description": "冗長さを削り、核心目標と重要制約を保持"
+      },
+      "structured": {
+        "name": "構造化",
+        "description": "役割・目標・ルール・手順・出力の構造に再編成"
+      },
+      "format": {
+        "name": "出力形式",
+        "description": "フィールド・形式・例・境界条件を明確化"
+      },
+      "custom": {
+        "name": "カスタム",
+        "description": "自分の言葉で最適化方向を指定"
+      }
+    }
+  },
   "promptWorkspace": {
     "addDescription": "説明を追加",
     "aiResponse": "AI の応答",

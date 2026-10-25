@@ -1210,6 +1210,106 @@
     "viewModeWaterfall": "Vista sulla cascata",
     "warning": "Avvertenza"
   },
+  "promptOptimization": {
+    "title": "Ottimizzazione prompt",
+    "optimizeAction": "Ottimizza con AI",
+    "originalPrompt": "Prompt originale",
+    "expand": "Espandi",
+    "collapse": "Comprimi",
+    "variables": "Variabili",
+    "noVariables": "Nessuna variabile",
+    "settings": "Impostazioni di ottimizzazione",
+    "target": "Ottimizza come",
+    "targetUser": "Prompt utente",
+    "targetSystem": "Prompt di sistema",
+    "targetUserHint": "Migliora il task, l'input e i vincoli che invii direttamente all'AI.",
+    "targetSystemHint": "Migliora ruolo, regole, confini e requisiti di output.",
+    "direction": "Direzione",
+    "customDirection": "Direzione personalizzata",
+    "customDirectionPlaceholder": "Descrivi come migliorarlo, ad es. più breve, aggiungi output JSON, riscrivi in tono assistenza",
+    "customRequired": "Inserisci prima una direzione di ottimizzazione personalizzata",
+    "model": "Modello",
+    "selectModel": "Seleziona modello",
+    "noModel": "Questa configurazione non ha modelli disponibili",
+    "noModelHint": "Aggiungi o recupera prima i modelli nella configurazione AI",
+    "startOptimize": "Avvia ottimizzazione",
+    "optimizing": "Ottimizzazione in corso…",
+    "stop": "Interrompi generazione",
+    "stopped": "Generazione interrotta; il risultato corrente è stato mantenuto",
+    "result": "Risultato ottimizzato",
+    "round": "Round {index}",
+    "resultPlaceholder": "Il prompt ottimizzato appare qui e può essere modificato",
+    "compare": "Confronta",
+    "evaluation": "Valutazione",
+    "original": "Originale",
+    "optimized": "Ottimizzato",
+    "charCount": "{count} caratteri",
+    "variablesPreserved": "Variabili conservate",
+    "missingVariables": "Nel risultato mancano le variabili: {variables}. Reinseriscile prima di applicare.",
+    "copyResult": "Copia risultato",
+    "copySuccess": "Risultato ottimizzato copiato",
+    "copyFailed": "Copia del risultato ottimizzato non riuscita",
+    "apply": "Applica al prompt",
+    "applying": "Applicazione…",
+    "applyConfirmTitle": "Applica risultato ottimizzato",
+    "applyConfirmMessage": "Il contenuto attuale del prompt verrà sostituito. Il contenuto originale resterà nella cronologia del prompt.",
+    "applied": "Applicato al prompt",
+    "applyFailed": "Applicazione del risultato ottimizzato non riuscita",
+    "noResult": "Esegui prima un'ottimizzazione",
+    "iterateTitle": "Continua a migliorare",
+    "iteratePlaceholder": "ad es. rendilo più breve e aggiungi un formato JSON",
+    "iterate": "Ottimizza ancora",
+    "evaluate": "Valutazione AI",
+    "evaluating": "Valutazione in corso…",
+    "evaluationHint": "Lascia che l'AI confronti originale e ottimizzato e assegni un punteggio.",
+    "evaluationFailed": "Valutazione non riuscita: {error}",
+    "evaluationParseFailed": "Impossibile analizzare la risposta di valutazione. Riprova o controlla l'output grezzo.",
+    "improvements": "Miglioramenti suggeriti",
+    "dimensions": {
+      "goalClarity": "Chiarezza obiettivo",
+      "instructionCompleteness": "Completezza istruzioni",
+      "structuralExecutability": "Eseguibilità struttura",
+      "ambiguityControl": "Controllo ambiguità",
+      "robustness": "Robustezza"
+    },
+    "verdictBetter": "Migliore dell'originale",
+    "verdictSimilar": "Simile all'originale",
+    "verdictWorse": "Peggiore dell'originale",
+    "optimizeSuccess": "Ottimizzazione completata",
+    "optimizeFailed": "Ottimizzazione non riuscita",
+    "historyChangeDescription": "Ottimizzazione AI",
+    "promptNotFound": "Prompt non trovato",
+    "loadFailed": "Caricamento del prompt non riuscito",
+    "noConfig": "Nessuna configurazione AI disponibile",
+    "noConfigDescription": "Aggiungi e abilita una configurazione AI prima di ottimizzare i prompt.",
+    "addConfig": "Aggiungi configurazione AI",
+    "presets": {
+      "general": {
+        "name": "Generale",
+        "description": "Completa obiettivi, contesto, vincoli, flusso e formato di output"
+      },
+      "professional": {
+        "name": "Professionale",
+        "description": "Trasforma richieste vaghe in requisiti concreti ed eseguibili"
+      },
+      "concise": {
+        "name": "Conciso",
+        "description": "Rimuovi ridondanze mantenendo obiettivo e vincoli chiave"
+      },
+      "structured": {
+        "name": "Strutturato",
+        "description": "Riorganizza in ruolo, obiettivo, regole, flusso e output"
+      },
+      "format": {
+        "name": "Formato output",
+        "description": "Chiarisci campi, formato, esempi e condizioni limite"
+      },
+      "custom": {
+        "name": "Personalizzato",
+        "description": "Descrivi la direzione di ottimizzazione con parole tue"
+      }
+    }
+  },
   "promptWorkspace": {
     "addDescription": "Aggiungi una descrizione",
     "aiResponse": "Risposta AI",

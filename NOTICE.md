@@ -193,6 +193,23 @@
 #### Files with inline modification notices:
 - `src/renderer/composables/useUpdate.ts` — Handle version tags with suffixes
 
+### 2026-10-25 — Mobile Prompt Optimization Workbench
+
+#### Files with inline modification notices:
+- `src/renderer/pages/mobile/MobilePromptOptimizePage.vue` — New: mobile AI prompt optimization workbench
+- `src/renderer/pages/mobile/MobilePromptDetailPage.vue` — Added AI optimization entry; hide empty credential rows
+- `src/renderer/pages/mobile/MobilePromptEditPage.vue` — Allow website-only credential records
+- `src/renderer/pages/mobile/MobilePromptPage.vue` — Two-column category card home + website-only display title
+- `src/renderer/router/mobile.ts` — Added `/prompt/optimize/:id` and `/category/:id` routes
+- `src/renderer/lib/prompt-optimization/templates.ts` — New: optimization / iteration / evaluation prompt builders
+- `src/renderer/lib/prompt-optimization/diff.ts` — New: line-level diff for the comparison tab
+- `src/renderer/lib/services/mobile-ai-generator.service.ts` — Added custom-system/user chat generation with streaming and stop support
+- `src/renderer/lib/utils/prompt-display.ts` — New: display-title fallback, including website-only credentials
+- `src/renderer/pages/mobile/MobileAIConfigEditPage.vue` — Sync autofilled API key from the ion-input host element
+
+#### Reference / inspiration:
+- The mobile optimization flow (single-click optimization, multi-round iteration, comparison, and AI evaluation) is inspired by [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer) by linshenkx, licensed under AGPL-3.0. The implementation is adapted to AI Gist's existing prompt model and is not a verbatim copy of that project's source files.
+
 ---
 
 ## Files NOT Modified
