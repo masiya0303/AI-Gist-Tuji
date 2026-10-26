@@ -1,16 +1,13 @@
-> 🔀 **本分支（`no-ai-mobile`）与主分支不同，以下内容需要打折读**
+> 🔀 **本分支（`no-ai-mobile`）和上游分支不是一回事**
 >
-> 这个分支把**全部 AI 功能**（AI 生成、AI 优化工作台、AI 提取变量、AI 配置管理）和**整个桌面端**（Electron、electron-builder、本地 CLI）都删掉了，只保留 **iOS / Android（Capacitor）** 构建链。
-> 因此下面关于 AI 模型接入、AI 生成/调优、桌面端（Windows / macOS / Linux）、Microsoft Store / Snap、以及桌面截图的部分**不适用于本分支**，它们是为了和上游保持一致而原样保留的。
-> 移动端可用的能力是：提示词管理（分类 / 标签 / 收藏 / 搜索）、变量填充与 Jinja 模板、版本历史、本地备份、云端备份与多设备同步、多语言。
-> 构建与开发请走 `yarn dev`、`yarn build`、`yarn cap:ios`、`yarn cap:android`，测试走 `yarn test:run`。
+> 这个分支把上游的**全部 AI 功能**和**整个桌面端**都删掉了，只留一个 **iOS / Android（Capacitor）移动端 App**。
+> 如果你想要「AI 生成提示词、AI 调优提示词、桌面端 Electron 应用」，请用上游分支——本分支里没有，也不会加回来。
 
 > ⚠️ **本项目是 [AI Gist](https://github.com/yarin-zhang/AI-Gist) 的 Fork**
 >
-> - **原作者**：Yarin Zhang（[GitHub](https://github.com/yarin-zhang)）
-> - **原项目**采用 AGPL-3.0 许可证，本项目在原项目基础上进行了修改
-> - **本 Fork** 同样采用 AGPL-3.0 许可证，修改由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）完成
-> - 移动端「提示词优化工作台」借鉴了 [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer)（AGPL-3.0，作者 linshenkx）的交互流程与提示词思路，详见文末[「致谢与开源声明」](#致谢与开源声明)
+> - 原作者：Yarin Zhang（[GitHub](https://github.com/yarin-zhang)），原项目采用 AGPL-3.0 许可证
+> - 本 Fork 同样采用 AGPL-3.0 许可证，修改由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）完成
+> - 具体的修改范围与删除记录见 [NOTICE.md](./NOTICE.md)
 > - 如果你通过网络（SaaS）方式提供基于本项目的服务，必须向用户公开修改后的完整源代码（AGPL-3.0 第 13 条）
 
 ---
@@ -21,250 +18,133 @@
 
 # AI Gist
 
-![100% 本地数据](https://img.shields.io/badge/数据存储-100%25本地-success?style=flat&logo=database&logoColor=white) ![AI 支持](https://img.shields.io/badge/AI-支持多模型-blue?style=flat&logo=openai&logoColor=white)  [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
+![分支](https://img.shields.io/badge/分支-no--ai--mobile-orange?style=flat) ![平台](https://img.shields.io/badge/平台-iOS%20%7C%20Android-00A98F?style=flat&logo=capacitor&logoColor=white) ![数据存储](https://img.shields.io/badge/数据存储-100%25本地-success?style=flat&logo=database&logoColor=white) ![许可证](https://img.shields.io/badge/许可证-AGPL--3.0-lightgrey?style=flat)
 
-![桌面端](https://img.shields.io/badge/桌面端-Windows%20%7C%20macOS%20%7C%20Linux-purple?style=flat&logo=electron&logoColor=white) ![移动端](https://img.shields.io/badge/移动端-Android%20%7C%20iOS-00A98F?style=flat&logo=capacitor&logoColor=white) 
+**本地优先的移动端提示词与凭据管理应用。** 全部数据存在设备本地的 IndexedDB 里，不经过任何中间服务器。
 
-
-✨ AI Gist 是一款隐私优先的 AI 提示词管理工具，致力于让个人收藏的 AI 提示词能够发挥最大价值。
-
-支持变量替换、Jinja 模板、AI 生成与调优、历史版本记录、云端备份等核心功能。
-
-![主要截图](docs/images/image-main.png?v=202608170119)
-
-[🏠 访问官网](https://getaigist.com) | [🔗 Fork Releases](https://github.com/msiya8160-star/AI-Gist-Tuji/releases) | [🔗 上游原项目](https://github.com/yarin-zhang/AI-Gist/releases) | [🇬🇧 English README](docs/README.en.md)
+上游原项目：<https://github.com/yarin-zhang/AI-Gist>
 
 </div>
 
-## 📌 特点
+## 本分支和上游有什么区别
 
-AI Gist 提供基础的 AI 提示词管理功能，旨在帮助用户高效地创建、组织和使用 AI 提示词。支持 Jinja 模板。
+**不包含**（已删除，请勿在 Issue 里追问）：
 
-* **变量填充**：调用模板时动态填入变量，结构清晰灵活，支持 Jinja 模板。
-* **多视图管理**：集中管理提示词模板，支持卡片视图、表格视图、分类视图。
-* **筛选分类**：快速筛选、查找、组织提示词，支持标签、分类、评分、收藏等功能。
-* **多种历史记录**：便于重复调用与持续优化，事后可回溯。
+- 所有 AI 功能：模型接入、AI 生成提示词、AI 调优 / 提示词优化工作台、AI 提取变量
+- 变量的 Jinja / Nunjucks 模板引擎：`package.json` 里还留着 `nunjucks` 依赖，代码里的渲染分支也还在，但没有任何界面能开启它——现在只有 `{{变量}}` 的纯替换
+- 桌面端（Electron + electron-builder）、桌面 Web 版（Docker）、本地 CLI
+- App Store / Microsoft Store 发布、代码签名与公证流程
+- iCloud 备份（`src/shared/types/cloud-backup.ts` 里 `icloud` 类型定义还在，本分支 UI 只提供 WebDAV）
 
-![特点01](docs/images/image-main-dark.png?v=202608162327)
+**包含：**
 
-AI Gist 还集成了 AI 模型，支持自动生成和调整提示词，提升管理效率。用之前，改一改。
+- iOS / Android（Capacitor）移动端 App，构建链完整保留
+- 提示词管理（变量填充、分类、标签、图片、收藏、搜索、排序）
+- 凭据记录（账号 / URL / 密码）
+- 本地备份与恢复、WebDAV 云端备份、多设备自动同步
+- 多语言、深浅色主题、版本号规范
 
-* **接入多种 AI 模型**：支持接入多种 AI 模型（包括本地模型 Ollama、LM Studio，以及 OpenAI 等多种常见在线模型）。
-* **AI 生成**：使用 AI 快捷生成提示词，支持自定义系统提示词。
-* **AI 调优**：使用 AI 改写提示词，快速让提示词更具体、更丰富，同样支持自定义。
-* **AI 提取变量**：无需手动挖空，使用 AI 自动提取可能的变量。
+> 备份兼容性：用上游（带 AI 的版本）做过的备份导入本分支，数据不会丢，只是 AI 相关的表在当前版本没有任何界面可以读写。
 
-![特点02](docs/images/image-ai-generator.png?v=202608162327)
+## 这是什么
 
-AI Gist 关注隐私和数据安全，所有数据都存储在本地，并支持云备份功能，方便在不同设备间同步。
+AI Gist 是一个本地优先的移动应用，用来管理你的**提示词模板**和**账号凭据**。默认完全离线，所有数据只写在本机 IndexedDB；只有你主动同步到 WebDAV 时才联网。
 
-* **本地优先**：所有数据存储在本地，默认情况无需联网，确保隐私和安全。
-* **掌控数据**：拥有完整的数据控制，支持完整导出和导入，通用格式 CSV 导出。
-* **云端备份**：支持 WebDAV、iCloud 备份与恢复，方便在多设备间共享数据。
+## 功能
 
-![特点03](docs/images/image-data-cloud-backup.png?v=202608162327)
+**提示词与凭据**
 
-* **多平台支持**：支持 Windows / macOS / Linux 桌面端，Android（APK）和 iOS（App Store）移动端。
-* **多语言支持**：支持简体中文、繁体中文、英文、日语。
+- **双记录类型**：同一条记录可以是提示词（正文模板）或凭据（账号 / URL / 一条或多条密码）
+- **变量填充**：在正文里写 `{{变量名}}`，使用时逐条填值再复制；变量支持文本 / 多行 / 下拉 / 数字 / 布尔五种类型，可设默认值、必填、校验规则
+- **自动识别变量**：保存时从正文里自动挖出全部 `{{变量}}` 并生成变量定义，正文改动会同步增删对应变量
+- **分类与标签**：分类支持在编辑页直接内联新建；标签支持搜索、常用标签推荐、按使用频次排序、多色标记
+- **图片**：编辑页可加图片 / 截图（相机或相册）
+- **收藏**：列表里单独筛「只看收藏」
 
-## ⬇️ 下载
+**浏览与查找**
 
-> 📦 **注意**：下表中的 GitHub Releases 下载链接指向**上游原项目**（[yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist/releases)）的发布版本。
-> 本 Fork 目前尚未独立发布版本，如需安装本 Fork，请从源码构建（见下方「开发说明」）。
-> Microsoft Store / App Store 链接指向的是上游原项目的商店版本，与本 Fork 无关。
+- **底部浮动导航**：两个 Tab（提示词 / 设置），提示词页多一条「新建提示词」入口条；下滑列表时导航自动收起，回到顶部展开
+- **两种视图**：列表视图 / 瀑布流视图，顶部有切换开关，选择会记住
+- **搜索与筛选**：全文搜索、顶部分类标签快速筛选、按标签筛选、只看收藏；按更新时间 / 创建时间 / 标题排序
+- **无限滚动 + 下拉刷新**
+- **详情页**：预览填充后的正文并复制；复制凭据可以按字段单独复制；改过的内容没保存会提示
+- **删除有确认**（提示词、分类、备份都要手动确认）
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/msiya8160-star/AI-Gist-Tuji?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases/latest) [![GitHub all releases](https://img.shields.io/github/downloads/msiya8160-star/AI-Gist-Tuji/total?style=flat)](https://github.com/msiya8160-star/AI-Gist-Tuji/releases)
+**数据与同步**
 
-| 平台 | 安装包 | 应用市场 | 说明 |
-|------|----------|----------|------|
-| ![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?logo=windows11&logoColor=white) | [Windows Setup](https://github.com/yarin-zhang/AI-Gist/releases/latest) | [Microsoft Store](https://apps.microsoft.com/detail/9n6vb23vsk8k?hl=zh-CN&gl=US) | Windows 安装程序 |
-| ![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white) | [macOS (Apple Silicon)](https://github.com/yarin-zhang/AI-Gist/releases/latest) | [App Store](https://apps.apple.com/us/app/ai-gist/id6762559220) | 适用于 Apple 芯片 Mac |
-| ![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white) | [macOS (Intel)](https://github.com/yarin-zhang/AI-Gist/releases/latest) | [App Store](https://apps.apple.com/us/app/ai-gist/id6762559220) | 适用于 Intel 芯片 Mac |
-| ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black) | [Linux AppImage](https://github.com/yarin-zhang/AI-Gist/releases/latest) | [Snap Store](https://snapcraft.io/ai-gist) | 通用 Linux 应用 |
-| ![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=flat&logo=android&logoColor=white) | [Android APK](https://github.com/yarin-zhang/AI-Gist/releases/latest) |  | APK 安装包 |
-| ![iOS](https://img.shields.io/badge/iOS-App%20Store-000000?style=flat&logo=apple&logoColor=white) | | [App Store](https://apps.apple.com/cn/app/ai-gist/id6762559220) | App Store |
+- **本地备份**：导出完整数据包，导入时做完整性校验
+- **云端备份**：WebDAV 云端上传 / 恢复 / 删除备份
+- **多设备同步**：支持自动定时同步（可配间隔）或手动；冲突时选 merge 或 overwrite
+- **自动备份**：可按设置自动导出本地备份
+- **隐私**：数据只存在本机 IndexedDB，不经过任何中间服务器；只在主动同步 WebDAV 时联网
 
-如果 Github 下载较慢，可以尝试通过百度网盘、SourceForge 进行下载。
+**多语言与外观**
 
-| 镜像源 | 下载链接 | 说明 |
-|------|----------|------|
-| [<img src="https://img.shields.io/badge/百度网盘-下载-blue?logo=baidu&style=flat-square" alt="Baidu Download">](https://pan.baidu.com/s/10apxOpgNciADcKfhuli5sA?pwd=4321) | [百度网盘](https://pan.baidu.com/s/10apxOpgNciADcKfhuli5sA?pwd=4321) | 中国用户推荐 提取码：4321 |
-| [![Download AI-Gist](https://img.shields.io/badge/SourceForge-下载-green?logo=sourceforge&style=flat)](https://sourceforge.net/projects/ai-gist/files/latest/download) | [SourceForge](https://sourceforge.net/projects/ai-gist/files/latest/download) | 国际用户推荐 |
+- 简体中文、繁体中文、English、日本語、Italiano
+- 深色 / 浅色 / 跟随系统
+- 关于页显示当前版本，可检查 GitHub 上的最新 release
 
-## 🚀 安装说明
+## 使用场景
 
-- **Windows：** 下载 `.exe` 文件后双击运行安装
-- **macOS：** 下载 `.dmg` 文件后打开，将应用拖拽到应用程序文件夹。已签名并通过 Apple 公证的版本可直接启动；旧的未签名版本仍需在终端执行 `xattr -cr /Applications/AI\ Gist.app` 后启动。
-- **Linux：** 下载 `.AppImage` 文件后添加执行权限：`chmod +x ai-gist-linux.AppImage`
-- **Android：** 下载 `.apk` 文件后，根据系统提示允许安装来自浏览器或文件管理器的应用。
-- **iOS：** 在 [App Store](https://apps.apple.com/cn/app/ai-gist/id6762559220) 中搜索或打开链接安装。
+- **写提示词**：模板里写 `{{角色}}`、`{{任务}}`、`{{输出格式}}`，保存后自动建好变量；下次用直接填值，一次复制
+- **记凭据**：「新建」按钮选「凭据」类型，录下账号、地址和一条或多条密码，按字段单独复制
+- **换设备**：设置 → 数据与同步，加一个 WebDAV 地址，开自动同步（或手动同步一次）
+- **备份**：设置 → 数据备份 → 导出完整数据包，或上传到 WebDAV 云端备份
 
-## 📒 使用场景
+## 安装
 
-### 管理提示词
+本分支**不维护独立的 APK / IPA 发布**，从源码自己出包：`yarn build` 构建渲染层并同步 Capacitor，然后 `yarn cap:android` / `yarn cap:ios` 在 Android Studio / Xcode 里出包（命令见下节「开发」）。
 
-- 点击“新建提示词”
-- 输入提示词模板，用 `{{变量名}}` 来插入变量，AI Gist 会自动读取其中的变量。
-- 使用时直接选择模板，输入变量值。
-- 点击“复制内容”，即可自动记录使用历史。
+也可以让 GitHub Actions 代跑，产物作为 draft release 上传（见下节「CI」）。
 
-### AI 生成提示词
+## 开发
 
-- 先在应用中添加 AI 模型（支持纯本地 Ollama、LM Studio 模型，以及常见的 OpenAI、DeepSeek 等在线模型）。
-- 在首页点击“AI 生成”按钮，可以通过 AI 模型生成提示词。
-
-### AI 润色提示词
-
-- 先添加 AI 模型
-- 在编辑提示词页面对现有提示词进行快速润色，例如“提取变量”、“更具体”等。也可以自定义润色提示词。
-
-### AI 优化工作台（移动端）
-
-- 先添加并启用一个 AI 模型
-- 打开提示词详情页，点击“AI 优化”进入优化工作台
-- 选择优化对象（用户提示词 / 系统提示词）与优化方向（通用、专业精准、精简、结构化、输出格式或自定义要求）
-- 流式生成优化结果，支持多轮继续优化、原文/结果逐行对比、AI 评分评估
-- 满意后一键应用回提示词，原内容自动保留在提示词历史记录中
-- `{{变量}}` 占位符会逐字保留，若优化结果丢失变量会明确提示，防止误应用
-
-## 开发说明
-
-### 安装依赖
+**环境**：Node.js 22+，yarn 4.9.2（`corepack` 管理，首次运行会自动拉取）
 
 ```bash
-yarn install
+yarn install                # 安装依赖
+yarn dev                    # Vite 移动模式，浏览器里预览
+yarn build                  # 构建渲染层到 build/renderer，然后 cap sync
+yarn cap:android            # 用 Android Studio 打开 android/（打 APK/IPA 走这个）
+yarn cap:ios                # 用 Xcode 打开 ios/（需 macOS + Xcode）
+yarn cap:assets             # 从 resources/ 重新生成各平台图标尺寸
+yarn test:run               # 跑一遍测试（43 个测试文件 / 424 个用例）
+yarn test                   # 监听模式
+yarn lint                   # ESLint
 ```
 
-### 启动开发环境
+**版本号**：只改 `package.json` 里的 `version` 和 `buildRevision`，各平台构建号自动推导，不要手改 `build.gradle` / `project.pbxproj`。
 
 ```bash
-yarn dev
+yarn version:sync           # 把 package.json 的版本同步到原生工程
+yarn version:check          # 校验（CI 里用）
 ```
 
-如果项目位于 WSL 中，但希望直接预览 Windows 客户端，可运行：
+**CI**：目前只有两条工作流，都只做移动端。
 
-```bash
-yarn dev:win
-```
+- Android：push 到 `mobile` 分支触发，出 debug / release 的 APK + AAB
+- iOS：只能 `workflow_dispatch` 手动触发，要签名 secret
 
-渲染页面修改会由 Vite 即时热更新；Electron 主进程和 preload 修改后会自动重新编译并重启客户端。首次运行会缓存一份 Windows Electron 开发运行时，之后不需要重新打包。
+> 这两条工作流都没监听 `no-ai-mobile`。要在本分支自动构建，把 `.github/workflows/build-android-mobile.yml` 里的 `branches: [mobile]` 改成包含 `no-ai-mobile`，或者在 Actions 页面手动跑。
 
-如果只需要在浏览器中预览 Web 端，可运行：
+**参考文档**
 
-```bash
-yarn dev:web
-```
-
-如果需要开发 iOS / Android 移动端，先构建并同步到 Capacitor，再用 Xcode / Android Studio 打开原生项目：
-
-```bash
-yarn build:mobile   # 构建渲染层并同步到 Capacitor
-yarn cap:ios        # 用 Xcode 打开 iOS 项目（需 macOS + Xcode）
-yarn cap:android    # 用 Android Studio 打开 Android 项目（需 Android Studio）
-```
-
-### 其他常用命令
-
-```bash
-# 开发相关
-yarn dev            # 启动应用并开启热重载
-yarn dev:win        # 从 WSL 启动 Windows 客户端并开启热重载
-yarn build          # 打包应用，输出目录为 "dist"
-
-# 跨平台构建
-yarn build:win      # 构建 Windows 安装包
-yarn build:mac      # 构建 macOS 安装包
-yarn build:linux    # 构建 Linux 安装包
-```
-
-### 开发指南
-
-详细的开发指南请参阅 [docs](./docs) 目录：
-
-- [项目架构指南](./docs/project-architecture.md)
-- [Web 本地部署与多端差异说明](./docs/web-deployment-and-platform-differences.md)
 - [移动端开发指南](./docs/mobile-development.md)
-- [GitHub Actions 自动构建与发布](./docs/github-actions.md)
+- [版本号与构建号规范](./docs/versioning.md)
+- [移动端实现计划](./docs/mobile-implementation-plan.md)
+- [移动端功能补全 PRD](./docs/plan/2026-05-05-移动端功能补全PRD.md)
+- [设计 token 规则](./docs/AI_UI_DESIGN_PROMPT.md)（改 `src/renderer` 下的样式时用它的公共 token，别自建本地主题）
+
+> `docs/project-architecture.md`、`docs/web-deployment-and-platform-differences.md`、`docs/github-actions.md` 讲的是上游桌面端 / Web 版，本分支不适用。`docs/images/` 里的截图也都属于上游界面。
 
 ## 贡献
 
-本 Fork 在上游 [AI Gist](https://github.com/yarin-zhang/AI-Gist)（作者 Yarin Zhang）基础上维护，部分功能思路借鉴自 [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer)（作者 linshenkx），由 兔叽（[@msiya8160-star](https://github.com/msiya8160-star)）持续修改与扩展，所有代码完全开源。
+提 Issue 或 PR 前先看一眼上面的「本分支和上游有什么区别」——**AI 相关功能不会在本分支加回来**，这类 Issue 会直接关闭。
 
-如果你喜欢这个项目，请点击右上角的 Star ⭐️ 来支持我！这将激励我继续改进和维护这个项目。
-
-如果有问题或建议，欢迎在 GitHub 上提交 Issue 或 Pull Request。
-
-欢迎加入 QQ 群，与开发者和其他用户交流使用心得、反馈问题和获取最新动态。
-
-<p align="center">
-  <img src="docs/images/QQ-QRCode.png?v=202507031628" alt="QQ 群" width="200" />
-</p>
-
-## 应用截图
-
-<div align="center">
-
-![变量填充](docs/images/image-variable-fill.png?v=202608162327)
-
-变量填充
-
-![编辑提示词](docs/images/image-edit-prompt.png?v=202608162327)
-
-编辑提示词
-
-![Jinja 模板](docs/images/image-jinja-template.png?v=202608162327)
-
-Jinja 模板
-
-![AI 模型管理](docs/images/image-ai-config.png?v=202608162327)
-
-AI 模型管理
-
-![AI 添加配置](docs/images/image-ai-add-config.png?v=202608162327)
-
-添加 AI 配置
-
-![AI 快速调整](docs/images/image-ai-quick-adjust.png?v=202608162327)
-
-AI 快速调整
-
-![高级筛选](docs/images/image-filter.png?v=202608162327)
-
-高级筛选
-
-![表格视图](docs/images/image-table-view.png?v=202608162327)
-
-表格视图
-
-![文件夹视图](docs/images/image-folder-view.png?v=202608162327)
-
-文件夹视图
-
-![分类管理](docs/images/image-category.png?v=202608162327)
-
-分类管理
-
-![数据备份](docs/images/image-data-local-backup.png?v=202608162327)
-
-数据备份
-
-![明亮模式](docs/images/image-main-light.png?v=202608162327)
-
-明亮模式
-
-</div>
+修改范围与记录见 [NOTICE.md](./NOTICE.md)，协作约定见 [AGENTS.md](./AGENTS.md)。
 
 ## 许可证
 
-本项目采用 [AGPL 许可证](./LICENSE)，请在使用时遵守相关条款。
+本项目采用 [AGPL-3.0](./LICENSE)。
 
-## 致谢与开源声明
-
-本 Fork 的移动端「提示词优化工作台」（单次优化、多轮迭代、原文对比、AI 评估的交互流程与提示词设计思路）借鉴了开源项目 [Prompt Optimizer](https://github.com/linshenkx/prompt-optimizer)（作者 [linshenkx](https://github.com/linshenkx)）。
-
-- **Prompt Optimizer** 采用 **AGPL-3.0** 许可证，与本项目的许可证兼容。
-- 本项目**没有直接复制**其源代码文件，而是在理解其优化流程与提示词工程思路后，基于 AI Gist 自身的数据模型、AI 服务层与移动端 UI 独立实现，相关代码以 AGPL-3.0 许可证随本 Fork 一并开源。
-- 依据 AGPL-3.0 第 5(a) 条，具体的借鉴范围与修改记录已在 [NOTICE.md](./NOTICE.md) 中逐文件登记。
-- 感谢 [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) 与上游 [yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist) 两个优秀的开源项目。
-
-> 📄 若你基于本项目（含上述借鉴实现）提供网络服务，请遵守 AGPL-3.0，向用户公开修改后的完整源代码。
+本项目是 [yarin-zhang/AI-Gist](https://github.com/yarin-zhang/AI-Gist) 的 Fork，在上游代码基础上修改。本分支同时删除了大量上游功能（全部 AI 能力、整个桌面端），删除记录见 [NOTICE.md](./NOTICE.md)。如果你通过网络（SaaS）方式提供基于本项目的服务，必须向用户公开修改后的完整源代码。

@@ -2,7 +2,7 @@
     "name": "ai-gist",
     "version": "2.1.5",
     "buildRevision": 1,
-    "description": "本地优先的移动端提示词管理工具，能够管理提示词 + 变量填充 + 分类标签。",
+    "description": "本地优先的移动端提示词与凭据管理应用：提示词 + 变量填充 + 分类标签 + 凭据记录 + WebDAV 同步。",
     "scripts": {
         "dev": "vite --config config/vite.config.mobile.js",
         "build": "node scripts/build-mobile.js",

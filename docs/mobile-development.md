@@ -29,15 +29,15 @@ android/                     # Android 原生项目
 
 ## 开发流程
 
-### 1. 桌面端预览移动端效果
+### 1. 浏览器里预览移动端效果
 
-窗口最小宽度已调整为 375px（iPhone 宽度），可以直接在桌面端预览移动端效果：
+本分支没有桌面端；`yarn dev` 启动的是 Vite 移动模式，直接在浏览器里跑同一个 Web 包：
 
 ```bash
 yarn dev
 ```
 
-然后将窗口宽度调整到 375px 左右即可预览移动端布局。
+把浏览器视口调到 375px 左右（iPhone 宽度），或用 DevTools 的设备模拟，就能预览移动端布局。要跑真机请走下面第 3、4 步。
 
 ### 2. 更新应用图标（打包前必做）
 
@@ -61,8 +61,8 @@ yarn cap:assets
 ### 3. 构建移动端应用
 
 ```bash
-# 构建渲染层并同步到 Capacitor
-yarn build:mobile
+# 构建渲染层到 build/renderer，并同步到 Capacitor
+yarn build
 ```
 
 ### 3. 打开原生 IDE
@@ -160,7 +160,7 @@ const value = await storage.get('key');
 
 ### Q: 如何同步代码到移动端？
 
-A: 每次修改代码后运行 `yarn build:mobile` 即可。
+A: 每次修改代码后运行 `yarn build` 即可。
 
 ### Q: 移动端如何调用原生功能？
 
