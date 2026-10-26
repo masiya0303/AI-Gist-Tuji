@@ -20,17 +20,16 @@
         class="mobile-floating-nav"
         :class="{ 'mobile-floating-nav--minimized': isNavMinimized }"
       >
-        <div v-if="isPromptsTab" class="mobile-prompt-actions">
-          <button
-            type="button"
-            class="mobile-ai-entry"
-            :aria-label="t('promptManagement.createPrompt')"
-            @click="navigateToCreatePrompt"
-          >
-            <ion-icon :icon="add"></ion-icon>
-            <span class="mobile-ai-entry__label">{{ t('promptManagement.createPrompt') }}</span>
-          </button>
-        </div>
+        <button
+          v-if="isPromptsTab"
+          type="button"
+          class="mobile-ai-entry"
+          :aria-label="t('promptManagement.createPrompt')"
+          @click="navigateToCreatePrompt"
+        >
+          <ion-icon :icon="add"></ion-icon>
+          <span class="mobile-ai-entry__label">{{ t('promptManagement.createPrompt') }}</span>
+        </button>
 
         <ion-tab-bar id="mobile-tab-bar">
           <ion-tab-button tab="prompts" href="/tabs/prompts">

@@ -1049,7 +1049,7 @@ ion-chip {
 }
 
 ion-content {
-  /* 让列表底部留出浮动导航（AI 入口条 + 标签栏）的空间，避免最后一项被遮挡 */
+  /* 让列表底部留出浮动导航（新建提示词入口条 + 标签栏）的空间，避免最后一项被遮挡 */
   --padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--mobile-nav-clearance));
 }
 
