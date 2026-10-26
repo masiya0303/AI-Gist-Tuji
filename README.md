@@ -99,7 +99,27 @@ AI Gist 是一个本地优先的移动应用，用来管理你的**提示词模�
 
 ## 开发
 
-**环境**：Node.js 22+，yarn 4.9.2（`corepack` 管理，首次运行会自动拉取）
+### 开发环境
+
+上游仓库没有把 `node` 和 `yarn` 装进 PATH，干净机器上直接敲 `yarn` 会提示找不到命令。实测可用（Windows + PowerShell）：
+
+```powershell
+# 1) 把 node 加进 PATH
+$env:PATH = 'C:\app\DeepSeek Harness\resources\runtime\primary-runtime\dependencies\node\bin;' + $env:PATH
+node -v          # v24.21.0
+
+# 2) yarn 本身也不在 PATH，直接用 node 跑仓库里 vendored 的那一份
+node .yarn/releases/yarn-4.9.2.cjs install
+node .yarn/releases/yarn-4.9.2.cjs build
+
+# 3) 之后每条命令都可以走 npm script：把 node_modules 下的 bin 目录挂上
+$env:PATH = 'C:\app\DeepSeek Harness\AI-Gist-Tuji\node_modules\.bin;' + $env:PATH
+yarn dev
+```
+
+注意 `package.json` 里 pin 了 `packageManager: "yarn@4.9.2"`，必须和 `.yarn/releases/yarn-4.9.2.cjs` 里 vendored 的版本一致；版本对不上时 corepack 会去联网下错版本。
+
+**环境要求**：Node.js 22+（CI 用 22），yarn 4.9.2
 
 ```bash
 yarn install                # 安装依赖
